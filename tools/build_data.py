@@ -256,6 +256,15 @@ def build(data: dict, learn: dict | None, talents: dict | None = None) -> dict[s
         priorities[p["spec"]] = {"keys": parse_priority(p["priority"]), "text": p["priority"],
                                  "source_url": p["source_url"], "checked": p["checked"]}
     conversions = next((p for p in data["stat_priority"] if p["spec"] == "Conversions"), None)
+    if conversions:
+        txt = conversions["priority"]
+        m_mana = re.search(r"1 Int = ([\d.]+) mana", txt)
+        m_crit = re.search(r"([\d.]+) Int = 1% spell crit", txt)
+        m_spi = re.search(r"Spirit/(\d+) \+ ([\d.]+) per 2s", data["rotations"]["mana"])
+        if not (m_mana and m_crit and m_spi):
+            raise SystemExit("build_data: stat conversion text changed; update the parser")
+        conversions = dict(conversions, int_mana=float(m_mana.group(1)), int_per_crit=float(m_crit.group(1)),
+                           spirit_divisor=int(m_spi.group(1)), mana_source=data["rotations"]["source_url"])
 
     brackets: dict[str, list] = {}
     for g in data["gear_by_bracket"]:

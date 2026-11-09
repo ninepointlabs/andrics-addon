@@ -21,7 +21,9 @@ Forever only: `AndricsAddon_Forever.toc`, `## Interface: 16001`, refuses to run 
 | What's changed | Research changes plus whatever the companion poller found, with unread state |
 | Sources & flags | Research gaps, conflicts between sources, addon assumptions, every source link |
 
-**Tooltips:** hovering any item shows whether it's an upgrade for your active profile's spec versus what you have equipped in that slot, roughly how much, which stats change, and whether it's on a research gear list. If profile B has a different spec, it gets one compact line too.
+**Tooltips:** hovering any item shows whether it's an upgrade for your active profile's spec versus what you have equipped in that slot (named), roughly how much, a **What improves / What you'd lose** list (e.g. "+10 Intellect (+150 max mana, +0.17% spell crit)", using only documented conversions), and a green **Equip this** line when it's an upgrade you can wear now (or "Upgrade once you reach level N"). If profile B has a different spec, it gets one compact line too.
+
+**Bags:** upgrades you can equip now get a green glow and arrow on their bag slot (our own overlay, so it doesn't fight Pawn's arrow). When a new one lands in your bags you get a chat line and a toast, once per item. Both can be turned off in Options.
 
 **Dual-spec ready:** each character has two profiles (A/B) with their own spec, weights and rotation context. Switch manually from the header. `Core/DualSpec.lua` is the hook for automatic switching once Forever's dual-spec API is confirmed.
 

@@ -4,7 +4,7 @@ local _, ns = ...
 local Tooltip = {}
 ns.Tooltip = Tooltip
 
-local GREEN, RED, GREY, GOLD = "|cff3fdc5a", "|cffff5050", "|cff9a9a9a", "|cffffd200"
+local GREEN, RED, GREY, GOLD, WHITE = "|cff3fdc5a", "|cffff5050", "|cff9a9a9a", "|cffffd200", "|cffffffff"
 
 -- itemID -> research notes (gear lists, wands) so the tooltip can say "recommended".
 local index
@@ -49,29 +49,60 @@ function Tooltip.LinesFor(link, spec, profile, level, percentScale, opts)
         return lines
     end
     local against = res.against
+    local vs = ""
+    if against.link then
+        local name = against.link:match("%[(.-)%]")
+        if name then vs = " vs " .. name end
+    end
+    local canWear = not (res.minLevel and level and res.minLevel > level)
     if against.empty then
-        table.insert(lines, GREEN .. "Upgrade: slot is empty|r")
+        table.insert(lines, GREEN .. "UPGRADE: that slot is empty|r")
     elseif math.abs(res.delta) < 0.05 then
-        table.insert(lines, GREY .. "= Sidegrade vs equipped|r")
+        table.insert(lines, GREY .. "Sidegrade" .. vs .. "|r")
     elseif res.delta > 0 then
-        table.insert(lines, GREEN .. "Upgrade " .. (res.pct and pctText(res.pct) or ("+" .. ("%.1f"):format(res.delta) .. " score")) .. " vs equipped|r")
+        table.insert(lines, GREEN .. "UPGRADE " .. (res.pct and pctText(res.pct) or ("+" .. ("%.1f"):format(res.delta) .. " score")) .. vs .. "|r")
     else
-        table.insert(lines, RED .. "Downgrade " .. (res.pct and pctText(res.pct) or (("%.1f"):format(res.delta) .. " score")) .. " vs equipped|r")
+        table.insert(lines, RED .. "Downgrade " .. (res.pct and pctText(res.pct) or (("%.1f"):format(res.delta) .. " score")) .. vs .. "|r")
     end
     if res.wandDelta and math.abs(res.wandDelta) > 0.05 then
         table.insert(lines, (res.wandDelta > 0 and GREEN or RED) .. ("Wand DPS %+.1f|r"):format(res.wandDelta))
     end
     if opts.showStats ~= false then
-        local parts = {}
+        -- What improves (and what you'd give up), most important stat for your spec first.
+        local order, seen = {}, {}
         local prio = ns.Data.StatPriority[res.setName]
-        for _, key in ipairs(prio and prio.keys or {}) do
+        for _, k in ipairs(prio and prio.keys or {}) do table.insert(order, k) seen[k] = true end
+        for _, k in ipairs({ "HEALING", "DAMAGE", "SPELL_CRIT", "SPELL_HIT", "INT", "SPI", "MP5", "STA" }) do
+            if not seen[k] then table.insert(order, k) seen[k] = true end
+        end
+        local w = res.weights or {}
+        local gains, losses = {}, {}
+        for _, key in ipairs(order) do
             local d = res.statDelta[key]
-            if d then
-                local txt = (d > 0 and "+" or "") .. (d % 1 == 0 and tostring(d) or ("%.1f"):format(d))
-                table.insert(parts, (d > 0 and GREEN or RED) .. txt .. " " .. ns.Stats.LABELS[key] .. "|r")
+            -- Show one spell-power line: Discipline weighs "Spell damage", everyone else "Spell/Shadow damage".
+            local skip = (key == "DAMAGE" and w.SPELL_DAMAGE) or (key == "SPELL_DAMAGE" and not w.SPELL_DAMAGE)
+            if d and not skip then
+                local num = (d % 1 == 0) and ("%+d"):format(d) or ("%+.1f"):format(d)
+                local label = ns.Stats.LABELS[key]
+                if key == "SPELL_HIT" or key == "SPELL_CRIT" then label = label:gsub(" %%", "") num = num .. "%" end
+                local effect = ns.Stats.Effect(key, d)
+                local line = (d > 0 and GREEN or RED) .. "  " .. num .. " " .. label .. "|r" .. (effect and (GREY .. "  (" .. effect .. ")|r") or "")
+                table.insert(d > 0 and gains or losses, line)
             end
         end
-        if #parts > 0 then table.insert(lines, table.concat(parts, GREY .. ", |r")) end
+        if #gains > 0 then
+            table.insert(lines, WHITE .. "What improves:|r")
+            for _, l in ipairs(gains) do table.insert(lines, l) end
+        end
+        if #losses > 0 then
+            table.insert(lines, WHITE .. "What you'd lose:|r")
+            for _, l in ipairs(losses) do table.insert(lines, l) end
+        end
+    end
+    if ns.Stats.IsUpgrade(res, level) then
+        table.insert(lines, GREEN .. ">> Equip this: it's better for your " .. (spec or "") .. " than what you're wearing.|r")
+    elseif res.delta and res.delta > 0.05 and not canWear then
+        table.insert(lines, GOLD .. ("Upgrade once you reach level %d.|r"):format(res.minLevel))
     end
     local itemID = tonumber(link:match("item:(%d+)"))
     local notes = itemID and ResearchIndex()[itemID]

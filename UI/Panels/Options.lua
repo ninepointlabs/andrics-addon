@@ -35,7 +35,10 @@ UI.RegisterPanel({
 
         L:Header("Tooltips")
         L:Check("Show upgrade tips on item tooltips", g.tooltip.enabled, function(v) g.tooltip.enabled = v end)
-        L:Check("Show stat differences", g.tooltip.showStats, function(v) g.tooltip.showStats = v end)
+        L:Check("Show what improves (stat changes) in tooltips", g.tooltip.showStats, function(v) g.tooltip.showStats = v end)
+        L:Check("Highlight upgrades in my bags", g.bags.highlight, function(v) g.bags.highlight = v ns.Bags.RefreshAll() end,
+            "Glow + arrow on bag items that beat what you're wearing for your active spec and that you can equip now.")
+        L:Check("Tell me when an upgrade lands in my bags", g.bags.toast, function(v) g.bags.toast = v end)
         L:Buttons({ { label = "Hit/crit: " .. g.percentScale .. " pts per 1%", onClick = function()
             local steps = { 5, 8, 10, 12, 14, 20 }
             local nextV = steps[1]

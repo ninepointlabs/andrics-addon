@@ -11,7 +11,7 @@ M.state = {
     level = 24, race = "Scourge", class = "PRIEST", faction = "Horde", money = 345678,
     projectId = 18, combat = false, known = {}, auras = {}, targetAuras = {}, target = true,
     mana = 80, targetHp = 60, cooldowns = {}, equipped = {}, itemLines = {}, itemInfo = {},
-    questsDone = {}, bags = {},
+    questsDone = {}, bags = {}, bagSlots = {},
 }
 
 local function newObject(kind)
@@ -127,6 +127,7 @@ G.C_Item = {
         return id, "Armor", "Cloth", info.equipLoc, 134400, info.classID, info.subclassID
     end,
     GetItemInfo = function(id)
+        id = tonumber(tostring(id):match("item:(%d+)")) or id
         local info = S.itemInfo[id]
         if not info then return nil end
         return "Item", "item:" .. id, 2, 20, info.minLevel or 1
@@ -183,7 +184,35 @@ G.GetCursorPosition = function() return 0, 0 end
 G.IsShiftKeyDown = function() return false end
 G.IsModifiedClick = function() return false end
 G.ChatEdit_InsertLink = function() end
-G.hooksecurefunc = function() end
+G.hooksecurefunc = function(a, b, c)
+    -- hooksecurefunc(table, "method", fn) or hooksecurefunc("global", fn)
+    if type(a) == "table" then
+        local orig = a[b]
+        a[b] = function(...) local r = orig and orig(...) c(...) return r end
+    end
+end
+G.C_Container = {
+    GetContainerNumSlots = function(bag) return S.bagSlots[bag] and #S.bagSlots[bag] or 0 end,
+    GetContainerItemInfo = function(bag, slot)
+        local link = S.bagSlots[bag] and S.bagSlots[bag][slot]
+        return link and { hyperlink = link, stackCount = 1 } or nil
+    end,
+}
+G.NUM_BAG_SLOTS = 4
+G.NUM_TOTAL_BAG_FRAMES = 0
+-- One combined-bags frame with two buttons (bag 0, slots 1-2).
+local bagButtons = {}
+for i = 1, 2 do
+    local b = newObject("ItemButton")
+    b.GetBagID = function() return 0 end
+    b.GetID = function() return i end
+    b.isExtended = false
+    bagButtons[i] = b
+end
+M.bagButtons = bagButtons
+G.ContainerFrameMixin = { UpdateItems = function() end }
+G.ContainerFrameCombinedBags = newObject("ContainerFrameCombinedBags")
+G.ContainerFrameCombinedBags.EnumerateValidItems = function() return ipairs(bagButtons) end
 G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
 G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 

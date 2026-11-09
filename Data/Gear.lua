@@ -1139,6 +1139,10 @@ ns.Data.StatConversions = {
   priority = "1 Int = 15 mana; 59.2 Int = 1% spell crit; healing power also grants 1/3 as damage in Forever",
   source_url = "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
   checked = "2026-11-09",
+  int_mana = 15.0,
+  int_per_crit = 59.2,
+  spirit_divisor = 4,
+  mana_source = "https://www.wowhead.com/forever/guide/classes/priest/shadow/leveling-tips",
 }
 
 ns.Data.Consumables = {

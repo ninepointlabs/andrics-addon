@@ -17,6 +17,7 @@ local function OnLogin()
     ns.UI.MinimapButton()
     ns.UI.RegisterSettings()
     ns.Tooltip.Install() -- gear tips are useful on any class's tooltip for Priest gear; still spec-based
+    pcall(ns.Bags.Install)
     ns.DualSpec.Register(f)
 
     for _, ev in ipairs({ "PLAYER_LEVEL_UP", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "UNIT_AURA",
@@ -42,6 +43,14 @@ local function OnLogin()
         C_Timer.After(5, function() ns.Print(("%d unread in What's changed. /andric changes"):format(unread)) end)
     end
     ns.Hud.Refresh()
+    -- Upgrades already sitting in the bags: one summary line, no toast spam.
+    C_Timer.After(6, function()
+        local found = ns.Bags.Scan(true)
+        if #found > 0 then
+            ns.Print(("|cff3fdc5a%d upgrade(s) in your bags|r for %s, highlighted in your bags: %s"):format(#found, ns.DB.ActiveSpec(), found[1].link .. (#found > 1 and " ..." or "")))
+        end
+        ns.Bags.RefreshAll()
+    end)
 end
 
 -- Reminder toast, throttled; out of combat only.
@@ -71,6 +80,19 @@ local function SoftRefresh()
     end)
 end
 
+-- Bags: re-check highlights and announce new upgrades (throttled, out of combat).
+local bagPending
+local function BagRefresh()
+    if bagPending then return end
+    bagPending = true
+    C_Timer.After(0.7, function()
+        bagPending = false
+        pcall(ns.Bags.RefreshAll)
+        if not InCombatLockdown() then pcall(ns.Bags.Scan, false) end
+    end)
+end
+ns.BagRefresh = BagRefresh
+
 f:SetScript("OnEvent", function(_, event, ...)
     if event == "ADDON_LOADED" then
         if ... == ADDON then f:UnregisterEvent("ADDON_LOADED") end
@@ -90,6 +112,7 @@ f:SetScript("OnEvent", function(_, event, ...)
         end
         ns.db.char.lastLevel = level
         SoftRefresh()
+        BagRefresh()
     elseif event == "PLAYER_REGEN_DISABLED" then
         if ns.db.char.summary.enabled then ns.Summary.Start(GetTime(), ns.Auras.PowerPct("player")) end
         ns.Hud.Refresh()
@@ -102,6 +125,7 @@ f:SetScript("OnEvent", function(_, event, ...)
         ns.Hud.Refresh()
         C_Timer.After(2, function() CheckReminders(false) end)
         SoftRefresh()
+        BagRefresh()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unit, _, spellID = ...
         if unit == "player" then ns.Summary.OnCast(spellID) end
@@ -113,10 +137,13 @@ f:SetScript("OnEvent", function(_, event, ...)
     elseif event == "PLAYER_EQUIPMENT_CHANGED" then
         ns.Stats.ClearCache()
         SoftRefresh()
+        BagRefresh()
     elseif event == "GET_ITEM_INFO_RECEIVED" then
         SoftRefresh() -- uncached items were never stored in the stat cache, so no clear needed
+        BagRefresh()
     elseif event == "BAG_UPDATE_DELAYED" then
         SoftRefresh()
+        BagRefresh()
     end
 end)
 f:RegisterEvent("ADDON_LOADED")
@@ -124,6 +151,8 @@ f:RegisterEvent("PLAYER_LOGIN")
 
 ns.On("SPEC_CHANGED", function()
     ns.Stats.ClearCache()
+    ns.Bags.Reset()
+    BagRefresh()
     if ns.UI.UpdateMinimap then ns.UI.UpdateMinimap() end
     ns.Hud.Refresh()
 end)

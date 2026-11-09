@@ -237,9 +237,48 @@ function Stats.Compare(link, spec, level, profile, percentScale, itemInfo, equip
     if best.score > 0 then result.pct = result.delta / best.score * 100 end
     if result.isWand and best.raw then result.wandDelta = (raw.WAND_DPS or 0) - (best.raw.WAND_DPS or 0) end
     result.statDelta = {}
-    for k in pairs(weights) do
+    for k in pairs(Stats.LABELS) do
         local d = (new[k] or 0) - (best.derived[k] or 0)
         if math.abs(d) > 0.001 then result.statDelta[k] = d end
     end
+    if C_Item and C_Item.GetItemInfo then
+        local ok, _, _, _, _, minLevel = pcall(C_Item.GetItemInfo, link)
+        if ok then result.minLevel = minLevel end
+    end
     return result
+end
+
+Stats.UPGRADE_MIN_PCT = 1 -- ignore rounding-level gains
+
+-- Is this a real upgrade the player can put on right now?
+function Stats.IsUpgrade(res, level)
+    if not res or res.unusable or res.pending or res.isEquipped or not res.delta then return false end
+    if res.minLevel and level and res.minLevel > level then return false end
+    if res.against and res.against.empty then return res.score > 0 end
+    if res.delta <= 0.05 then return false end
+    return res.pct == nil or res.pct >= Stats.UPGRADE_MIN_PCT
+end
+
+-- What a stat change means in practice, from documented conversions only.
+function Stats.Effect(key, d)
+    local conv = ns.Data.StatConversions
+    local sign = d > 0 and "+" or "-"
+    local a = math.abs(d)
+    if key == "INT" and conv then
+        return ("%s%d max mana, %s%.2f%% spell crit"):format(sign, math.floor(a * conv.int_mana + 0.5), sign, a / conv.int_per_crit)
+    elseif key == "SPI" and conv then
+        return ("%s%.1f mana per 2 sec while not casting"):format(sign, a / conv.spirit_divisor)
+    elseif key == "MP5" then
+        return ("%s%d mana every 5 sec, even while casting"):format(sign, a)
+    elseif key == "SPELL_HIT" then
+        return d > 0 and "fewer resisted spells" or "more resisted spells"
+    elseif key == "SPELL_CRIT" then
+        return d > 0 and "more spell crits" or "fewer spell crits"
+    elseif key == "HEALING" then
+        return d > 0 and "bigger heals" or "smaller heals"
+    elseif key == "DAMAGE" or key == "SPELL_DAMAGE" then
+        return d > 0 and "harder-hitting spells" or "weaker spells"
+    elseif key == "STA" then
+        return d > 0 and "more health" or "less health"
+    end
 end

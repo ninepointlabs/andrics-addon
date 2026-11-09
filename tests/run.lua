@@ -165,7 +165,7 @@ end)
 test("tooltip lines", function()
     local lines = ns.Tooltip.LinesFor(NEW, "Holy", {}, 30, 10)
     local all = table.concat(lines, "\n")
-    truthy(all:find("Upgrade", 1, true), all)
+    truthy(all:find("UPGRADE", 1, true), all)
     truthy(all:find("Healing power", 1, true), "stat delta")
     truthy(all:find("addon assumption", 1, true))
     truthy(M.tooltipHook, "tooltip hook installed via TooltipDataProcessor")
@@ -367,6 +367,51 @@ test("gear: my-level view vs best overall", function()
     ns.UI.Refresh()
     truthy(textHas("Death Speaker Robes"), "best overall includes higher-level items")
     ns.UI.SetGearView("mine")
+end)
+
+test("tooltip: what improves + equip call-out + level gate", function()
+    ns.DB.SetSpec("Holy")
+    ns.Stats.ClearCache()
+    S.level = 30
+    local all = table.concat(ns.Tooltip.LinesFor(NEW, "Holy", {}, 30, 10), "\n")
+    truthy(all:find("What improves:", 1, true), all)
+    truthy(all:find("+20 Healing power", 1, true), "healing gain line")
+    truthy(all:find("What you'd lose:", 1, true), "spirit loss listed")
+    truthy(all:find("-10 Spirit", 1, true))
+    truthy(all:find("Equip this", 1, true), "equip call-out")
+    eq(ns.Stats.Effect("INT", 10), "+150 max mana, +0.17% spell crit")
+    eq(ns.Stats.Effect("SPI", 4), "+1.0 mana per 2 sec while not casting")
+    -- same item but level 40 required
+    S.itemInfo[1001].minLevel = 40
+    ns.Stats.ClearCache()
+    all = table.concat(ns.Tooltip.LinesFor(NEW, "Holy", {}, 30, 10), "\n")
+    truthy(not all:find("Equip this", 1, true), "can't equip yet")
+    truthy(all:find("Upgrade once you reach level 40", 1, true), all)
+    S.itemInfo[1001].minLevel = nil
+    ns.Stats.ClearCache()
+end)
+
+test("bags: highlight + one-time announcement", function()
+    ns.DB.SetSpec("Holy")
+    S.level = 30
+    S.bagSlots = { [0] = { NEW, PLATE } }
+    ns.Bags.Reset()
+    local printed = 0
+    local realPrint = ns.Print
+    ns.Print = function(m) if tostring(m):find("Upgrade in your bags", 1, true) then printed = printed + 1 end end
+    local found = ns.Bags.Scan(false)
+    eq(#found, 1, "robe is an upgrade, plate is not")
+    ns.Bags.Scan(false)
+    eq(printed, 1, "announced once")
+    ns.Print = realPrint
+    ns.Bags.RefreshAll()
+    truthy(rawget(M.bagButtons[1], "AndricsUpgrade") and rawget(M.bagButtons[1], "AndricsUpgrade").__shown, "upgrade highlighted")
+    truthy(not (rawget(M.bagButtons[2], "AndricsUpgrade") and rawget(M.bagButtons[2], "AndricsUpgrade").__shown), "plate not highlighted")
+    ns.db.global.bags.highlight = false
+    ns.Bags.RefreshAll()
+    truthy(not rawget(M.bagButtons[1], "AndricsUpgrade").__shown, "toggle off hides it")
+    ns.db.global.bags.highlight = true
+    S.bagSlots = {}
 end)
 
 test("slash commands", function()

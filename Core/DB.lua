@@ -41,6 +41,7 @@ DB.accountDefaults = {
     minimap = { angle = 215, hide = false },
     changesRead = {},
     tooltip = { enabled = true, showStats = true },
+    bags = { highlight = true, toast = true },
     percentScale = 10, -- points per 1% hit/crit: addon assumption, editable, flagged in-game
     debug = false,
 }
