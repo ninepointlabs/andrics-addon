@@ -1,5 +1,7 @@
 # Andric's Addon
 
+**Website:** https://andricsaddon.myazerothlife.com (GitHub Pages from `docs/`, styled like [My Azeroth Life](https://myazerothlife.com/))
+
 The do-everything **Priest** companion for **WoW Forever**. Pick **Holy**, **Discipline** or **Shadow** and every panel adapts: leveling, rotation help, talents, gear upgrade tips on item tooltips, class quests, training, mounts and gold goals, reminders, a full *Learn the Priest* mode, and *What's changed*.
 
 Forever only: `AndricsAddon_Forever.toc`, `## Interface: 16001`, refuses to run unless `WOW_PROJECT_ID == 18`.

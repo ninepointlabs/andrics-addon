@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en" data-faction="neutral">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andric's Addon · the Priest companion for WoW Forever</title>
+<meta name="description" content="Andric's Addon: the do-everything Priest companion for World of Warcraft: Forever. Rotation help, gear upgrade tips, leveling, talents, a Fortitude button and a full Learn the Priest mode.">
+<meta name="theme-color" content="#0b0806">
+<link rel="icon" href="https://myazerothlife.com/assets/icons/inv_misc_note_01.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@400;600&family=Grenze+Gotisch:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>
+  try { var f = localStorage.getItem("faction"); if (f) document.documentElement.dataset.faction = f; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the paper</a>
+
+<header class="topbar">
+  <a class="brand" href="https://myazerothlife.com/"><img src="https://myazerothlife.com/assets/icons/inv_misc_note_01.jpg" alt="" width="26" height="26"><span>My Azeroth Life</span></a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#main" aria-current="page">Andric's Addon</a>
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="#data">The data</a>
+    <a href="https://github.com/ninepointlabs/andrics-addon">GitHub</a>
+  </nav>
+  <div class="faction" role="group" aria-label="Choose your edition">
+    <button type="button" data-pick="alliance" aria-pressed="false" title="Alliance edition"><img src="https://myazerothlife.com/assets/art/alliance-crest.webp" alt="Alliance" width="22" height="28"></button>
+    <button type="button" data-pick="horde" aria-pressed="false" title="Horde edition"><img src="https://myazerothlife.com/assets/art/horde-sigil.webp" alt="Horde" width="22" height="28"></button>
+  </div>
+</header>
+
+<div class="world" aria-hidden="true"></div>
+
+<div class="sheet">
+  <header class="masthead">
+    <div class="ears">
+      <div class="ear">
+        <img src="https://myazerothlife.com/assets/icons/inv_misc_coin_01.jpg" alt="" width="34" height="34">
+        <p><b>Price</b>Free<br><small>MIT licence, open source</small></p>
+      </div>
+      <div class="nameplate">
+        <p class="motto">A special edition of My Azeroth Life</p>
+        <h1>Andric's Addon</h1>
+      </div>
+      <div class="ear right">
+        <p><b>For</b>Priests of WoW Forever<br><small>Holy, Discipline &amp; Shadow</small></p>
+        <img src="https://myazerothlife.com/assets/icons/inv_misc_spyglass_03.jpg" alt="" width="34" height="34">
+      </div>
+    </div>
+    <div class="dateline">
+      <span>Version 0.2.0</span>
+      <span class="edition">
+        <span class="ed-neutral">The Neutral Edition</span>
+        <span class="ed-alliance">Stormwind Edition · For the Alliance!</span>
+        <span class="ed-horde">Orgrimmar Edition · For the Horde!</span>
+      </span>
+      <span><time datetime="2026-11-09">Monday, November 9, 2026</time></span>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="front">
+      <div class="stories">
+        <article class="lead">
+          <p class="kicker">New addon</p>
+          <h2 class="headline">The Priest's Companion Arrives for WoW Forever</h2>
+          <p class="deck">Pick Holy, Discipline or Shadow and every page bends to it: what to cast, what to wear, where to quest and what to learn next.</p>
+          <p class="byline">From the presses of <b>Nine Point Labs</b> · for World of Warcraft: Forever · Interface 16001</p>
+          <div class="excerpt cols dropcap">
+            <p>A Priest has a great deal to keep in mind: which rank to train, which buff has fallen off, whether that robe in the bag is truly better, and what a healer does in Blackfathom Deeps when the tank pulls three packs. Andric's Addon keeps it in one window, sorted by what you should do next.</p>
+            <p>The Home page shows what to train, how much gold you have toward your riding, your next class quest and anything that needs attention. The Rotation page lists only the spells you can actually cast at your level, and an on-screen helper suggests the next one. Every item tooltip says whether the item is an upgrade for your spec and what it would change.</p>
+            <p>It was built for Forever alone. It reads Forever's own talent trees and supports dual spec (talent spec one and two each keep their own Priest profile). Where the sources disagree or say nothing, it says so instead of guessing.</p>
+          </div>
+          <div class="actions">
+            <a class="wow-btn" href="#install">Install it</a>
+            <a class="wow-btn ghost" href="https://github.com/ninepointlabs/andrics-addon/releases/latest">Download the latest release</a>
+          </div>
+        </article>
+
+        <h2 class="section-head" id="features"><img src="https://myazerothlife.com/assets/icons/inv_misc_rune_01.jpg" alt="" width="22" height="22"><span>In this edition</span></h2>
+        <div class="columns">
+          <article class="story">
+            <p class="kicker">Home</p>
+            <h3 class="headline">What to do next, at a glance</h3>
+            <p>Cards for your trainer, your savings toward riding at 40 and 60, and your next class quest. Below them: missing buffs, upgrades sitting in your bags, unread news and new lessons.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Rotation</p>
+            <h3 class="headline">Only spells you can cast</h3>
+            <p>Priority lists for solo, dungeon and raid, filtered to your level and talents. An optional on-screen helper suggests the next spell for Shadow, or shows your priorities and cooldowns when healing, and each fight ends with a short summary and a mana tip. It gives advice only: nothing casts by itself.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Gear</p>
+            <h3 class="headline">Upgrade or not, and why</h3>
+            <p>Item tooltips compare against what you wear for your spec, list what improves and what you'd lose, and say <em>Equip this</em> when it's worth it. Upgrades in your bags glow. For each recommended item the Gear page shows the boss and drop chance, the quest and quest giver, or the recipe, and can put a pin on your map.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Leveling</p>
+            <h3 class="headline">Your path to sixty</h3>
+            <p>Upcoming trainer visits and milestones, zones and dungeons for your level and faction, every spell rank with the level you learn it, the racial class quests at ten and twenty, and your riding trainer and first mount.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Talents</p>
+            <h3 class="headline">Builds you can see</h3>
+            <p>Recommended leveling, dungeon, raid and PvP builds drawn on Forever's real talent trees, with points per talent and in-game tooltips, plus the Forever talent changes for your tree.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Learn the Priest</p>
+            <h3 class="headline">A school in your spellbook</h3>
+            <p>Every spell and talent explained (what it does, when to use it, which rank), how the class works, playing in a group, leveling each spec and common mistakes. New lessons unlock as you level, and the first time you learn a spell you get a short hint.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Fortitude</p>
+            <h3 class="headline">One button to buff them all</h3>
+            <p>Each press casts Power Word: Fortitude on the nearest friendly player who doesn't have it yet: you first, then your group, your target, then players with friendly nameplates showing. You can bind it to any key.</p>
+          </article>
+          <article class="story">
+            <p class="kicker">Reminders &amp; news</p>
+            <h3 class="headline">Nothing forgotten</h3>
+            <p>Reminders for Fortitude, Inner Fire, Shadowform, your wand and candles. A What's new page collects Forever and Priest changes; an optional companion script on your PC keeps that list up to date.</p>
+          </article>
+        </div>
+      </div>
+
+      <aside class="crier" aria-label="Town crier">
+        <section class="tip-box" id="install">
+          <h2 class="section-head"><span>Install with OmaForge</span></h2>
+          <p>On Linux, one line:</p>
+          <code>omaforge install -c forever github:ninepointlabs/andrics-addon</code>
+          <p>Or search for <em>andrics</em> in OmaForge. Then <code>/reload</code> in game and type <code>/andric</code>.</p>
+        </section>
+
+        <section class="box">
+          <h2 class="section-head"><img src="https://myazerothlife.com/assets/icons/inv_misc_note_01.jpg" alt="" width="22" height="22"><span>By hand</span></h2>
+          <p>Download the zip from the <a href="https://github.com/ninepointlabs/andrics-addon/releases/latest">latest release</a> and extract it into <em>World of Warcraft/_forever_/Interface/AddOns</em>, so that you have an <em>AndricsAddon</em> folder there.</p>
+          <p>WoW Forever only. Classic Era and retail clients won't load it.</p>
+        </section>
+
+        <section class="box">
+          <h2 class="section-head"><img src="https://myazerothlife.com/assets/icons/inv_misc_spyglass_03.jpg" alt="" width="22" height="22"><span>Slash commands</span></h2>
+          <ul class="plain">
+            <li><code>/andric</code> <small>open or close</small></li>
+            <li><code>/priest</code> <small>same thing</small></li>
+            <li><code>/andric spec shadow</code> <small>holy · disc · shadow</small></li>
+            <li><code>/andric rotation</code> <small>gear · leveling · talents · learn</small></li>
+            <li><code>/andric fort key</code> <small>bind the Fortitude button</small></li>
+            <li><code>/andric remind</code> <small>check buffs now</small></li>
+          </ul>
+        </section>
+
+        <aside class="notice" aria-label="A notice from Nine Point Labs">
+          <p class="notice-label">A notice from Nine Point Labs, publishers of this paper</p>
+          <p class="notice-kicker">To Adventurers on Linux</p>
+          <p class="notice-name">OmaForge</p>
+          <p class="notice-deck">A World of Warcraft addon manager for Linux.<br>Retail, Classic and Forever, under Wine or Proton.</p>
+          <p class="notice-body">Installs and updates Andric's Addon straight from GitHub, alongside your addons from CurseForge and WoWInterface.</p>
+          <p class="notice-link"><a href="https://omaforge.ninepointlabs.com/" rel="noopener">omaforge.ninepointlabs.com</a></p>
+        </aside>
+      </aside>
+    </div>
+
+    <section class="feature" id="data">
+      <h2 class="headline">Honest Data, Plainly Sourced</h2>
+      <div class="columns">
+        <article class="story">
+          <h3 class="headline">From the record</h3>
+          <p>Spells, quests, builds, gear, riding costs and talent trees come from Blizzard's own notes and articles, Icy Veins and Wowhead. Every record keeps its source and the date it was checked, and each page has a <em>Sources &amp; notes</em> link.</p>
+        </article>
+        <article class="story">
+          <h3 class="headline">No guessing</h3>
+          <p>Where the sources are silent or disagree (a cooldown here, a spell ID there, gear lists past level 30, raid best-in-slot before the raids open on December 9), the addon says so plainly rather than inventing an answer.</p>
+        </article>
+        <article class="story">
+          <h3 class="headline">Kept current</h3>
+          <p>The research is rechecked and the addon updated through new releases. Talent trees come from Forever's current client build, and the build string is checked whenever a build is drawn.</p>
+        </article>
+      </div>
+      <ol class="steps" aria-label="Getting started">
+        <li>Install with OmaForge or by hand, then <code>/reload</code>.</li>
+        <li>Type <code>/andric</code> and pick Holy, Discipline or Shadow. With dual spec, pick one for each talent spec.</li>
+        <li>Start on Home: it tells you what to do next.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <div class="rule-double"></div>
+    <p class="imprint">
+      Printed on the presses of <em><a href="https://myazerothlife.com/">My Azeroth Life</a></em>, Tim Apple, proprietor.
+      Source and issues on <a href="https://github.com/ninepointlabs/andrics-addon">GitHub</a>. A <a href="https://ninepointlabs.com/">Nine Point Labs</a> production.
+    </p>
+  </footer>
+</div>
+
+<footer class="footer">
+  <div class="crests" aria-hidden="true">
+    <img src="https://myazerothlife.com/assets/art/alliance-crest.webp" alt="" width="36" height="45">
+    <img src="https://myazerothlife.com/assets/icons/inv_misc_note_01.jpg" alt="" width="36" height="36" class="seal">
+    <img src="https://myazerothlife.com/assets/art/horde-sigil.webp" alt="" width="36" height="45">
+  </div>
+  <p class="legal">
+    Andric's Addon is an unofficial fan project, not affiliated with or endorsed by Blizzard Entertainment.
+    World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of
+    Blizzard Entertainment, Inc. Game artwork, icons and the Alliance and Horde emblems © Blizzard
+    Entertainment, Inc., used under Blizzard's fan content guidelines
+    (<a href="https://myazerothlife.com/assets/SOURCES.txt">sources</a>).
+  </p>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll(".faction button");
+  function show(f) {
+    root.dataset.faction = f;
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.pick === f)); });
+  }
+  show(root.dataset.faction || "neutral");
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = root.dataset.faction === b.dataset.pick ? "neutral" : b.dataset.pick;
+      show(f);
+      try { localStorage.setItem("faction", f); } catch (e) {}
+    });
+  });
+})();
+</script>
+</body>
+</html>
