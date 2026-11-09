@@ -477,11 +477,20 @@ test("fortitude button: picks the next player who needs it", function()
     b.__scripts.PostClick(b, "LeftButton", false)
     pick = ns.Fort.Pick(GetTime())
     eq(pick.unit, "nameplate1", "after casting on Bram, next is the stranger")
+    -- strangers are reached by name, then the old target is restored/cleared
+    ns.Fort.Update()
+    eq(b:GetAttribute("macrotext"), "/targetexact Stranger\n/cast [@target,help,nodead] Power Word: Fortitude\n/cleartarget")
+    S.units.nameplate1.realm = "Argent Dawn"
+    S.target = true
+    eq(ns.Fort.MacroText("nameplate1", "Stranger-Argent Dawn", true), "/targetexact Stranger-Argent Dawn\n/cast [@target,help,nodead] Power Word: Fortitude\n/targetlasttarget")
+    S.target = false
+    eq(ns.Fort.MacroText("party2", "Cora", false), "/cast [@party2,help,nodead] Power Word: Fortitude", "group members stay direct")
+    eq(ns.Fort.ConditionCheck("party1"), "pass (party1)")
     -- in combat the target can't change
     S.combat = true
     S.units.nameplate1.buffs = { ["Power Word: Fortitude"] = true }
     ns.Fort.Update()
-    eq(b:GetAttribute("unit"), "party1", "frozen in combat")
+    eq(b:GetAttribute("unit"), "nameplate1", "frozen in combat on the last pick")
     S.combat = false
     -- everyone buffed except Cora (out of range)
     S.units.party1.buffs = { ["Power Word: Fortitude"] = true }

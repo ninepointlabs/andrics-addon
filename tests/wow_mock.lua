@@ -262,6 +262,9 @@ G.EditMacro = function(i, name, icon, body) M.macros[i].body = body end
 G.PickupMacro = function(i) M.pickedMacro = i end
 G.GetMacroInfo = function(i) local m = M.macros[i] return m and m.name, 134400, m and m.body end
 G.GetCVarBool = function() return false end
+G.UnitName = function(u) if u == "player" then return "Andric" end return S.units[u] and S.units[u].name end
+G.GetUnitName = function(u, withRealm) local x = S.units[u] if not x then return u == "player" and "Andric" or nil end return x.realm and (x.name .. "-" .. x.realm) or x.name end
+G.SecureCmdOptionParse = function(s) local unit = s:match("^%[@([%w]+),") return (unit and G.UnitExists(unit)) and "x" or nil, unit end
 G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
 G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 

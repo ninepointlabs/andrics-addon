@@ -129,8 +129,29 @@ local function setLook(active)
     btn:SetBackdropBorderColor(unpack(active and UI.Accent() or UI.C.border))
 end
 
-function Fort.MacroText(unit)
-    return ("/cast [@%s,help,nodead] %s"):format(unit, spellName(Fort.SPELL_ID, "Power Word: Fortitude"))
+-- Units macro conditionals reliably accept. Nameplate tokens (strangers) are
+-- reached by name instead: in v0.1.5 a [@nameplateN] /cast silently did nothing
+-- on Forever (no cast, no error, no block).
+local DIRECT = { player = true, target = true, focus = true }
+function Fort.IsDirectUnit(unit)
+    return DIRECT[unit] or unit:match("^party%d+$") ~= nil or unit:match("^raid%d+$") ~= nil
+end
+
+function Fort.MacroText(unit, name, hadTarget)
+    local spell = spellName(Fort.SPELL_ID, "Power Word: Fortitude")
+    if Fort.IsDirectUnit(unit) or not name then
+        return ("/cast [@%s,help,nodead] %s"):format(unit, spell)
+    end
+    return ("/targetexact %s\n/cast [@target,help,nodead] %s\n%s"):format(name, spell, hadTarget and "/targetlasttarget" or "/cleartarget")
+end
+
+-- Full name (with realm for other-realm players) for /targetexact.
+local function fullName(unit)
+    if GetUnitName then
+        local ok, n = pcall(GetUnitName, unit, true)
+        if ok and n and not ns.Auras.IsSecret(n) then return n end
+    end
+    return UnitName(unit)
 end
 
 -- Re-aim the secure button (out of combat only).
@@ -146,7 +167,7 @@ function Fort.Update()
         -- Cast through a /cast line (same as an action-bar macro; picks your
         -- highest rank the normal way) rather than the template's spell action.
         btn:SetAttribute("type", "macro")
-        btn:SetAttribute("macrotext", Fort.MacroText(pick.unit))
+        btn:SetAttribute("macrotext", Fort.MacroText(pick.unit, fullName(pick.unit), UnitExists("target")))
         btn:SetAttribute("unit", pick.unit)
         btn.status:SetText((UnitIsUnit(pick.unit, "player") and "you" or (pick.name or "?")) .. (count > 1 and (UI.Hex(UI.C.dim) .. " +" .. (count - 1) .. "|r") or ""))
         setLook(true)
@@ -262,8 +283,19 @@ end
 -- Click diagnostics: for ~1.5s after a press, report whether a cast started,
 -- failed (red error text) or was blocked by the client.
 local watch
+-- Does the game's own macro-condition parser accept [@unit,help,nodead] right now?
+function Fort.ConditionCheck(unit)
+    if not unit or not SecureCmdOptionParse then return "n/a" end
+    local ok, action, target = pcall(SecureCmdOptionParse, "[@" .. unit .. ",help,nodead] x")
+    if not ok then return "error" end
+    if action then return "pass (" .. tostring(target) .. ")" end
+    return "FAIL"
+end
+
 function Fort.Watch(target)
     watch = { at = GetTime(), name = target and target.name or "?", unit = target and target.unit, events = {} }
+    watch.cond = Fort.ConditionCheck(watch.unit)
+    watch.macro = btn and btn:GetAttribute("macrotext")
     C_Timer.After(1.5, function()
         local w = watch
         watch = nil
@@ -275,7 +307,9 @@ function Fort.Watch(target)
         elseif w.blocked then
             ns.Print("|cffff5050The game blocked the Fortitude button|r (" .. w.blocked .. "). Please tell Andric's Addon's author; /andric fort debug shows details.")
         else
-            ns.Print("|cffff5050Fortitude button pressed but no cast started|r (target " .. w.name .. ", " .. tostring(w.unit) .. "). Type /andric fort debug and share the output.")
+            ns.Print("|cffff5050Fortitude button pressed but no cast started|r (target " .. w.name .. ", " .. tostring(w.unit)
+                .. ", macro condition " .. tostring(w.cond) .. "). Please share this line and /andric fort debug.")
+            print("  macro was: " .. tostring(w.macro):gsub("\n", " | "))
         end
     end)
 end
@@ -311,7 +345,8 @@ function Fort.Debug()
     print(("  shown=%s combat=%s knowsFort=%s enabled=%s"):format(tostring(holder:IsShown()), tostring(InCombatLockdown()),
         tostring(ns.Progress.KnowsSpell(Fort.SPELL_ID)), tostring(ns.db.char.fortButton.enabled)))
     print(("  type=%s unit=%s useOnKeyDown=%s"):format(a("type"), a("unit"), a("useOnKeyDown")))
-    print("  macrotext=" .. a("macrotext"))
+    print("  macrotext=" .. a("macrotext"):gsub("\n", " | "))
+    if current then print("  macro condition [@" .. current.unit .. ",help,nodead]: " .. Fort.ConditionCheck(current.unit)) end
     print(("  spell name=%s  cvar ActionButtonUseKeyDown=%s"):format(tostring(spellName(Fort.SPELL_ID, "?")),
         tostring(GetCVarBool and GetCVarBool("ActionButtonUseKeyDown"))))
     if current then
