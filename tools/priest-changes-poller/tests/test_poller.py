@@ -1,6 +1,7 @@
 """Offline tests for the change poller (fixtures only; no network)."""
 import importlib.util
 import json
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -62,7 +63,10 @@ class PollerTest(unittest.TestCase):
         self.assertNotIn("Retail: Priest", lua, "non-Forever item dropped")
         self.assertNotIn("Mage tuning", lua, "non-Priest Forever item dropped")
         # valid Lua
-        r = subprocess.run(["lua5.1", "-e", f"local ns={{}} assert(loadfile('{self.out}'))('x', ns) assert(#ns.Data.Changes.items == 2)"],
+        lua = shutil.which("lua5.1") or shutil.which("lua")
+        if not lua:
+            self.skipTest("no lua interpreter")
+        r = subprocess.run([lua, "-e", f"local ns={{}} assert(loadfile('{self.out}'))('x', ns) assert(#ns.Data.Changes.items == 2)"],
                            capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
 
