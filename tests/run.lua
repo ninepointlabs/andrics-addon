@@ -530,13 +530,31 @@ test("fortitude button: picks the next player who needs it", function()
     S.spellNames = nil
     ns.Print = realPrint
     ns.Fort.Debug()
-    -- macro
+    -- macro: body mirrors the button (no /click), kept in sync out of combat
     ns.Fort.CreateMacro()
     eq(M.macros[1].name, "AndricsFort")
-    truthy(M.macros[1].body:find("/click AndricsFortButton", 1, true))
+    truthy(not M.macros[1].body:find("/click", 1, true), "no /click")
+    eq(M.macros[1].body, "#showtooltip Power Word: Fortitude", "nobody to buff: tooltip only")
     eq(M.pickedMacro, 1)
     ns.Fort.CreateMacro()
     eq(#M.macros, 1, "reuses existing macro")
+    S.units.party1.buffs = {}
+    S.time = (S.time or 1000) + 10 -- past the "just buffed" window
+    ns.Fort.Update()
+    eq(M.macros[1].body, "#showtooltip Power Word: Fortitude\n/cast [@party1,help,nodead] Power Word: Fortitude", "synced to the button")
+    S.combat = true
+    S.units.party1.buffs = { ["Power Word: Fortitude"] = true }
+    ns.Fort.Update()
+    truthy(M.macros[1].body:find("@party1", 1, true), "macro frozen in combat")
+    S.combat = false
+    -- a cast from the macro (no PostClick) still moves the button on
+    S.units.party1.buffs = {}
+    ns.Fort.Update()
+    S.spellNames = { [1243] = "Power Word: Fortitude" }
+    M.Fire("UNIT_SPELLCAST_SENT", "player", "Bram", "guid", 1243)
+    M.RunTimers()
+    truthy(not M.macros[1].body:find("@party1", 1, true), "skips Bram right after the macro cast him")
+    S.spellNames = nil
     S.units, S.target, S.known, S.auras = {}, saved.target, saved.known, saved.auras
 end)
 

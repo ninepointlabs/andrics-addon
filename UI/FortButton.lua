@@ -171,12 +171,14 @@ function Fort.Update()
         btn:SetAttribute("unit", pick.unit)
         btn.status:SetText((UnitIsUnit(pick.unit, "player") and "you" or (pick.name or "?")) .. (count > 1 and (UI.Hex(UI.C.dim) .. " +" .. (count - 1) .. "|r") or ""))
         setLook(true)
+        Fort.SyncMacro(btn:GetAttribute("macrotext"))
     else
         btn:SetAttribute("type", nil)
         btn:SetAttribute("macrotext", nil)
         btn:SetAttribute("unit", nil)
         btn.status:SetText(UI.Hex(UI.C.dim) .. (reason == "everyone nearby is buffed" and "all buffed" or "none in range") .. "|r")
         setLook(false)
+        Fort.SyncMacro(nil)
     end
     btn.reason = reason
     btn.count = count
@@ -318,8 +320,14 @@ local function isFort(spellID)
     local n = spellID and ns.Auras.SpellName(spellID)
     return n ~= nil and n == spellName(Fort.SPELL_ID, "Power Word: Fortitude")
 end
-ns.On("WOW_UNIT_SPELLCAST_SENT", function(unit, _, _, spellID)
-    if watch and unit == "player" and isFort(spellID) then watch.sent = true end
+ns.On("WOW_UNIT_SPELLCAST_SENT", function(unit, targetName, _, spellID)
+    if unit ~= "player" or not isFort(spellID) then return end
+    if watch then watch.sent = true end
+    -- Macro presses don't fire PostClick: skip the player we just buffed and move on.
+    if current and current.guid and (targetName == nil or targetName == current.name or (current.name and tostring(targetName):find("^" .. current.name))) then
+        recent[current.guid] = GetTime()
+    end
+    C_Timer.After(0.3, function() if not InCombatLockdown() then Fort.Update() end end)
 end)
 ns.On("WOW_UNIT_SPELLCAST_SUCCEEDED", function(unit, _, spellID)
     if watch and unit == "player" and isFort(spellID) then watch.succeeded = true end
@@ -359,27 +367,47 @@ function Fort.Debug()
     print("  action-bar macro: " .. (mi > 0 and ("present, body: " .. (select(3, GetMacroInfo(mi)) or "?"):gsub("\n", " | ")) or "not created"))
 end
 
--- Action-bar macro that presses the button (/click). Created on request.
+-- Action-bar macro. Forever's /click refuses addon secure buttons (the /click
+-- handler skips buttons with HasAccessConstraints()/forbidden ScriptedInput;
+-- wow-ui-source@forever SlashCommands.lua), so instead of "/click" the macro
+-- body IS the button's current command, rewritten out of combat whenever the
+-- target changes. In combat it keeps its last target, same as the button.
 Fort.MACRO_NAME = "AndricsFort"
-function Fort.MacroBody()
-    return "#showtooltip " .. spellName(Fort.SPELL_ID, "Power Word: Fortitude") .. "\n/click AndricsFortButton"
+Fort.MACRO_ICON = "INV_MISC_QUESTIONMARK" -- with #showtooltip the bar shows the spell icon
+
+function Fort.MacroBody(macrotext)
+    local body = "#showtooltip " .. spellName(Fort.SPELL_ID, "Power Word: Fortitude")
+    if macrotext then body = body .. "\n" .. macrotext end
+    return body
+end
+
+local lastMacroBody
+function Fort.SyncMacro(macrotext)
+    if InCombatLockdown() then return end
+    local body = Fort.MacroBody(macrotext)
+    if body == lastMacroBody then return end
+    local index = GetMacroIndexByName(Fort.MACRO_NAME)
+    if index == 0 then return end -- only maintain it once the player created it
+    if pcall(EditMacro, index, Fort.MACRO_NAME, Fort.MACRO_ICON, body) then lastMacroBody = body end
 end
 
 function Fort.CreateMacro()
     if InCombatLockdown() then ns.Print("Can't create macros in combat.") return end
+    local body = Fort.MacroBody(btn and btn:GetAttribute("macrotext"))
     local index = GetMacroIndexByName(Fort.MACRO_NAME)
     if index == 0 then
-        local ok, res = pcall(CreateMacro, Fort.MACRO_NAME, "INV_MISC_QUESTIONMARK", Fort.MacroBody(), nil)
+        local ok, res = pcall(CreateMacro, Fort.MACRO_NAME, Fort.MACRO_ICON, body, nil)
         if not ok or not res then
             ns.Print("Couldn't create the macro (your general macro slots may be full).")
             return
         end
         index = res
-        ns.Print("Created macro '" .. Fort.MACRO_NAME .. "'. It's on your cursor: drop it on an action bar.")
+        ns.Print("Created macro '" .. Fort.MACRO_NAME .. "'. It's on your cursor: drop it on an action bar. It follows the button's target automatically.")
     else
-        pcall(EditMacro, index, Fort.MACRO_NAME, "INV_MISC_QUESTIONMARK", Fort.MacroBody())
-        ns.Print("Macro '" .. Fort.MACRO_NAME .. "' is on your cursor: drop it on an action bar.")
+        pcall(EditMacro, index, Fort.MACRO_NAME, Fort.MACRO_ICON, body)
+        ns.Print("Macro '" .. Fort.MACRO_NAME .. "' updated and on your cursor: drop it on an action bar.")
     end
+    lastMacroBody = body
     PickupMacro(index)
 end
 
