@@ -213,6 +213,31 @@ M.bagButtons = bagButtons
 G.ContainerFrameMixin = { UpdateItems = function() end }
 G.ContainerFrameCombinedBags = newObject("ContainerFrameCombinedBags")
 G.ContainerFrameCombinedBags.EnumerateValidItems = function() return ipairs(bagButtons) end
+-- Map: a top map with two zones; The Barrens has the Wailing Caverns entrance.
+local function vec(x, y) return { GetXY = function() return x, y end } end
+M.waypoints = {}
+G.C_Map = {
+    GetBestMapForUnit = function() return 10 end,
+    GetFallbackWorldMapID = function() return 947 end,
+    GetMapInfo = function(id)
+        local maps = { [947] = { name = "Azeroth", parentMapID = 0 }, [10] = { name = "Northern Barrens", parentMapID = 947 },
+            [2200] = { name = "Riverglades", parentMapID = 947 } }
+        return maps[id] and { mapID = id, name = maps[id].name, parentMapID = maps[id].parentMapID } or nil
+    end,
+    GetMapChildrenInfo = function(top)
+        return { { mapID = 10, name = "Northern Barrens", mapType = 3 }, { mapID = 2200, name = "Riverglades", mapType = 3 } }
+    end,
+    CanSetUserWaypointOnMap = function() return true end,
+    SetUserWaypoint = function(p) table.insert(M.waypoints, p) end,
+}
+G.UiMapPoint = { CreateFromCoordinates = function(mapID, x, y) return { mapID = mapID, x = x, y = y } end }
+G.C_SuperTrack = { SetSuperTrackedUserWaypoint = function(v) M.superTracked = v end }
+G.C_EncounterJournal = {
+    GetDungeonEntrancesForMap = function(mapID)
+        if mapID == 10 then return { { name = "Wailing Caverns", position = vec(0.389, 0.693) } } end
+        return {}
+    end,
+}
 G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
 G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 
@@ -220,7 +245,7 @@ local OPTIONAL = {
     issecretvalue = true, WOW_PROJECT_CAMELOT = true, AuraUtil = true, GetSpellInfo = true, strtrim = true,
     AndricsAddonDB = true, AndricsAddonCharDB = true, AndricsAddonFrame = true, AndricsAddonHud = true,
     AndricsAddonMinimapButton = true, SLASH_ANDRICSADDON1 = true, SLASH_ANDRICSADDON2 = true,
-    AndricsAddon_OnCompartmentClick = true,
+    AndricsAddon_OnCompartmentClick = true, OpenWorldMap = true,
 }
 
 function M.Install()

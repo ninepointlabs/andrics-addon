@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RESEARCH = ROOT / "research" / "data.json"
 LEARN = ROOT / "content" / "learn.json"
 TALENTS = ROOT / "research" / "talents_priest.json"
+ITEM_SOURCES = ROOT / "research" / "item_sources.json"
 OUT = ROOT / "Data"
 
 SPECS = ("Shadow", "Holy", "Discipline")
@@ -194,7 +195,7 @@ def to_int(v):
         return v
 
 
-def build(data: dict, learn: dict | None, talents: dict | None = None) -> dict[str, str]:
+def build(data: dict, learn: dict | None, talents: dict | None = None, sources: dict | None = None) -> dict[str, str]:
     files: dict[str, str] = {}
     src = "research/data.json"
 
@@ -316,6 +317,15 @@ def build(data: dict, learn: dict | None, talents: dict | None = None) -> dict[s
         write("Talents.lua", {"TalentTrees": trees, "TalentTreesMeta": meta, "DecodedBuilds": decoded},
               "research/talents_priest.json + research/data.json builds", files)
 
+    if sources is not None:
+        write("ItemSources.lua", {
+            "ItemSources": {int(k): v for k, v in sources["items"].items()},
+            "QuestSources": {int(k): v for k, v in sources["quests"].items()},
+            "ItemSourcesMeta": {"source": sources["source"], "checked": sources["checked"]},
+        }, "research/item_sources.json (tools/fetch_item_sources.py)", files)
+    else:
+        files["ItemSources.lua"] = HEADER.format(inputs="(research/item_sources.json missing)") + "\nns.Data.ItemSources = {}\nns.Data.QuestSources = {}\n"
+
     if learn is not None:
         write("Learn.lua", {"Learn": learn}, "content/learn.json", files)
     else:
@@ -335,7 +345,8 @@ def main() -> int:
     data = json.loads(args.data.read_text(encoding="utf-8"))
     learn = json.loads(args.learn.read_text(encoding="utf-8")) if args.learn.exists() else None
     talents = json.loads(args.talents.read_text(encoding="utf-8")) if args.talents.exists() else None
-    files = build(data, learn, talents)
+    sources = json.loads(ITEM_SOURCES.read_text(encoding="utf-8")) if ITEM_SOURCES.exists() else None
+    files = build(data, learn, talents, sources)
 
     args.out.mkdir(parents=True, exist_ok=True)
     stale = []

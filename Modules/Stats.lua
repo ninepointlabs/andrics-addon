@@ -33,6 +33,7 @@ Stats.PATTERNS = {
     { "^%+(%d+) damage and healing spells$", "SPELL_POWER" },
     { "^%+(%d+) spell damage and healing$", "SPELL_POWER" },
     { "^equip: increases healing done by up to (%d+) and damage done by up to (%d+) for all magical spells and effects%.?$", "HEALING", "HEALING_DMG" },
+    { "^equip: increases healing done by magical spells and effects by up to (%d+)%.?$", "HEALING" }, -- Forever wording
     { "^equip: increases healing done by spells and effects by up to (%d+)%.?$", "HEALING" },
     { "^equip: increases healing done by up to (%d+)%.?$", "HEALING" },
     { "^%+(%d+) healing spells$", "HEALING" },
@@ -81,11 +82,14 @@ function Stats.ParseLines(lines)
 end
 
 -- Combine raw tooltip stats into the keys the research priorities use.
--- Forever: "healing power also grants 1/3 as damage" (Wowhead stat-priority);
--- applied only when the item does not state its damage portion explicitly.
+-- Forever: "healing power also grants 1/3 as damage" (Wowhead stat-priority).
+-- Forever healing items print that damage as its own line ("Increases healing
+-- done by magical spells... by up to 20" + "Increases damage done by magical
+-- spells... by up to 7", Icy Veins DB item 6682), so when an item lists both,
+-- the damage line already is the 1/3 and nothing extra is added.
 function Stats.Derive(raw)
     local heal = raw.HEALING or 0
-    local healAsDamage = raw.HEALING_DMG or (heal / 3)
+    local healAsDamage = raw.HEALING_DMG or ((raw.SPELL_DAMAGE or 0) > 0 and 0) or (heal / 3)
     return {
         DAMAGE = (raw.SPELL_POWER or 0) + (raw.SPELL_DAMAGE or 0) + (raw.SHADOW_DAMAGE or 0) + healAsDamage,
         HEALING = (raw.SPELL_POWER or 0) + heal,

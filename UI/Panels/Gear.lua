@@ -25,6 +25,12 @@ end
 
 local bracketSel
 local gearView -- "mine" | "best" | "bracket"
+local detailId -- item id shown in the detail view (nil = list)
+
+local function openDetail(id)
+    return function() detailId = id UI.Refresh() end
+end
+UI.OpenGearDetail = function(id) detailId = id end
 
 local SLOT_GROUPS = {
     { "Head", { INVTYPE_HEAD = true } }, { "Neck", { INVTYPE_NECK = true } },
@@ -116,7 +122,7 @@ local function renderSlots(L, c, view)
                 local right = upgradeText(it.id, c)
                 if view == "best" and it.minLevel > c.level then right = UI.Hex(UI.C.warn) .. "at " .. it.minLevel .. "|r  " .. right end
                 if i == 1 and view == "mine" then sub = UI.Hex(UI.C.good) .. "Best for you · |r" .. sub end
-                L:Item(it.id, it.name, sub, right)
+                L:Item(it.id, it.name, sub, right, openDetail(it.id))
             end
         end
     end
@@ -125,15 +131,180 @@ local function renderSlots(L, c, view)
         table.sort(soon, function(a, b) return a.minLevel < b.minLevel end)
         L:Header("Coming up (next 5 levels)")
         for _, it in ipairs(soon) do
-            L:Item(it.id, it.name, (it.source or "") .. " · req. " .. it.minLevel, upgradeText(it.id, c))
+            L:Item(it.id, it.name, (it.source or "") .. " · req. " .. it.minLevel, upgradeText(it.id, c), openDetail(it.id))
         end
     end
     L:Flag("The research only has Wowhead's level 20 and 30 gear lists (plus wands). Level 40-60 lists and raid BiS aren't published yet.")
 end
 
+----------------------------------------------------------------------------
+-- Item detail: comparison + where/how to get it + map pins.
+----------------------------------------------------------------------------
+
+-- Research list labels for an item (bracket + source text).
+local function researchLabels(id)
+    local out = {}
+    for bracket, list in pairs(ns.Data.GearBrackets) do
+        for _, g in ipairs(list) do
+            if g.item_id == id then table.insert(out, { bracket = bracket, source = g.source, rec = g }) end
+        end
+    end
+    for _, w in ipairs(ns.Data.Wands) do
+        if w.item_id == id then table.insert(out, { bracket = "wand list", source = w.source, rec = w }) end
+    end
+    return out
+end
+
+local function findDungeon(label)
+    if not label then return nil end
+    local key = ns.Map.Norm(label)
+    key = ns.Map.DUNGEON_ALIASES[key] or key
+    for _, d in ipairs(ns.Data.Dungeons) do
+        local dn = ns.Map.Norm(d.name)
+        if dn == key or dn:find(key, 1, true) or (key:find("scarlet monastery", 1, true) and dn:find("^sm ")) then return d end
+    end
+    return nil
+end
+
+local function renderDetail(L, c, id)
+    L:Buttons({ { label = "< Back to the list", onClick = function() detailId = nil UI.Refresh() end } }, 160)
+    local name, link, _, _, minLevel = C_Item.GetItemInfo(id)
+    local labels = researchLabels(id)
+    name = name or (labels[1] and labels[1].rec.name) or ("Item " .. id)
+    local _, _, _, equipLoc = C_Item.GetItemInfoInstant(id)
+    L:Item(id, name, (SLOT_NAMES[equipLoc] or "") .. (minLevel and (" · requires level " .. minLevel) or ""), upgradeText(id, c))
+
+    -- Comparison (same lines as the tooltip, minus the header).
+    if link then
+        local lines = ns.Tooltip.LinesFor(link, c.spec, c.profile, c.level, ns.db.global.percentScale)
+        for i = 2, #lines do L:Text(lines[i], { size = 12 }) end
+    else
+        L:Text(UI.Hex(UI.C.dim) .. "Loading item data...|r")
+    end
+
+    L:Header("How to get it")
+    local src = ns.Data.ItemSources[id]
+    local any = false
+    local researchLabel = labels[1] and labels[1].source
+
+    for _, d in ipairs(src and src.drops or {}) do
+        any = true
+        local dungeon = findDungeon(researchLabel)
+        local where = dungeon and (" in " .. dungeon.name .. " (levels " .. dungeon.levels .. (dungeon.new_in_forever and ", new in Forever" or "") .. ")") or ""
+        L:Row({ icon = "Interface\\Icons\\INV_Misc_Bag_10_Black", title = "Drops from " .. d.npc .. where,
+            sub = (d.chance and (d.chance .. " drop chance") or "drop chance unknown") .. " · NPC #" .. d.npc_id })
+        if dungeon then
+            local e = ns.Map.FindDungeonEntrance(dungeon.name)
+            if e then
+                L:Text(("Entrance: %s (%s %.1f, %.1f)"):format(e.name, ns.Map.MapName(e.mapID), e.x * 100, e.y * 100), { indent = 10 })
+                L:Buttons({
+                    { label = "Mark entrance on map", onClick = function() ns.Map.SetWaypoint(e.mapID, e.x, e.y, e.name .. " entrance") end },
+                    { label = "Open map", onClick = function() ns.Map.Open(e.mapID) end },
+                }, 170)
+            else
+                L:Text(UI.Hex(UI.C.dim) .. "The game's map data didn't return an entrance for this dungeon, so it can't be pinned.|r", { size = 11, indent = 10 })
+            end
+            if c.level < (tonumber(dungeon.levels:match("^(%d+)")) or 0) then
+                L:Text(UI.Hex(UI.C.warn) .. "You're below this dungeon's level range.|r", { size = 11, indent = 10 })
+            end
+        end
+    end
+
+    local playerFaction = c.faction
+    for _, q in ipairs(src and src.quests or {}) do
+        any = true
+        local qd = ns.Data.QuestSources[q.quest_id] or {}
+        local done = ns.Progress.IsQuestDone(q.quest_id)
+        local title = (done and (UI.CHECK_ICON .. " ") or "") .. "Quest reward: " .. q.name .. (q.choice and " (choose it as your reward)" or "")
+        local parts = {}
+        if qd.level then table.insert(parts, "level " .. qd.level) end
+        if qd.min_level then table.insert(parts, "from level " .. qd.min_level) end
+        local factionOnly = qd.faction and qd.faction ~= "Both" and qd.faction
+        if factionOnly then table.insert(parts, factionOnly .. " only") end
+        table.insert(parts, "quest #" .. q.quest_id)
+        local sub = table.concat(parts, " · ")
+        if qd.start_npc then sub = sub .. "\nStarts with " .. qd.start_npc .. (qd.zone and (" in " .. qd.zone) or "") end
+        if done then sub = sub .. "\n" .. UI.Hex(UI.C.good) .. "You've already completed this quest.|r" end
+        if factionOnly and playerFaction and factionOnly ~= playerFaction then sub = sub .. "\n" .. UI.Hex(UI.C.bad) .. "Not available to " .. playerFaction .. ".|r" end
+        L:Row({ icon = "Interface\\GossipFrame\\AvailableQuestIcon", title = title, sub = sub })
+        -- One spot per NPC label (the DB lists some NPCs at several spots); quest giver first.
+        local pins, seenLabel = {}, {}
+        for _, pin in ipairs(qd.pins or {}) do
+            if not seenLabel[pin.label] then
+                seenLabel[pin.label] = true
+                table.insert(pins, pin)
+            end
+        end
+        table.sort(pins, function(a, b)
+            local as, bs = a.label:find("^Start") and 0 or 1, b.label:find("^Start") and 0 or 1
+            return as < bs
+        end)
+        local btns = {}
+        for _, pin in ipairs(pins) do
+            local zone = pin.zone or qd.zone
+            local mapID = ns.Map.FindZone(zone)
+            L:Text(("%s: %s %.1f, %.1f"):format(pin.label, zone or "?", pin.x, pin.y), { size = 11, indent = 10 })
+            if mapID and #btns < 2 then
+                local who = pin.label:gsub("^[^:]*:%s*", "")
+                table.insert(btns, { label = (pin.label:find("^Start") and "Mark quest giver" or ("Mark " .. who)), onClick = function()
+                    ns.Map.SetWaypoint(mapID, pin.x / 100, pin.y / 100, pin.label)
+                end })
+            elseif not mapID then
+                L:Text(UI.Hex(UI.C.dim) .. "Couldn't match zone '" .. tostring(zone) .. "' to a game map.|r", { size = 11, indent = 10 })
+            end
+        end
+        if #btns > 0 then L:Buttons(btns, 150) end
+        if not qd.pins and qd.zone then
+            L:Text(UI.Hex(UI.C.dim) .. "No coordinates published for this quest yet.|r", { size = 11, indent = 10 })
+        end
+        if qd.source_url then L:Source(qd) end
+    end
+    -- Research says "Quest NNNN" but the item DB lists other quest ids: flag it.
+    local rq = researchLabel and tonumber(researchLabel:match("Quest (%d+)"))
+    if rq and src and src.quests then
+        local match = false
+        for _, q in ipairs(src.quests) do if q.quest_id == rq then match = true end end
+        if not match then L:Flag(("The gear guide lists quest %d; the Icy Veins DB lists the quest(s) above. Same chain, different step?"):format(rq)) end
+    end
+
+    if src and src.crafted then
+        any = true
+        local cr = src.crafted
+        local reagents = {}
+        for _, r in ipairs(cr.reagents or {}) do table.insert(reagents, r.count .. " " .. r.name) end
+        L:Row({ icon = "Interface\\Icons\\Trade_Tailoring", title = "Crafted with " .. cr.profession .. (cr.skill and (" (skill " .. cr.skill .. ")") or ""),
+            sub = (#reagents > 0 and ("Reagents: " .. table.concat(reagents, ", ")) or "Reagents not listed") .. "\nMake it yourself or ask a " .. cr.profession:lower() .. " crafter (trade chat / crafting orders)." })
+    end
+    for _, v in ipairs(src and src.sold_by or {}) do
+        any = true
+        L:Row({ icon = "Interface\\Icons\\INV_Misc_Coin_02", title = "Sold by " .. v.npc, sub = "NPC #" .. v.npc_id })
+    end
+
+    if not any then
+        L:Text("Gear guide says: " .. (researchLabel or "?"))
+        local dungeon = findDungeon(researchLabel)
+        if dungeon then
+            local e = ns.Map.FindDungeonEntrance(dungeon.name)
+            if e then L:Buttons({ { label = "Mark " .. dungeon.name .. " entrance", onClick = function() ns.Map.SetWaypoint(e.mapID, e.x, e.y, e.name .. " entrance") end } }, 240) end
+        end
+        L:Flag("The Icy Veins item database (early access) doesn't list a source for this item yet.")
+    end
+    if src then L:Source(src) end
+
+    L:Header("On the gear lists")
+    for _, l in ipairs(labels) do
+        L:Text(("%s: %s"):format(l.bracket, l.source ~= "" and l.source or "?"), { size = 11 })
+    end
+    if labels[1] then L:Source(labels[1].rec) end
+end
+
 UI.RegisterPanel({
     key = "gear", label = "Gear", icon = "Interface\\Icons\\INV_Chest_Cloth_17",
     render = function(L, c)
+        if detailId then
+            renderDetail(L, c, detailId)
+            return
+        end
         local setName = ns.Stats.WeightSetName(c.spec, c.level, c.profile)
         local prio = ns.Data.StatPriority[setName]
         L:Header("Stat weights: " .. setName, c.spec and ("Used for item tooltips while " .. (c.spec or "") .. " is active.") or "Pick a spec to use spec weights.")
@@ -156,7 +327,7 @@ UI.RegisterPanel({
             end, "Leveling priority (Icy Veins): Spell power > Crit > Hit > Intellect > Spirit > Stamina > MP5")
         end
 
-        L:Header("Gear", "Researched items scored with your spec's weights.")
+        L:Header("Gear", "Researched items scored with your spec's weights. Click any item for where and how to get it.")
         gearView = gearView or "mine"
         L:Buttons({
             { label = "For my level", active = gearView == "mine", onClick = function() gearView = "mine" UI.Refresh() end },
@@ -207,7 +378,7 @@ UI.RegisterPanel({
                 L:Text(UI.Hex(UI.Accent()) .. src .. "|r", { size = 12 })
                 for _, g in ipairs(bySource[src]) do
                     local _, _, _, equipLoc = C_Item.GetItemInfoInstant(g.item_id)
-                    L:Item(g.item_id, g.name, SLOT_NAMES[equipLoc] or "", upgradeText(g.item_id, c))
+                    L:Item(g.item_id, g.name, SLOT_NAMES[equipLoc] or "", upgradeText(g.item_id, c), openDetail(g.item_id))
                 end
             end
             L:Source(list[1])
@@ -218,7 +389,7 @@ UI.RegisterPanel({
         for _, w in ipairs(ns.Data.Wands) do table.insert(wands, w) end
         table.sort(wands, function(a, b) return (a.dps or 0) > (b.dps or 0) end)
         for _, w in ipairs(wands) do
-            L:Item(w.item_id, w.name, (w.source ~= "" and w.source or "") .. (w.required_level and (" · req. " .. w.required_level) or ""), w.dps and ("%.1f DPS"):format(w.dps) or "DPS ?")
+            L:Item(w.item_id, w.name, (w.source ~= "" and w.source or "") .. (w.required_level and (" · req. " .. w.required_level) or ""), w.dps and ("%.1f DPS"):format(w.dps) or "DPS ?", openDetail(w.item_id))
         end
         L:Text(UI.Hex(UI.C.dim) .. ns.Data.OtherWeapons.note .. "|r", { size = 11 })
 

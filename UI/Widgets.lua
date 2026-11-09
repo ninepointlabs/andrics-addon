@@ -323,7 +323,7 @@ function Layout:Check(label, checked, onToggle, tip)
 end
 
 -- Item row helper (icon from item id, tooltip shows our upgrade tip).
-function Layout:Item(id, name, sub, right)
+function Layout:Item(id, name, sub, right, onClick)
     local icon = (C_Item and C_Item.GetItemIconByID and C_Item.GetItemIconByID(id)) or "Interface\\Icons\\INV_Misc_QuestionMark"
     return self:Row({
         icon = icon, title = name, sub = sub, right = right,
@@ -336,6 +336,8 @@ function Layout:Item(id, name, sub, right)
             if IsModifiedClick and IsModifiedClick("CHATLINK") then
                 local _, link = C_Item.GetItemInfo(id)
                 if link then ChatEdit_InsertLink(link) end
+            elseif onClick then
+                onClick()
             end
         end,
     })

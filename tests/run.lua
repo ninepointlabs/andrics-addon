@@ -107,11 +107,19 @@ test("stat parsing", function()
     eq(raw.INT, 7); eq(raw.SPI, 5); eq(raw.STA, 4); eq(raw.SPELL_POWER, 12); eq(raw.HEALING, 9)
     eq(raw.SPELL_CRIT, 1); eq(raw.SPELL_HIT, 2); eq(raw.MP5, 3); eq(raw.SHADOW_DAMAGE, 6); eq(raw.SPELL_DAMAGE, 4)
     local d = ns.Stats.Derive(raw)
-    near(d.DAMAGE, 12 + 4 + 6 + 3, "healing counts 1/3 as damage")
+    near(d.DAMAGE, 12 + 4 + 6, "explicit damage line present, so no extra 1/3 from healing")
+    near(ns.Stats.Derive({ HEALING = 9 }).DAMAGE, 3, "healing-only item: 1/3 counts as damage")
     eq(d.HEALING, 21)
     local tbc = ns.Stats.ParseLines({ "x", "Equip: Increases healing done by up to 22 and damage done by up to 8 for all magical spells and effects." })
     near(ns.Stats.Derive(tbc).DAMAGE, 8, "explicit damage portion wins")
     eq(ns.Stats.ParseLines({ "x", "(16.5 damage per second)" }).WAND_DPS, 16.5)
+    -- Forever wording (Death Speaker Robes): healing + its 1/3 damage on separate lines
+    local fr = ns.Stats.ParseLines({ "Death Speaker Robes", "+11 Intellect",
+        "Equip: Increases healing done by magical spells and effects by up to 20.",
+        "Equip: Increases damage done by magical spells and effects by up to 7." })
+    eq(fr.HEALING, 20, "Forever healing line parsed")
+    local fd = ns.Stats.Derive(fr)
+    eq(fd.HEALING, 20); eq(fd.DAMAGE, 7, "no double 1/3 conversion")
 end)
 
 test("weights derive from priority order", function()
@@ -412,6 +420,33 @@ test("bags: highlight + one-time announcement", function()
     truthy(not rawget(M.bagButtons[1], "AndricsUpgrade").__shown, "toggle off hides it")
     ns.db.global.bags.highlight = true
     S.bagSlots = {}
+end)
+
+test("gear detail: sources, quest pin, dungeon entrance pin", function()
+    -- fixtures shaped like research/item_sources.json
+    ns.Data.ItemSources[6629] = { drops = { { npc = "Lady Anacondra", npc_id = 3671, chance = "12%" } }, source_url = "https://db.icy-veins.com/wow-forever/items/6629", checked = "2026-11-09" }
+    ns.Data.ItemSources[15444] = { quests = { { name = "Hidden Enemies", quest_id = 5730, choice = true } }, source_url = "x", checked = "2026-11-09" }
+    ns.Data.QuestSources[5730] = { level = 20, faction = "Horde", zone = "Riverglades", start_npc = "Thrall",
+        pins = { { zone = "Riverglades", label = "Start: Thrall", x = 31.5, y = 37.8 } }, source_url = "y", checked = "2026-11-09" }
+    S.faction = "Horde"
+    ns.DB.SetSpec("Holy")
+    ns.UI.OpenGearDetail(6629) -- Sporid Cape, Wailing Caverns in the research
+    M.texts = {}
+    ns.UI.Open("gear")
+    truthy(textHas("Drops from Lady Anacondra in Wailing Caverns"), "drop + dungeon")
+    truthy(textHas("Entrance: Wailing Caverns"), "entrance found from client map data")
+    local e = ns.Map.FindDungeonEntrance("Wailing Caverns")
+    M.waypoints = {}
+    truthy(ns.Map.SetWaypoint(e.mapID, e.x, e.y, "WC"))
+    eq(M.waypoints[1].mapID, 10); eq(M.superTracked, true)
+    ns.UI.OpenGearDetail(15444)
+    M.texts = {}
+    ns.UI.Refresh()
+    truthy(textHas("Quest reward: Hidden Enemies"), "quest source")
+    truthy(textHas("Starts with Thrall in Riverglades"), "quest giver")
+    truthy(textHas("gear guide lists quest 5726"), "research/IV quest id mismatch flagged")
+    eq(ns.Map.FindZone("Riverglades"), 2200)
+    ns.UI.OpenGearDetail(nil)
 end)
 
 test("slash commands", function()
