@@ -5,7 +5,7 @@ local UI = ns.UI
 UI.SettingsSections = UI.SettingsSections or {}
 local S = UI.SettingsSections
 
-local TABS = { "General", "Fortitude button", "Tooltips & bags", "Reminders", "About the data" }
+local TABS = { "General", "Fortitude button", "Tooltips & bags", "Reminders", "About the data", "About" }
 local tab = "General"
 
 S.General = function(L, c)
@@ -81,6 +81,24 @@ S["Tooltips & bags"] = function(L, c)
             ns.Stats.ClearCache()
             UI.Refresh()
         end } })
+end
+
+S.About = function(L, c)
+    local version = tostring(ns.VERSION)
+    if not version:match("^v") then version = "v" .. version end
+    L:Row({ icon = "Interface\\Icons\\Spell_Holy_WordFortitude", title = ns.TITLE .. " " .. version,
+        sub = "The do-everything Priest companion for World of Warcraft: Forever." })
+    L:Label("Named for")
+    L:Row({ icon = "Interface\\Icons\\Spell_Holy_HolyBolt", title = "Andric Grammaris",
+        sub = "The Human Priest who started it all. This addon was built for him and tested on him, and every screenshot on its website and GitHub page is his." })
+    L:Text(UI.Hex(UI.C.dim) .. "If you see a Human Priest handing out Fortitude to everyone around him, say hello. May the Light guide your heals.|r", { size = 12 })
+    L:Label("Links")
+    L:Link("Website", "https://andricsaddon.myazerothlife.com")
+    L:Link("Source, releases and issues", "https://github.com/ninepointlabs/andrics-addon")
+    L:Label("Credits")
+    L:Row({ title = "Made by Nine Point Labs", sub = "Free and open source, MIT licence." })
+    L:Row({ title = "Information from Blizzard, Icy Veins and Wowhead", sub = "Credited per fact: see About the data, or the Sources & notes link on each screen." })
+    L:Text(UI.Hex(UI.C.dim) .. "Andric's Addon is an unofficial fan project, not affiliated with or endorsed by Blizzard Entertainment. World of Warcraft and Warcraft are trademarks of Blizzard Entertainment, Inc.|r", { size = 11 })
 end
 
 UI.RegisterPanel({

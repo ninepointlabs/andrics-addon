@@ -242,7 +242,8 @@ Anything the sources couldn't confirm is marked as such.
   talent spec 2. Swap specs and the addon switches with you. You can also switch by hand from the
   header.
 - **Settings** sub-tabs: General · Fortitude button · Tooltips & bags · Reminders · About the data
-  (research gaps, conflicts between sources, assumptions, and every source link).
+  (research gaps, conflicts between sources, assumptions, and every source link) · About (version,
+  links, credits, and Andric Grammaris, the Priest it's named for).
 
 <img src="docs/img/settings.webp" alt="Settings: specs and dual spec, rotation helper, learning" width="760">
 
@@ -256,7 +257,7 @@ Anything the sources couldn't confirm is marked as such.
 | `/andric spec holy\|disc\|shadow` | Set the spec for the active profile |
 | `/andric profile A\|B` | Switch profile |
 | `/andric home` · `rotation` · `gear` · `leveling` · `talents` · `learn` · `news` · `settings` | Open a screen |
-| `/andric trainer` · `quests` · `riding` · `reminders` · `sources` | Open a sub-tab directly |
+| `/andric trainer` · `quests` · `riding` · `reminders` · `sources` · `about` | Open a sub-tab directly |
 | `/andric fort` | Show or hide the Buff Button |
 | `/andric fort key` | Bind a key to the Buff Button |
 | `/andric fort debug` | Show what the Buff Button is aimed at and why |

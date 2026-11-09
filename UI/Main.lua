@@ -26,7 +26,7 @@ UI.ALIASES = {
     overview = { "home" }, training = { "leveling", "Trainer" }, spells = { "leveling", "Trainer" },
     quests = { "leveling", "Class quests" }, mounts = { "leveling", "Riding & gold" }, gold = { "leveling", "Riding & gold" },
     reminders = { "settings", "Reminders" }, options = { "settings" }, config = { "settings" }, trainer = { "leveling", "Trainer" }, riding = { "leveling", "Riding & gold" },
-    sources = { "settings", "About the data" }, changes = { "news" },
+    sources = { "settings", "About the data" }, about = { "settings", "About" }, changes = { "news" },
 }
 
 local W, H, SIDE, HEAD = 980, 660, 210, 56

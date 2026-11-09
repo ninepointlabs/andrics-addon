@@ -181,7 +181,7 @@ local function Slash(msg)
     local cmd, arg = msg:match("^(%S*)%s*(.*)$")
     local tabs = { home = "home", overview = "home", rotation = "rotation", learn = "learn", leveling = "leveling", talents = "talents",
         gear = "gear", quests = "quests", trainer = "trainer", riding = "riding", training = "training", spells = "training", mounts = "mounts", gold = "mounts",
-        reminders = "reminders", news = "news", changes = "news", sources = "sources", settings = "settings", options = "settings", config = "settings" }
+        reminders = "reminders", news = "news", changes = "news", sources = "sources", about = "about", settings = "settings", options = "settings", config = "settings" }
     if cmd == "" then
         ns.UI.Toggle()
     elseif cmd == "spec" then
@@ -215,7 +215,7 @@ local function Slash(msg)
     elseif tabs[cmd] then
         ns.UI.Open(tabs[cmd])
     else
-        ns.Print("/andric [home|rotation|gear|leveling|talents|learn|news|settings] · also: trainer quests riding reminders sources")
+        ns.Print("/andric [home|rotation|gear|leveling|talents|learn|news|settings] · also: trainer quests riding reminders sources about")
         ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [key|debug]")
     end
 end

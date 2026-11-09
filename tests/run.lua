@@ -314,7 +314,7 @@ test("every sub-tab renders for every spec", function()
     local subs = {
         leveling = { "Path", "Zones & dungeons", "Trainer", "Class quests", "Riding & gold" },
         gear = { "For my level", "Best overall", "By bracket", "Consumables", "Weights" },
-        settings = { "General", "Fortitude button", "Tooltips & bags", "Reminders", "About the data" },
+        settings = { "General", "Fortitude button", "Tooltips & bags", "Reminders", "About the data", "About" },
         learn = { "Lessons", "Spells", "Talents", "How the class works", "In a group", "Leveling", "Common mistakes" },
         rotation = { "Solo", "Dungeon", "Raid" },
     }
@@ -621,6 +621,13 @@ test("tooltip: huge percentages read as 'much better'", function()
     local all = table.concat(ns.Tooltip.LinesFor("item:1101", "Holy", {}, 30, 10), "\n")
     truthy(all:find("UPGRADE (much better)", 1, true), all)
     S.equipped[1] = nil
+end)
+
+test("About names Andric Grammaris", function()
+    M.texts = {}
+    SlashCmdList.ANDRICSADDON("about")
+    truthy(textHas("Andric Grammaris"), "About tab shows Andric's full name")
+    truthy(textHas("andricsaddon.myazerothlife.com"), "website link")
 end)
 
 test("slash commands", function()
