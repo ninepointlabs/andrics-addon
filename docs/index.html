@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="extra.css">
 <script>
   document.documentElement.classList.add("js");
   try { var f = localStorage.getItem("andrics-faction"); if (f) document.documentElement.dataset.faction = f; } catch (e) {}
@@ -24,6 +25,7 @@
     <span>Andric's Addon</span>
   </a>
   <nav class="nav" aria-label="Sections">
+    <a href="#buff">Buff Button</a>
     <a href="#quests">Quests</a>
     <a href="#loot">Loot</a>
     <a href="#tavern">Tavern</a>
@@ -53,13 +55,75 @@
     </p>
     <div class="cta">
       <a class="wow-btn" href="#loot">Claim your loot</a>
-      <a class="wow-btn ghost" href="#quests">Open the quest log</a>
+      <a class="wow-btn ghost" href="#buff">Try the Buff Button</a>
     </div>
     <p class="meta">Free and open source · MIT · WoW Forever only · <span data-version>v0.2.0</span></p>
   </div>
   <div class="loading" aria-hidden="true">
     <p class="loading-tip"><b>Tip:</b> <span id="tip">The Rotation page only lists spells you can actually cast at your level.</span></p>
     <div class="loading-bar"><div class="loading-fill"></div></div>
+  </div>
+</section>
+
+<div class="facts-band">
+  <div class="facts" aria-label="At a glance">
+    <div class="fact"><b>3</b><span>specs, one click apart</span></div>
+    <div class="fact"><b>46</b><span>spells explained</span></div>
+    <div class="fact"><b>40</b><span>talents explained</span></div>
+    <div class="fact"><b>35</b><span>level-up lessons</span></div>
+    <div class="fact"><b>13</b><span>builds drawn</span></div>
+    <div class="fact"><b>120</b><span>items sourced</span></div>
+  </div>
+</div>
+
+<section class="section buff" id="buff">
+  <div class="section-head">
+    <h2 class="heading">The Buff Button</h2>
+    <p class="sub">Power Word: Fortitude for everyone around you, one press at a time.</p>
+  </div>
+
+  <div class="spotlight">
+    <div>
+      <h3>One button. Everyone buffed.</h3>
+      <p>A small Fortitude button sits on your screen. Each press casts Power Word: Fortitude on
+        the next friendly player who needs it, and the button immediately moves on to the next.
+        Keep pressing until everyone around you has it. Its label tells you who's next, and its
+        tooltip says how many are left.</p>
+      <p class="steps-title">Who it picks, in order</p>
+      <ol class="picks">
+        <li><b>You</b>, if your own buff is missing.</li>
+        <li><b>Your group</b>, nearest first when the game reports distance (raid or party).</li>
+        <li><b>Your target</b>, if it's a friendly player.</li>
+        <li><b>Players with friendly nameplates showing</b> (press <kbd>Shift</kbd>+<kbd>V</kbd>): buff the whole town.</li>
+      </ol>
+      <p class="steps-title">It skips anyone who</p>
+      <ul class="rules">
+        <li>already has Fortitude, or Prayer of Fortitude</li>
+        <li>is out of range, dead or offline</li>
+        <li>you buffed a moment ago (while their buff is still on its way)</li>
+      </ul>
+      <p class="steps-title">Make it yours</p>
+      <ul class="rules">
+        <li>Bind it to any key: <em>Settings › Fortitude button › Set key</em>, or <code>/andric fort key</code>. Shift, Ctrl, Alt and extra mouse buttons work.</li>
+        <li>Drag the small bar above it to move it. <code>/andric fort</code> shows or hides it.</li>
+        <li>It appears as soon as you know Power Word: Fortitude.</li>
+      </ul>
+      <p class="steps-title">Blizzard's rules, kept</p>
+      <ul class="rules">
+        <li>One press, one cast. The addon never casts on its own.</li>
+        <li>In combat the game freezes who the button aims at, so it keeps its last pick until combat ends. Buff between pulls.</li>
+      </ul>
+    </div>
+
+    <div class="demo" id="buff-demo" tabindex="0" aria-label="Buff Button demo: press the button or F">
+      <div class="demo-bar"><span>Try it</span><small>a pretend party · same picking order as the addon</small></div>
+      <ul class="party" aria-live="polite"></ul>
+      <div class="demo-foot">
+        <button type="button" class="fort-btn" aria-label="Cast Power Word: Fortitude on the next player"><span class="key">F</span></button>
+        <div class="demo-status"></div>
+      </div>
+      <p class="demo-note">A web demo of the addon's logic, not a screenshot of the game.</p>
+    </div>
   </div>
 </section>
 
@@ -91,6 +155,9 @@
             <li>Track your savings for riding at 40 (100g) and 60 (1000g)</li>
             <li>Never miss your level 10 and 20 racial class quests</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Three cards across the top: what your trainer has for you now (or at your next visit), your savings toward Apprentice Riding at 40 and Journeyman at 60 with a progress bar, and your next racial class quest.</p>
+            <p>Below them, <em>Needs attention</em> lists missing buffs, upgrades sitting in your bags, unread news and new lessons, each with a button that takes you there. Next to it: your rotation at a glance.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="rare">
@@ -119,6 +186,9 @@
             <li>See only spells your level and talents allow</li>
             <li>Learn from a summary after every fight</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Each spec has Solo, Dungeon and Raid lists. A step you can cast shows normally; one your level allows but you haven't trained yet is tagged <em>Train it</em>; spells from talents you haven't taken, or other races' spells, stay hidden until they apply.</p>
+            <p>For damage, the helper shows the next spell large with the two after it, plus a row of cooldowns. For healing it shows your priorities and their cooldowns: who to heal stays your call. After a fight, chat gets a line of what you cast and a tip, like finishing mobs with your wand so your mana comes back.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="epic">
@@ -146,6 +216,8 @@
             <li>Bind it to a key from Settings</li>
             <li>Keep the whole town stamina-blessed</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>See <a href="#buff">the Buff Button</a> above for the full picking order and a demo you can press.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="rare">
@@ -172,6 +244,9 @@
             <li>See what each stat change means for your mana, crit and healing</li>
             <li>Spot upgrades in your bags at a glance</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Each spec's stat priority comes from the guides, and the addon turns it into weights for your spec. Shadow uses its leveling priority until 60. Rings and trinkets are compared against the weaker of your two, and a two-hander against your main hand and off hand together.</p>
+            <p><em>Equip this</em> only appears for an upgrade of 1% or more that you can wear right now. Otherwise you'll see "Upgrade once you reach level N". Intellect is shown as max mana and spell crit, and Spirit as mana per two seconds.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="epic">
@@ -199,6 +274,9 @@
             <li>Find the boss, the quest giver or the recipe</li>
             <li>Pin it on your map and follow the arrow</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>The views are <em>For my level</em> (gear you can wear now, plus what unlocks in the next five levels), <em>Best overall</em>, <em>By bracket</em>, <em>Consumables</em> and <em>Weights</em>.</p>
+            <p>Item sources come from the Icy Veins Forever database. Dungeon entrances come from the game's own map, so the pin lands where the game says the entrance is. If a source isn't published yet, the page says so.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="rare">
@@ -224,6 +302,8 @@
             <li>Find zones and dungeons for your level and faction</li>
             <li>Complete your class quests and claim your first mount</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p><em>Path</em> lists your next trainer visits and milestones by level. <em>Zones &amp; dungeons</em> highlights your bracket, <em>Trainer</em> shows every rank and when you learn it, and <em>Class quests</em> ticks off the ones you've done. <em>Riding &amp; gold</em> shows your trainer, your vendor and your first-mount quest (the first mount is free).</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="uncommon">
@@ -250,6 +330,8 @@
             <li>Read what each build takes, talent by talent</li>
             <li>Switch specs and let the addon follow</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Pick Leveling, Dungeon, Raid or PvP and the build appears on Forever's three trees, with points per talent and the game's own tooltip on hover. Below it, a list says what the build takes. A build that no longer fits the current trees shows its link instead of a wrong picture.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="epic">
@@ -276,6 +358,8 @@
             <li>Unlock lessons as you level</li>
             <li>Learn your role in a group</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>The sections are <em>Lessons</em>, <em>Spells</em>, <em>Talents</em>, <em>How the class works</em> (mana and Spirit, downranking, Weakened Soul, threat and more), <em>In a group</em>, <em>Leveling</em> (five tips for each spec) and <em>Common mistakes</em>. Anything the sources couldn't confirm is marked.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="legendary">
@@ -303,6 +387,8 @@
             <li>Catch every Priest change in What's new</li>
             <li>Check the source behind any fact</li>
           </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Reminders appear on Home and as a small pop-up out of combat; choose which ones in Settings. Each page has a <em>Sources &amp; notes</em> link with the sources it uses and any open questions. The search box at the top of the sidebar finds any spell, talent, item, quest or dungeon.</p></div>
           <h4>Rewards</h4>
           <div class="rewards">
             <div class="item" tabindex="0" data-quality="uncommon">
@@ -467,5 +553,6 @@
 <p class="zone-text" id="zone-text" aria-live="polite"></p>
 
 <script src="app.js" defer></script>
+<script src="demo.js" defer></script>
 </body>
 </html>

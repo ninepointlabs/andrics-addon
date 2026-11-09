@@ -29,6 +29,8 @@
     setTimeout(() => el.remove(), 5200);
   }
 
+  window.andricsAchieve = achieve; // used by demo.js
+
   const zone = $("#zone-text");
   function announce(text) {
     zone.textContent = text;
