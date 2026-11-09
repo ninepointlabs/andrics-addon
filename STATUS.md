@@ -3,6 +3,8 @@
 **PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged. Tag/release `v0.1.0` cut on the PR branch at Tim's request (see below).
 **Repo:** `ninepointlabs/andrics-addon` (**public** since 2026-11-09, at Tim's request). Topics `wow-addon` and `world-of-warcraft` are set, which OmaForge's GitHub search requires. Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
 
+**Release `v0.2.2`** (2026-11-09, at Tim's request): tag on `main` at `859007b`. Release workflow passed; `release.json` = forever / 16001; OmaForge shows `-> v0.2.2`. Adds Settings › About (named for Andric Grammaris) and `/andric about`. Andric's full name is also on the website and in the README. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.2.2
+
 **PR #1 merged into `main`** (2026-11-09, at Tim's request): merge commit `aca9d16`. The repo front page now shows the full README with in-game screenshots, and GitHub Pages builds the website from `main` /docs.
 
 **Release `v0.2.1`** (2026-11-09, at Tim's request): tag at `94df2e1`. Release workflow passed; `release.json` = forever / 16001; OmaForge shows `v0.2.0 -> v0.2.1`. Fixes from Tim's in-game screenshots: version text, spec-icon logo, gear levels from item sources, a cap on huge percentages, and the Fortitude tooltip refresh. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.2.1
