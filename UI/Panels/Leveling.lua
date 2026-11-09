@@ -1,61 +1,124 @@
+-- Leveling: Path · Zones & dungeons · Trainer · Class quests · Riding & gold.
+-- Trainer / Class quests / Riding & gold live in their own files as sections.
 local _, ns = ...
 local UI = ns.UI
+
+UI.LevelingSections = UI.LevelingSections or {}
+local S = UI.LevelingSections
+
+local TABS = { "Path", "Zones & dungeons", "Trainer", "Class quests", "Riding & gold" }
+local tab = "Path"
 
 local function bracketRange(levels)
     local lo, hi = levels:match("(%d+)%-(%d+)")
     return tonumber(lo), tonumber(hi)
 end
 
+-- Upcoming steps: trainer visits + milestones + riding, merged by level.
+local function pathSteps(c)
+    local steps, seen = {}, {}
+    local function add(level, text, kind)
+        local key = level .. text
+        if seen[key] then return end
+        seen[key] = true
+        table.insert(steps, { level = level, text = text, kind = kind })
+    end
+    local lvl, visits = c.level, 0
+    while visits < 2 do
+        local nextLvl = ns.Training.NextLevel(lvl, c.spec)
+        if not nextLvl then break end
+        local names = {}
+        for _, e in ipairs(ns.Training.At(nextLvl, c.spec)) do table.insert(names, e.spell.display .. " r" .. e.rank) end
+        add(nextLvl, "Trainer: " .. table.concat(names, ", "), "trainer")
+        lvl, visits = nextLvl, visits + 1
+    end
+    for _, m in ipairs(ns.Data.Milestones.items) do
+        if m.level > c.level then add(m.level, m.what, "milestone") end
+    end
+    table.sort(steps, function(a, b) return a.level < b.level end)
+    local out = {}
+    for i = 1, math.min(6, #steps) do out[i] = steps[i] end
+    return out
+end
+
+function S.Path(L, c)
+    L:Columns({ 0.55, 0.45 })
+    L:Label("Your path")
+    local now = ns.Training.At(c.level, c.spec)
+    L:Row({ chip = { text = tostring(c.level), kind = "good" }, title = "You are here" .. (#now > 0 and (" · " .. #now .. " spell" .. (#now == 1 and "" or "s") .. " to train") or ""),
+        tint = UI.Accent(), button = #now > 0 and { label = "Trainer", onClick = function() tab = "Trainer" UI.Refresh() end } or nil })
+    for _, s in ipairs(pathSteps(c)) do
+        L:Row({ chip = { text = tostring(s.level), kind = "neutral" }, title = s.text })
+    end
+    L:Source(ns.Data.Milestones)
+    L:NextColumn()
+    local horde = c.faction == "Horde"
+    local zoneCard
+    for _, z in ipairs(ns.Data.Zones) do
+        local lo, hi = bracketRange(z.levels)
+        if lo and c.level >= lo and c.level <= hi then zoneCard = z end
+    end
+    if zoneCard then
+        L:Card({ label = "Where to quest (" .. zoneCard.levels .. ")", title = horde and zoneCard.horde or zoneCard.alliance,
+            body = "Dungeons: " .. zoneCard.dungeons,
+            button = { label = "Zones & dungeons", onClick = function() tab = "Zones & dungeons" UI.Refresh() end } })
+    else
+        L:Card({ label = "Where to quest", title = "Not in the research yet",
+            body = "Zone guides for levels 30-60 aren't published yet. Questie or the dungeon list can help.",
+            button = { label = "Dungeons near your level", onClick = function() tab = "Zones & dungeons" UI.Refresh() end } })
+    end
+    local content = ns.Learn.Content()
+    local tips = content and content.leveling and c.spec and content.leveling[c.spec]
+    if tips and tips[1] then
+        L:Card({ label = "Leveling as " .. c.spec, title = tips[1].title, body = tips[1].body,
+            button = { label = "More leveling tips", onClick = function() UI.Select("learn", "Leveling") end } })
+    end
+    L:EndColumns()
+end
+
+S["Zones & dungeons"] = function(L, c)
+    local horde = c.faction == "Horde"
+    L:Label((c.faction or "?") .. " zones by level")
+    for _, z in ipairs(ns.Data.Zones) do
+        local lo, hi = bracketRange(z.levels)
+        local here = lo and c.level >= lo and c.level <= hi
+        L:Row({ chip = { text = z.levels, kind = here and "good" or "neutral" }, title = horde and z.horde or z.alliance,
+            sub = "Dungeons: " .. z.dungeons, tint = here and UI.Accent() or nil })
+    end
+    L:Source(ns.Data.Zones[1])
+    L:Note("Zones for levels 30-60 aren't in the research yet (Wowhead zone pages were blocked).")
+    L:Label("Dungeons near your level")
+    local any = false
+    for _, d in ipairs(ns.Data.Dungeons) do
+        local lo, hi = bracketRange(d.levels)
+        if lo and c.level >= lo - 3 and c.level <= hi then
+            any = true
+            L:Row({ chip = d.new_in_forever and { text = "New in Forever", kind = "info" } or nil, title = d.name, right = "levels " .. d.levels })
+        end
+    end
+    if not any then L:Text(UI.Hex(UI.C.dim) .. "None in range right now.|r") end
+    L:Note("Dungeon enemy XP was raised 50% on Nov 8.")
+    L:Label("New zones in Forever")
+    for _, z in ipairs(ns.Data.NewZones) do
+        L:Row({ title = z.zone, right = "levels " .. z.levels, sub = z.notes ~= "" and z.notes or nil })
+    end
+    L:Label("Professions")
+    local pr = ns.Data.Professions
+    L:Row({ title = "While leveling: " .. pr.leveling, sub = "For raiding: " .. pr.raiding .. " · Alternatives: " .. table.concat(pr.alternatives, ", ") })
+    L:Source(pr)
+end
+
 UI.RegisterPanel({
-    key = "leveling", label = "Leveling", icon = "Interface\\Icons\\INV_Misc_Map_01",
+    key = "leveling", label = "Leveling",
+    setSub = function(sub) for _, t in ipairs(TABS) do if t == sub then tab = sub end end end,
     render = function(L, c)
-        local horde = c.faction == "Horde"
-        L:Header("Where to quest", (c.faction or "?") .. " zones by level (Icy Veins). Your bracket is highlighted.")
-        for _, z in ipairs(ns.Data.Zones) do
-            local lo, hi = bracketRange(z.levels)
-            local here = lo and c.level >= lo and c.level <= hi
-            L:Row({ icon = here and "Interface\\Icons\\INV_Misc_Map02" or nil, title = (here and UI.Hex(UI.Accent()) or "") .. z.levels .. "  " .. (horde and z.horde or z.alliance) .. (here and "|r" or ""),
-                sub = "Dungeons: " .. z.dungeons, tint = here and UI.Accent() or nil })
+        L:Title("Leveling", ("Level %d %s"):format(c.level, c.spec and (c.spec .. " Priest") or "Priest"))
+        local items = {}
+        for _, t in ipairs(TABS) do
+            table.insert(items, { label = t, active = tab == t, onClick = function() tab = t UI.Refresh() end })
         end
-        L:Flag("Zones for levels 30-60 are not in the research yet (Wowhead zone pages were blocked). Use Questie or the Dungeons list below.")
-        L:Source(ns.Data.Zones[1])
-
-        L:Header("Dungeons near your level")
-        local any = false
-        for _, d in ipairs(ns.Data.Dungeons) do
-            local lo, hi = bracketRange(d.levels)
-            if lo and c.level >= lo - 3 and c.level <= hi then
-                any = true
-                L:Row({ title = d.name .. (d.new_in_forever and ("  " .. UI.Hex(UI.C.good) .. "NEW in Forever|r") or ""), right = d.levels })
-            end
-        end
-        if not any then L:Text(UI.Hex(UI.C.dim) .. "None in range right now.|r") end
-        L:Text(UI.Hex(UI.C.dim) .. "Dungeon enemy XP was raised 50% on Nov 8.|r", { size = 11 })
-
-        L:Header("New zones in Forever")
-        for _, z in ipairs(ns.Data.NewZones) do
-            L:Row({ title = z.zone, right = "levels " .. z.levels, sub = z.notes ~= "" and z.notes or nil })
-        end
-
-        if c.spec then
-            L:Header("Leveling as " .. c.spec)
-            local content = ns.Learn.Content()
-            for _, e in ipairs(content and content.leveling and content.leveling[c.spec] or {}) do
-                L:Text(UI.Hex(UI.Accent()) .. e.title .. "|r\n" .. e.body .. (e.unconfirmed and ("\n" .. UI.FLAG_ICON .. " " .. (e.flag or "Unconfirmed")) or ""))
-            end
-            for _, b in ipairs(ns.Data.Builds.Other) do
-                if b.notes then
-                    L:Row({ icon = "Interface\\Icons\\Ability_Marksmanship", title = b.spec .. " - " .. b.purpose, sub = b.notes })
-                end
-            end
-            L:Header("Stat priority while leveling")
-            L:Text(ns.Data.StatPriority.Leveling.text)
-            L:Source(ns.Data.StatPriority.Leveling)
-        end
-
-        L:Header("Professions")
-        local pr = ns.Data.Professions
-        L:Text(("Leveling: %s\nRaiding: %s\nAlternatives: %s"):format(pr.leveling, pr.raiding, table.concat(pr.alternatives, ", ")))
-        L:Source(pr)
+        L:Tabs(items)
+        local fn = S[tab] or S.Path
+        fn(L, c)
     end,
 })

@@ -87,15 +87,15 @@ local function buildList(L, build)
 end
 
 UI.RegisterPanel({
-    key = "talents", label = "Talents & builds", icon = "Interface\\Icons\\Ability_Marksmanship",
+    key = "talents", label = "Talents",
     render = function(L, c)
         local spec = c.spec
-        if not spec then L:Text("Pick a spec first.") return end
+        L:Title("Talents", spec and ("Recommended " .. spec .. " builds, drawn on Forever's trees") or nil)
+        if not spec then L:Text("Pick a spec first (spec pill at the top).") return end
         local builds = {}
         for _, b in ipairs(ns.Data.DecodedBuilds or {}) do
             if b.spec == spec then table.insert(builds, b) end
         end
-        L:Header(spec .. " builds", "Wowhead's recommended builds, drawn on Forever's talent trees. Hover a talent for its in-game tooltip.")
         if #builds == 0 then
             L:Text("No builds in the research for this spec.")
         else
@@ -111,28 +111,30 @@ UI.RegisterPanel({
                 if b.purpose == cur then build = b end
                 table.insert(items, { label = b.purpose, active = b.purpose == cur, onClick = function() selected[spec] = b.purpose UI.Refresh() end })
             end
-            L:Buttons(items, 100)
+            L:Tabs(items)
             build = build or builds[1]
             if build.valid then
                 local spent = {}
                 for ti, tree in ipairs(ns.Data.TalentTrees) do table.insert(spent, tree.name .. " " .. build.trees[ti].spent) end
-                L:Text(("%s · %d points (level %d)"):format(table.concat(spent, " / "), build.total, build.level), { size = 13 })
+                L:Row({ title = ("%s · %d points (level %d)"):format(table.concat(spent, " / "), build.total, build.level),
+                    sub = "Hover a talent for its in-game tooltip.",
+                    button = { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } })
                 if build.level > c.level then
                     L:Text(UI.Hex(UI.C.dim) .. ("You have %d talent points at level %d; this build is the level-%d target. Work toward it in the order your guide suggests."):format(math.max(0, c.level - 9), c.level, build.level) .. "|r", { size = 11 })
                 end
                 L:Space(4)
                 drawTrees(L, build)
-                L:Buttons({ { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } }, 160)
-                L:Header("What this build takes")
+                L:Label("What this build takes")
                 buildList(L, build)
             else
-                L:Flag("Can't draw this build on the current talent tree: " .. (build.reason or "?") .. ". Use the link instead.")
-                L:Buttons({ { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } }, 160)
+                L:Row({ chip = { text = "Can't draw", kind = "warn" }, title = "This build doesn't fit the current talent tree",
+                    sub = build.reason or "?", button = { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } })
             end
             L:Source(build)
             local meta = ns.Data.TalentTreesMeta
             if meta then
-                L:Text(UI.Hex(UI.C.dim) .. ("Talent trees: Icy Veins calculator data for client build %s (checked %s)."):format(tostring(meta.client_build), meta.checked) .. "|r", { size = 10 })
+                L:Note(("Talent trees: Icy Veins calculator data for client build %s (checked %s)."):format(tostring(meta.client_build), meta.checked))
+                L:Source({ source_url = meta.page_url, checked = meta.checked })
             end
         end
         for _, b in ipairs(ns.Data.Builds.Other) do
@@ -140,22 +142,21 @@ UI.RegisterPanel({
                 L:Row({ icon = "Interface\\Icons\\INV_Misc_Map_01", title = b.spec .. ": " .. b.purpose, sub = b.notes })
             end
         end
-        L:Text(UI.Hex(UI.C.dim) .. "Talents start at level 10. Milestones: " .. ns.Data.Milestones.talent_milestones .. ". Respec at any class trainer in a major city.|r", { size = 11 })
+        L:Text(UI.Hex(UI.C.dim) .. "Talents start at level 10. Milestones: " .. ns.Data.Milestones.talent_milestones .. ". Respec at any class trainer in a major city.|r", { size = 12 })
 
-        L:Header("What changed in Forever")
+        L:Label("What changed in Forever")
         local tree = ns.Specs[spec].tree
         for _, t in ipairs(ns.Data.TalentChanges) do
             if t.tree == tree or t.tree == "Baseline" then
                 L:Row({ title = UI.Hex(t.tree == tree and UI.Accent() or UI.C.dim) .. t.tree .. "|r", sub = t.change })
             end
         end
-        L:Text(UI.Hex(UI.C.dim) .. "Other trees:|r", { size = 11 })
         for _, t in ipairs(ns.Data.TalentChanges) do
-            if t.tree ~= tree and t.tree ~= "Baseline" then L:Text(UI.Hex(UI.C.dim) .. t.tree .. ": " .. t.change .. "|r", { size = 11, indent = 8 }) end
+            if t.tree ~= tree and t.tree ~= "Baseline" then L:Note(t.tree .. ": " .. t.change) end
         end
         L:Source(ns.Data.TalentChanges[1])
 
-        L:Header("Legacy talents")
+        L:Label("Legacy talents")
         for _, t in ipairs(ns.Data.LegacyTalents) do
             L:Spell(t.spell_id, t.name)
         end

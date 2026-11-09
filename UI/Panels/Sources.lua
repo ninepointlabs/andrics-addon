@@ -1,5 +1,8 @@
+-- Settings › About the data: client info, research gaps, conflicts, assumptions, sources.
 local _, ns = ...
 local UI = ns.UI
+
+UI.SettingsSections = UI.SettingsSections or {}
 
 -- Known conflicts called out by the brief, in addition to research gaps.
 local CONFLICTS = {
@@ -18,27 +21,27 @@ local CONFLICTS = {
     "Searing Light proc buff name (Holy solo rotation) is assumed, not confirmed.",
 }
 
-UI.RegisterPanel({
-    key = "sources", label = "Sources & flags", icon = "Interface\\Icons\\INV_Misc_Note_06",
-    render = function(L, c)
-        local meta = ns.Data.Meta
-        L:Header("Client")
-        L:Text(("Built for %s, Interface %s, project id %s.\nResearch build: %s\nYour client: %s (WOW_PROJECT_ID %s)"):format(
-            meta.game, tostring(meta.toc_interface), meta.wow_project_id, meta.latest_build_seen,
-            table.concat({ GetBuildInfo() }, " / "), tostring(WOW_PROJECT_ID)))
-        L:Text(UI.Hex(UI.C.dim) .. meta.api_note .. "|r", { size = 11 })
+UI.SettingsSections["About the data"] = function(L, c)
+    local meta = ns.Data.Meta
+    L:Label("Client")
+    L:Row({ title = ("Built for %s · Interface %s · project %s"):format(meta.game, tostring(meta.toc_interface), meta.wow_project_id),
+        sub = ("Research build %s\nYour client %s (WOW_PROJECT_ID %s)"):format(meta.latest_build_seen,
+            table.concat({ GetBuildInfo() }, " / "), tostring(WOW_PROJECT_ID)) })
+    L:Note(meta.api_note)
 
-        L:Header("Research gaps", "Things the addon deliberately does not guess.")
-        for _, g in ipairs(ns.Data.Gaps) do L:Flag(g.gap) end
-        L:Header("Conflicts between sources")
-        for _, t in ipairs(CONFLICTS) do L:Flag(t) end
-        L:Header("Addon assumptions")
-        L:Text("- Gear scores use rank-derived weights from each spec's stat priority, not simulations.\n- Hit/crit % are scaled by " .. ns.db.global.percentScale .. " points per 1% (Options).\n- Healing power counts 1/3 toward damage (Wowhead) when an item doesn't list damage.\n- Tooltip stat parsing reads English item text.")
+    L:Label("Research gaps (the addon doesn't guess these)")
+    for _, g in ipairs(ns.Data.Gaps) do L:Row({ chip = { text = "Gap", kind = "warn" }, title = g.gap }) end
+    L:Label("Conflicts between sources")
+    for _, t in ipairs(CONFLICTS) do L:Row({ chip = { text = "Conflict", kind = "info" }, title = t }) end
+    L:Label("Addon assumptions")
+    L:Row({ title = "Gear scores use rank-derived weights from each spec's stat priority, not simulations." })
+    L:Row({ title = "Hit/crit % are scaled by " .. ns.db.global.percentScale .. " points per 1% (Tooltips & bags tab)." })
+    L:Row({ title = "Healing power counts 1/3 toward damage (Wowhead) when an item doesn't list damage." })
+    L:Row({ title = "Tooltip stat parsing reads English item text." })
 
-        L:Header("Sources", "Click to copy. Every record in the addon keeps its source and check date.")
-        local keys = {}
-        for k in pairs(ns.Data.Sources) do table.insert(keys, k) end
-        table.sort(keys)
-        for _, k in ipairs(keys) do L:Link(k, ns.Data.Sources[k]) end
-    end,
-})
+    L:Label("Sources")
+    local keys = {}
+    for k in pairs(ns.Data.Sources) do table.insert(keys, k) end
+    table.sort(keys)
+    for _, k in ipairs(keys) do L:Link(k, ns.Data.Sources[k]) end
+end

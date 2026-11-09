@@ -307,7 +307,36 @@ test("every panel renders for every spec without errors", function()
             end
         end
     end
-    eq(#ns.PanelOrder, 13)
+    eq(#ns.PanelOrder, 8, "8 screens after the redesign")
+end)
+
+test("every sub-tab renders for every spec", function()
+    local subs = {
+        leveling = { "Path", "Zones & dungeons", "Trainer", "Class quests", "Riding & gold" },
+        gear = { "For my level", "Best overall", "By bracket", "Consumables", "Weights" },
+        settings = { "General", "Fortitude button", "Tooltips & bags", "Reminders", "About the data" },
+        learn = { "Lessons", "Spells", "Talents", "How the class works", "In a group", "Leveling", "Common mistakes" },
+        rotation = { "Solo", "Dungeon", "Raid" },
+    }
+    for _, spec in ipairs(ns.SPEC_ORDER) do
+        ns.DB.SetSpec(spec)
+        for key, list in pairs(subs) do
+            for _, sub in ipairs(list) do
+                M.texts = {}
+                ns.UI.Open(key, sub)
+                for _, t in ipairs(M.texts) do
+                    if t:find("This panel hit an error", 1, true) then error(spec .. "/" .. key .. "/" .. sub .. ": " .. t) end
+                end
+            end
+        end
+    end
+    ns.UI.Open("rotation", "Solo")
+    -- old names still work
+    for _, old in ipairs({ "overview", "training", "quests", "mounts", "reminders", "sources", "options", "changes" }) do
+        ns.UI.Open(old)
+    end
+    truthy(#ns.UI.Search("mind") > 0, "search finds Mind spells")
+    eq(#ns.UI.Search("m"), 0, "search needs 2+ characters")
 end)
 
 test("learn subsections render", function()
@@ -444,7 +473,11 @@ test("gear detail: sources, quest pin, dungeon entrance pin", function()
     ns.UI.Refresh()
     truthy(textHas("Quest reward: Hidden Enemies"), "quest source")
     truthy(textHas("Starts with Thrall in Riverglades"), "quest giver")
-    truthy(textHas("gear guide lists quest 5726"), "research/IV quest id mismatch flagged")
+    local flagged = false
+    for _, n in ipairs(ns.UI.currentNotes or {}) do
+        if n.text and n.text:find("gear guide lists quest 5726", 1, true) then flagged = true end
+    end
+    truthy(flagged, "research/IV quest id mismatch in Sources & notes")
     eq(ns.Map.FindZone("Riverglades"), 2200)
     ns.UI.OpenGearDetail(nil)
 end)

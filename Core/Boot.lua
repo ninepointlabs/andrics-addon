@@ -44,7 +44,7 @@ local function OnLogin()
     end
     local unread = ns.Changes.UnreadCount()
     if unread > 0 then
-        C_Timer.After(5, function() ns.Print(("%d unread in What's changed. /andric changes"):format(unread)) end)
+        C_Timer.After(5, function() ns.Print(("%d unread in What's new. /andric news"):format(unread)) end)
     end
     ns.Hud.Refresh()
     -- Upgrades already sitting in the bags: one summary line, no toast spam.
@@ -179,9 +179,9 @@ local function Slash(msg)
     end
     msg = (msg or ""):lower():match("^%s*(.-)%s*$")
     local cmd, arg = msg:match("^(%S*)%s*(.*)$")
-    local tabs = { overview = "overview", rotation = "rotation", learn = "learn", leveling = "leveling", talents = "talents",
-        gear = "gear", quests = "quests", training = "training", spells = "training", mounts = "mounts", gold = "mounts",
-        reminders = "reminders", changes = "changes", sources = "sources", options = "options", config = "options" }
+    local tabs = { home = "home", overview = "home", rotation = "rotation", learn = "learn", leveling = "leveling", talents = "talents",
+        gear = "gear", quests = "quests", trainer = "trainer", riding = "riding", training = "training", spells = "training", mounts = "mounts", gold = "mounts",
+        reminders = "reminders", news = "news", changes = "news", sources = "sources", settings = "settings", options = "settings", config = "settings" }
     if cmd == "" then
         ns.UI.Toggle()
     elseif cmd == "spec" then
@@ -215,7 +215,7 @@ local function Slash(msg)
     elseif tabs[cmd] then
         ns.UI.Open(tabs[cmd])
     else
-        ns.Print("/andric [overview|rotation|learn|leveling|talents|gear|quests|training|mounts|reminders|changes|sources|options]")
+        ns.Print("/andric [home|rotation|gear|leveling|talents|learn|news|settings] · also: trainer quests riding reminders sources")
         ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [key|debug]")
     end
 end

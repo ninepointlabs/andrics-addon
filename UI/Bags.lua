@@ -101,9 +101,8 @@ function Bags.Install()
     end
 end
 
--- Scan bags for upgrades; toast once per item link.
-local announced = {}
-function Bags.Scan(silent)
+-- Upgrades currently in the bags (no side effects; used by Home).
+function Bags.Upgrades()
     if not ns.db or not ns.DB.ActiveSpec() then return {} end
     local found = {}
     for bag = 0, NUM_BAGS do
@@ -112,6 +111,20 @@ function Bags.Scan(silent)
             local okInfo, info = pcall(C_Container.GetContainerItemInfo, bag, slot)
             local link = okInfo and info and info.hyperlink
             local res = link and Bags.Check(link)
+            if res then table.insert(found, { link = link, res = res }) end
+        end
+    end
+    return found
+end
+
+-- Scan bags for upgrades; toast once per item link.
+local announced = {}
+function Bags.Scan(silent)
+    if not ns.db or not ns.DB.ActiveSpec() then return {} end
+    local found = {}
+    for _, u in ipairs(Bags.Upgrades()) do
+        local link, res = u.link, u.res
+        do
             if res then
                 table.insert(found, { link = link, res = res })
                 if not announced[link] then

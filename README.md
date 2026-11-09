@@ -6,20 +6,18 @@ Forever only: `AndricsAddon_Forever.toc`, `## Interface: 16001`, refuses to run 
 
 ## Features
 
-| Tab | What it does |
+The window has a grouped sidebar (with search for spells, talents, items, quests and dungeons), a spec pill and an A/B profile switch in the header, and one sub-tab bar per screen. Sources and research notes sit behind a "Sources & notes" link on each screen.
+
+| Screen | Sub-tabs / what it does |
 |---|---|
-| Overview | Level, active spec/profile, next trainer visit, riding gold goal, next class quest, next milestone, unread badges |
-| Rotation | Only spells you can use at your level; priority lists per spec for solo, dungeon and raid, plus an on-screen helper (next-spell suggestion for damage, priority list and cooldowns for healing) and a post-fight summary with mana tips. Advice only: nothing is automated |
-| Learn the Priest | Every spell and talent (what, when, which rank, per spec), class mechanics, group play and etiquette, leveling per spec, common mistakes, and lessons that unlock as you level. Optional hint the first time you learn a spell |
-| Leveling | Zones by level for your faction, dungeons near your level, new Forever zones, spec leveling notes, professions |
-| Talents & builds | Each recommended build (leveling/raid/dungeon/PvP) drawn on Forever's three talent trees with points per talent and in-game tooltips, plus a list of what it takes; Forever talent changes, legacy talents |
-| Gear | Spec weights; **For my level** (best researched gear you can equip now, per slot, plus what unlocks in the next 5 levels), **Best overall** (everything ranked for your spec), **By bracket** (level 20/30 lists, 40–60 and raid BiS placeholders), wands, consumables |
-| Class quests | Level 4 robes and the level 10/20 racial quests with IDs and completion checks |
-| Spells & training | Ranks by level, what's trainable now, next trainer level |
-| Mounts & gold | 100g at 40 (Apprentice), 1000g at 60 (Journeyman) progress bars, race trainer, vendor and first-mount quest |
-| Reminders | Fortitude, Inner Fire, Shadowform (Shadow), wand equipped, candles, consumables for your level |
-| What's changed | Research changes plus whatever the companion poller found, with unread state |
-| Sources & flags | Research gaps, conflicts between sources, addon assumptions, every source link |
+| **Home** | "Do next" cards (trainer, riding savings, next class quest), "Needs attention" (missing buffs, upgrades in your bags, unread news and lessons), your rotation at a glance, latest changes |
+| **Play › Rotation** | Solo · Dungeon · Raid. Only spells you can use at your level; on-screen helper toggle, the plan, tips, last-fight summary. Advice only: nothing is automated |
+| **Play › Gear** | For my level · Best overall (best item per slot + detail panel: what it gives you, how to get it, map pin, other options) · By bracket · Consumables · Weights |
+| **Progress › Leveling** | Path (what's next by level) · Zones & dungeons · Trainer · Class quests · Riding & gold |
+| **Progress › Talents** | Recommended builds drawn on Forever's talent trees, what each build takes, Forever talent changes, legacy talents |
+| **Learn the Priest** | Lessons · Spells · Talents · How the class works · In a group · Leveling · Common mistakes |
+| **What's new** | Research changes plus what the companion poller found, with unread state |
+| **Settings** | General · Fortitude button · Tooltips & bags · Reminders · About the data (gaps, conflicts, assumptions, sources) |
 
 **Tooltips:** hovering any item shows whether it's an upgrade for your active profile's spec versus what you have equipped in that slot (named), roughly how much, a **What improves / What you'd lose** list (e.g. "+10 Intellect (+150 max mana, +0.17% spell crit)", using only documented conversions), and a green **Equip this** line when it's an upgrade you can wear now (or "Upgrade once you reach level N"). If profile B has a different spec, it gets one compact line too.
 

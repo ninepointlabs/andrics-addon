@@ -3,8 +3,8 @@ local UI = ns.UI
 
 local section = "lessons"
 local SECTIONS = {
-    { "lessons", "Lessons" }, { "spells", "Spells" }, { "talents", "Talents" }, { "mechanics", "Mechanics" },
-    { "roles", "Group play" }, { "leveling", "Leveling" }, { "mistakes", "Mistakes" },
+    { "lessons", "Lessons" }, { "spells", "Spells" }, { "talents", "Talents" }, { "mechanics", "How the class works" },
+    { "roles", "In a group" }, { "leveling", "Leveling" }, { "mistakes", "Common mistakes" },
 }
 
 local function flagText(e)
@@ -33,7 +33,7 @@ function render.lessons(L, c, content)
         for _, l in ipairs(unlocked) do read[l.id] = true end
         UI.Refresh()
     end } }, 120)
-    L:Header("Unlocked (" .. #unlocked .. ")")
+    L:Label("Unlocked (" .. #unlocked .. ")")
     for _, l in ipairs(unlocked) do
         local new = not read[l.id]
         local row = L:Row({ icon = "Interface\\Icons\\INV_Misc_Book_07", title = (new and (UI.Hex(UI.C.good) .. "NEW|r  ") or "") .. l.title,
@@ -42,7 +42,7 @@ function render.lessons(L, c, content)
         row.tint = nil
     end
     if #upcoming > 0 then
-        L:Header("Coming up")
+        L:Label("Coming up")
         for _, l in ipairs(upcoming) do
             L:Row({ icon = "Interface\\Icons\\INV_Misc_Lock_01", title = UI.Hex(UI.C.dim) .. l.title .. "|r", right = "unlocks at " .. l.level })
         end
@@ -94,7 +94,7 @@ function render.talents(L, c, content)
     local lastTree
     for _, it in ipairs(entries) do
         if it.e.tree ~= lastTree then
-            L:Header((it.e.tree or "Other") .. " tree")
+            L:Label((it.e.tree or "Other") .. " tree")
             lastTree = it.e.tree
         end
         local id = ns.Rotation.SpellId(it.name)
@@ -117,11 +117,11 @@ function render.leveling(L, c, content)
     for _, spec in ipairs(ns.SPEC_ORDER) do
         local list = content.leveling and content.leveling[spec]
         if list and (spec == c.spec or not c.spec) then
-            L:Header("Leveling as " .. spec)
+            L:Label("Leveling as " .. spec)
             for _, e in ipairs(list) do article(L, e) end
         end
     end
-    L:Header("Other specs")
+    L:Label("Other specs")
     for _, spec in ipairs(ns.SPEC_ORDER) do
         if spec ~= c.spec and content.leveling and content.leveling[spec] then
             L:Text(UI.Hex(UI.C.dim) .. spec .. ": " .. #content.leveling[spec] .. " tips (switch spec to read them in full).|r", { size = 11 })
@@ -131,12 +131,16 @@ function render.leveling(L, c, content)
 end
 
 UI.RegisterPanel({
-    key = "learn", label = "Learn the Priest", icon = "Interface\\Icons\\INV_Misc_Book_07",
+    key = "learn", label = "Learn the Priest",
+    setSub = function(sub)
+        for _, s in ipairs(SECTIONS) do if s[2] == sub or s[1] == (sub or ""):lower() then section = s[1] end end
+    end,
     badge = function()
         if not ns.DB.HasChosenSpec() then return 0 end
         return ns.Learn.UnreadLessonCount(UnitLevel("player"), ns.DB.ActiveSpec())
     end,
     render = function(L, c)
+        L:Title("Learn the Priest", "Everything about the class, unlocked as you level")
         local content = ns.Learn.Content()
         if not content then
             L:Flag("Teaching content missing: run tools/build_data.py with content/learn.json present.")
@@ -146,8 +150,8 @@ UI.RegisterPanel({
         for _, s in ipairs(SECTIONS) do
             table.insert(items, { label = s[2], active = section == s[1], onClick = function() section = s[1] UI.Refresh() end })
         end
-        L:Buttons(items)
-        L:Text(UI.Hex(UI.C.dim) .. "Content checked " .. (content.checked or "?") .. ". " .. UI.FLAG_ICON .. " marks facts the research couldn't confirm.|r", { size = 10 })
+        L:Tabs(items)
+        L:Note("Teaching content checked " .. (content.checked or "?") .. ". Entries marked with ! are facts the research couldn't confirm.")
         render[section](L, c, content)
     end,
 })

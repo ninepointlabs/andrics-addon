@@ -1,20 +1,37 @@
--- Main window: header (spec chip + profile A/B), sidebar tabs, scrolling content,
--- and the first-run spec picker overlay.
+-- Main window (v0.2 layout): header (spec pill + profile A/B), grouped sidebar
+-- with search, scrolling content, first-run spec picker overlay.
 local _, ns = ...
 local UI = ns.UI
 
 ns.Panels = {}
 ns.PanelOrder = {}
 
--- Panels register themselves: { key, label, icon, render(layout, ctx), badge() }
+-- Panels register themselves: { key, label, render(layout, ctx), badge(), setSub(sub) }
 function UI.RegisterPanel(p)
     ns.Panels[p.key] = p
     table.insert(ns.PanelOrder, p.key)
 end
 
-local W, H, SIDE = 920, 620, 178
+-- Sidebar groups (Tim approved the mockup, 2026-11-09).
+UI.NAV = {
+    { title = nil, keys = { "home" } },
+    { title = "Play", keys = { "rotation", "gear" } },
+    { title = "Progress", keys = { "leveling", "talents" } },
+    { title = "Learn", keys = { "learn" } },
+    { title = "More", keys = { "news", "settings" } },
+}
+
+-- Old tab names (slash commands, links) -> new screen + sub-tab.
+UI.ALIASES = {
+    overview = { "home" }, training = { "leveling", "Trainer" }, spells = { "leveling", "Trainer" },
+    quests = { "leveling", "Class quests" }, mounts = { "leveling", "Riding & gold" }, gold = { "leveling", "Riding & gold" },
+    reminders = { "settings", "Reminders" }, options = { "settings" }, config = { "settings" }, trainer = { "leveling", "Trainer" }, riding = { "leveling", "Riding & gold" },
+    sources = { "settings", "About the data" }, changes = { "news" },
+}
+
+local W, H, SIDE, HEAD = 980, 660, 210, 56
 -- Fixed content width: GetWidth() on an anchored frame can be 0 before the first layout pass.
-local CONTENT_W = W - SIDE - 2 - 18 - 30 - 24
+local CONTENT_W = W - SIDE - 2 - 28 - 34 - 6
 local frame
 
 local function ctx()
@@ -31,48 +48,54 @@ local function ctx()
 end
 UI.Ctx = ctx
 
-local function ApplyAccent()
+local function ApplyHeader()
     if not frame then return end
     local a = UI.Accent()
-    frame.topLine:SetColorTexture(a[1], a[2], a[3], 0.9)
-    frame.title:SetTextColor(a[1], a[2], a[3])
+    frame.logo:SetColorTexture(a[1], a[2], a[3], 1)
     local spec = ns.DB.ActiveSpec()
     local s = ns.Specs[spec]
-    frame.specIcon:SetTexture(s and s.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
-    frame.specText:SetText(s and (UI.Hex(a) .. spec .. "|r  " .. UI.Hex(UI.C.dim) .. s.role .. "|r") or (UI.Hex(UI.C.dim) .. "No spec picked|r"))
+    frame.specPill.dot:SetColorTexture(a[1], a[2], a[3], 1)
+    frame.specPill:SetBackdropBorderColor(a[1], a[2], a[3], 1)
+    frame.specPill.label:SetText(s and (spec .. " · " .. s.role .. "   " .. UI.Hex(UI.C.dim) .. "change|r") or ("Pick a spec   " .. UI.Hex(UI.C.dim) .. "change|r"))
+    frame.specPill:SetWidth(frame.specPill.label:GetStringWidth() + 44)
     for _, id in ipairs(ns.DB.PROFILE_IDS) do
         local b = frame.profileButtons[id]
         local p = ns.DB.Profile(id)
-        b.label:SetText(id .. (p.spec and (": " .. p.spec:sub(1, 4)) or ": -"))
-        b.tip = ("Profile %s%s. Profile A follows talent spec 1, B follows talent spec 2 (dual spec at 40). You can also switch by hand."):format(id, p.spec and (" (" .. p.spec .. ")") or "")
-        b:SetActive(ns.DB.ActiveId() == id)
+        local active = ns.DB.ActiveId() == id
+        b.label:SetText(id .. " · " .. (p.spec or "-"))
+        b:SetWidth(b.label:GetStringWidth() + 20)
+        b:SetBackdropColor(unpack(active and { 0.165, 0.165, 0.22, 1 } or { 0, 0, 0, 0 }))
+        b.label:SetTextColor(unpack(active and { 1, 1, 1 } or UI.C.dim))
+        b.tip = ("Profile %s%s. Follows talent spec %s (dual spec); click to switch by hand."):format(id, p.spec and (" (" .. p.spec .. ")") or "", id == "A" and "1" or "2")
     end
+    local segW = 8
+    for _, id in ipairs(ns.DB.PROFILE_IDS) do segW = segW + frame.profileButtons[id]:GetWidth() + 3 end
+    frame.profileSeg:SetWidth(segW)
 end
 
-local function UpdateTabs()
-    for _, key in ipairs(ns.PanelOrder) do
-        local tab = frame.tabs[key]
+local function UpdateNav()
+    local a = UI.Accent()
+    for key, b in pairs(frame.navButtons) do
         local p = ns.Panels[key]
         local selected = frame.current == key
-        local a = UI.Accent()
-        tab.bar:SetColorTexture(a[1], a[2], a[3], selected and 1 or 0)
-        tab.bg:SetColorTexture(1, 1, 1, selected and 0.06 or 0)
-        tab.text:SetTextColor(unpack(selected and a or UI.C.text))
-        local n = p.badge and p.badge() or 0
+        b.bg:SetColorTexture(1, 1, 1, selected and 0.07 or 0)
+        b.bar:SetColorTexture(a[1], a[2], a[3], selected and 1 or 0)
+        b.text:SetTextColor(unpack(selected and { 1, 1, 1 } or { 0.84, 0.84, 0.886 }))
+        local n = p and p.badge and p.badge() or 0
         if n and n > 0 then
-            tab.badge.text:SetText(n > 99 and "99+" or tostring(n))
-            tab.badge:SetWidth(math.max(18, tab.badge.text:GetStringWidth() + 10))
-            tab.badge:Show()
+            b.badge.text:SetText(n > 99 and "99+" or tostring(n))
+            b.badge:SetWidth(math.max(20, b.badge.text:GetStringWidth() + 12))
+            b.badge:Show()
         else
-            tab.badge:Hide()
+            b.badge:Hide()
         end
     end
 end
 
 function UI.Refresh()
     if not frame or not frame:IsShown() then return end
-    ApplyAccent()
-    UpdateTabs()
+    ApplyHeader()
+    UpdateNav()
     local key = frame.current
     local p = ns.Panels[key]
     local view = key and frame.views[key]
@@ -84,12 +107,16 @@ function UI.Refresh()
         ns.Debug(err)
     end
     view.layout:Finish()
+    UI.currentNotes = view.layout.notes -- what the "Sources & notes" link shows (tests read it too)
     frame.picker:SetShown(not ns.DB.HasChosenSpec() or frame.forcePicker)
 end
 
-function UI.Select(key)
-    if not ns.Panels[key] then key = "overview" end
+function UI.Select(key, sub)
+    local alias = UI.ALIASES[key or ""]
+    if alias then key, sub = alias[1], sub or alias[2] end
+    if not ns.Panels[key] then key = "home" end
     UI.Build()
+    if sub and ns.Panels[key].setSub then ns.Panels[key].setSub(sub) end
     if frame.current and frame.views[frame.current] then frame.views[frame.current].content:Hide() end
     frame.current = key
     ns.db.char.window.tab = key
@@ -103,7 +130,134 @@ function UI.Select(key)
     frame.scroll:SetScrollChild(view.content)
     view.content:Show()
     frame.scroll:SetVerticalScroll(0)
+    frame.search.results:Hide()
     UI.Refresh()
+end
+
+----------------------------------------------------------------------------
+-- Search: spells, talents, items, quests, dungeons -> jump to the right screen.
+----------------------------------------------------------------------------
+local function searchIndex()
+    if UI.searchIndex then return UI.searchIndex end
+    local idx = {}
+    local function add(kind, name, open)
+        if name then table.insert(idx, { kind = kind, name = name, lower = name:lower(), open = open }) end
+    end
+    for _, s in ipairs(ns.Data.Spells) do add("Spell", s.display, function() UI.Select("learn", "Spells") end) end
+    for _, r in ipairs(ns.Data.Racials) do add("Spell", r.spell .. " (" .. r.race .. ")", function() UI.Select("learn", "Spells") end) end
+    for _, tree in ipairs(ns.Data.TalentTrees or {}) do
+        for _, t in ipairs(tree.talents) do add("Talent", t.name, function() UI.Select("talents") end) end
+    end
+    local seen = {}
+    local function item(id, name)
+        if seen[id] then return end
+        seen[id] = true
+        add("Item", name, function() UI.OpenGearDetail(id) UI.Select("gear") end)
+    end
+    for _, list in pairs(ns.Data.GearBrackets) do
+        for _, g in ipairs(list) do item(g.item_id, g.name) end
+    end
+    for _, w in ipairs(ns.Data.Wands) do item(w.item_id, w.name) end
+    for _, q in ipairs(ns.Data.Quests) do add("Quest", q.name, function() UI.Select("leveling", "Class quests") end) end
+    for _, d in ipairs(ns.Data.Dungeons) do add("Dungeon", d.name, function() UI.Select("leveling", "Zones & dungeons") end) end
+    UI.searchIndex = idx
+    return idx
+end
+
+function UI.Search(text)
+    text = (text or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+    local out = {}
+    if #text < 2 then return out end
+    for _, e in ipairs(searchIndex()) do
+        local pos = e.lower:find(text, 1, true)
+        if pos then table.insert(out, { e = e, score = (pos == 1 and 0 or 1) }) end
+    end
+    table.sort(out, function(a, b)
+        if a.score ~= b.score then return a.score < b.score end
+        return a.e.name < b.e.name
+    end)
+    local res = {}
+    for i = 1, math.min(8, #out) do res[i] = out[i].e end
+    return res
+end
+
+local function BuildSearch(parent)
+    local box = CreateFrame("EditBox", "AndricsAddonSearch", parent, "BackdropTemplate")
+    box:SetSize(SIDE - 24, 30)
+    box:SetPoint("TOPLEFT", 12, -12)
+    UI.Backdrop(box, UI.C.card, UI.C.border)
+    box:SetAutoFocus(false)
+    box:SetFontObject(ChatFontNormal)
+    box:SetTextInsets(10, 8, 0, 0)
+    box.hint = UI.Text(box, 12, UI.C.dim)
+    box.hint:SetPoint("LEFT", 10, 0)
+    box.hint:SetText("Search spells, items, quests...")
+    box.results = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    box.results:SetPoint("TOPLEFT", box, "BOTTOMLEFT", 0, -4)
+    box.results:SetWidth(320)
+    box.results:SetFrameStrata("DIALOG")
+    UI.Backdrop(box.results, UI.C.bg, UI.C.border)
+    box.results:Hide()
+    box.rows = {}
+    for i = 1, 8 do
+        local r = CreateFrame("Button", nil, box.results)
+        r:SetSize(312, 26)
+        r:SetPoint("TOPLEFT", 4, -4 - (i - 1) * 26)
+        r.bg = r:CreateTexture(nil, "BACKGROUND")
+        r.bg:SetAllPoints()
+        r.bg:SetColorTexture(1, 1, 1, 0)
+        r.kind = UI.Text(r, 10, UI.C.dim)
+        r.kind:SetPoint("LEFT", 8, 0)
+        r.kind:SetWidth(60)
+        r.text = UI.Text(r, 13)
+        r.text:SetPoint("LEFT", 70, 0)
+        r.text:SetWidth(234)
+        r.text:SetWordWrap(false)
+        r:SetScript("OnEnter", function(s) s.bg:SetColorTexture(1, 1, 1, 0.07) end)
+        r:SetScript("OnLeave", function(s) s.bg:SetColorTexture(1, 1, 1, 0) end)
+        r:SetScript("OnClick", function(s)
+            box:SetText("")
+            box:ClearFocus()
+            box.results:Hide()
+            if s.entry then s.entry.open() end
+        end)
+        box.rows[i] = r
+    end
+    function box.Update(self)
+        local t = self:GetText() or ""
+        self.hint:SetShown(t == "")
+        local res = UI.Search(t)
+        for i = 1, 8 do
+            local r, e = self.rows[i], res[i]
+            r.entry = e
+            if e then
+                r.kind:SetText(e.kind:upper())
+                r.text:SetText(e.name)
+                r:Show()
+            else
+                r:Hide()
+            end
+        end
+        if #res == 0 and #t >= 2 then
+            local r = self.rows[1]
+            r.kind:SetText("")
+            r.text:SetText(UI.Hex(UI.C.dim) .. "No matches|r")
+            r:Show()
+            self.results:SetHeight(34)
+        else
+            self.results:SetHeight(8 + #res * 26)
+        end
+        self.results:SetShown(#t >= 2)
+    end
+    box:SetScript("OnTextChanged", function(self) self:Update() end)
+    box:SetScript("OnEscapePressed", function(self) self:SetText("") self:ClearFocus() self.results:Hide() end)
+    box:SetScript("OnEnterPressed", function(self)
+        local first = self.rows[1].entry
+        self:ClearFocus()
+        self.results:Hide()
+        if first then self:SetText("") first.open() end
+    end)
+    return box
 end
 
 local function BuildPicker(parent)
@@ -117,22 +271,21 @@ local function BuildPicker(parent)
     title:SetPoint("TOP", 0, -40)
     title:SetJustifyH("CENTER")
     f.title = title
-    local sub = UI.Text(f, 12, UI.C.dim)
+    local sub = UI.Text(f, 13, UI.C.dim)
     sub:SetPoint("TOP", title, "BOTTOM", 0, -8)
     sub:SetWidth(560)
     sub:SetJustifyH("CENTER")
-    sub:SetText("Every panel (leveling, talents, rotation, gear tips, reminders, lessons) adapts to this choice. Change it any time; profile B can hold a second spec for when Forever gets dual spec.")
-    f.cards = {}
-    local cardW, gap = 210, 18
+    sub:SetText("Rotation, gear tips, reminders and lessons all follow this choice. Change it any time from the spec pill at the top.")
+    local cardW, gap = 200, 18
     local total = cardW * 3 + gap * 2
     for i, key in ipairs(ns.SPEC_ORDER) do
         local s = ns.Specs[key]
         local c = CreateFrame("Button", nil, f, "BackdropTemplate")
-        c:SetSize(cardW, 250)
+        c:SetSize(cardW, 240)
         c:SetPoint("TOPLEFT", f, "TOP", -total / 2 + (i - 1) * (cardW + gap), -120)
         UI.Backdrop(c, UI.C.card, UI.C.border)
         local icon = c:CreateTexture(nil, "ARTWORK")
-        icon:SetSize(64, 64)
+        icon:SetSize(56, 56)
         icon:SetPoint("TOP", 0, -24)
         icon:SetTexture(s.icon)
         icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
@@ -140,7 +293,7 @@ local function BuildPicker(parent)
         name:SetPoint("TOP", icon, "BOTTOM", 0, -14)
         name:SetJustifyH("CENTER")
         name:SetText(key)
-        local role = UI.Text(c, 11, UI.C.dim)
+        local role = UI.Text(c, 12, UI.C.dim)
         role:SetPoint("TOP", name, "BOTTOM", 0, -4)
         role:SetJustifyH("CENTER")
         role:SetText(s.role)
@@ -156,7 +309,6 @@ local function BuildPicker(parent)
             parent.forcePicker = false
             UI.Refresh()
         end)
-        f.cards[key] = c
     end
     f:SetScript("OnShow", function()
         f.title:SetText(("Pick a spec for profile %s (talent spec %s)"):format(ns.DB.ActiveId(), ns.DB.ActiveId() == "A" and "1" or "2"))
@@ -180,101 +332,139 @@ function UI.Build()
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
     UI.Backdrop(frame, UI.C.bg, UI.C.border)
     table.insert(UISpecialFrames, "AndricsAddonFrame")
-    frame.views, frame.tabs = {}, {}
+    frame.views, frame.navButtons = {}, {}
 
     -- Header
-    frame.topLine = frame:CreateTexture(nil, "OVERLAY")
-    frame.topLine:SetPoint("TOPLEFT", 1, -1)
-    frame.topLine:SetPoint("TOPRIGHT", -1, -1)
-    frame.topLine:SetHeight(2)
-    local logo = frame:CreateTexture(nil, "ARTWORK")
-    logo:SetSize(22, 22)
-    logo:SetPoint("TOPLEFT", 14, -14)
-    logo:SetTexture("Interface\\Icons\\Spell_Holy_WordFortitude")
-    logo:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    frame.title = UI.Text(frame, 17)
-    frame.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
-    frame.title:SetText(ns.TITLE)
-    local ver = UI.Text(frame, 10, UI.C.dim)
-    ver:SetPoint("LEFT", frame.title, "RIGHT", 8, -1)
-    ver:SetText("v" .. ns.VERSION .. " · WoW Forever")
+    local head = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    head:SetPoint("TOPLEFT", 1, -1)
+    head:SetPoint("TOPRIGHT", -1, -1)
+    head:SetHeight(HEAD)
+    UI.Backdrop(head, UI.C.head, { 0, 0, 0, 0 })
+    local rule = head:CreateTexture(nil, "ARTWORK")
+    rule:SetPoint("BOTTOMLEFT")
+    rule:SetPoint("BOTTOMRIGHT")
+    rule:SetHeight(1)
+    rule:SetColorTexture(unpack(UI.C.softBorder))
+    frame.logo = head:CreateTexture(nil, "ARTWORK")
+    frame.logo:SetSize(24, 24)
+    frame.logo:SetPoint("LEFT", 18, 0)
+    local title = UI.Text(head, 16)
+    title:SetPoint("LEFT", frame.logo, "RIGHT", 12, 0)
+    title:SetText(ns.TITLE)
+    local tag = UI.Text(head, 11, UI.C.dim)
+    tag:SetPoint("LEFT", title, "RIGHT", 10, -1)
+    tag:SetText("WoW Forever · v" .. ns.VERSION)
 
-    local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", -4, -6)
+    local close = CreateFrame("Button", nil, head, "UIPanelCloseButton")
+    close:SetPoint("RIGHT", -8, 0)
 
-    frame.specIcon = frame:CreateTexture(nil, "ARTWORK")
-    frame.specIcon:SetSize(24, 24)
-    frame.specIcon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    frame.specText = UI.Text(frame, 13)
-    frame.specText:SetWordWrap(false)
-
+    local seg = CreateFrame("Frame", nil, head, "BackdropTemplate")
+    seg:SetSize(180, 32)
+    UI.Backdrop(seg, { 0.094, 0.094, 0.133, 1 }, UI.C.border)
     frame.profileButtons = {}
     local prev
-    for i = #ns.DB.PROFILE_IDS, 1, -1 do
-        local id = ns.DB.PROFILE_IDS[i]
-        local b = UI.Button(frame, id, 74, 24, function()
-            ns.DB.SwitchProfile(id)
-            UI.Refresh()
+    for _, id in ipairs(ns.DB.PROFILE_IDS) do
+        local b = CreateFrame("Button", nil, seg, "BackdropTemplate")
+        b:SetSize(84, 24)
+        UI.Backdrop(b, { 0, 0, 0, 0 }, { 0, 0, 0, 0 })
+        b.label = UI.Text(b, 12)
+        b.label:SetPoint("CENTER")
+        b.label:SetWordWrap(false)
+        if prev then b:SetPoint("LEFT", prev, "RIGHT", 3, 0) else b:SetPoint("LEFT", seg, "LEFT", 4, 0) end
+        b:SetScript("OnClick", function() ns.DB.SwitchProfile(id) UI.Refresh() end)
+        b:SetScript("OnEnter", function(s)
+            GameTooltip:SetOwner(s, "ANCHOR_BOTTOM")
+            GameTooltip:SetText(s.tip or "", 1, 1, 1, 1, true)
+            GameTooltip:Show()
         end)
-        if prev then b:SetPoint("RIGHT", prev, "LEFT", -6, 0) else b:SetPoint("TOPRIGHT", -40, -13) end
+        b:SetScript("OnLeave", function() GameTooltip:Hide() end)
         frame.profileButtons[id] = b
         prev = b
     end
-    local change = UI.Button(frame, "Change spec", 100, 24, function()
-        frame.forcePicker = true
-        UI.Refresh()
-    end)
-    change:SetPoint("RIGHT", prev, "LEFT", -12, 0)
-    frame.specText:SetPoint("RIGHT", change, "LEFT", -12, 0)
-    frame.specIcon:SetPoint("RIGHT", frame.specText, "LEFT", -8, 0)
+    seg:SetPoint("RIGHT", close, "LEFT", -8, 0)
+    frame.profileSeg = seg
+
+    local pill = CreateFrame("Button", nil, head, "BackdropTemplate")
+    pill:SetSize(180, 32)
+    UI.Backdrop(pill, { 0.125, 0.125, 0.169, 1 }, UI.C.border)
+    pill.dot = pill:CreateTexture(nil, "ARTWORK")
+    pill.dot:SetSize(10, 10)
+    pill.dot:SetPoint("LEFT", 12, 0)
+    pill.label = UI.Text(pill, 13)
+    pill.label:SetPoint("LEFT", pill.dot, "RIGHT", 8, 0)
+    pill.label:SetWordWrap(false)
+    pill:SetPoint("RIGHT", seg, "LEFT", -10, 0)
+    pill:SetScript("OnClick", function() frame.forcePicker = true UI.Refresh() end)
+    pill:SetScript("OnEnter", function(s) s:SetBackdropColor(unpack(UI.C.cardHover)) end)
+    pill:SetScript("OnLeave", function(s) s:SetBackdropColor(0.125, 0.125, 0.169, 1) end)
+    frame.specPill = pill
 
     -- Sidebar
     local side = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-    side:SetPoint("TOPLEFT", 1, -50)
+    side:SetPoint("TOPLEFT", 1, -(HEAD + 1))
     side:SetPoint("BOTTOMLEFT", 1, 1)
     side:SetWidth(SIDE)
     UI.Backdrop(side, UI.C.side, { 0, 0, 0, 0 })
-    for i, key in ipairs(ns.PanelOrder) do
-        local p = ns.Panels[key]
-        local t = CreateFrame("Button", nil, side)
-        t:SetSize(SIDE, 32)
-        t:SetPoint("TOPLEFT", 0, -6 - (i - 1) * 33)
-        t.bg = t:CreateTexture(nil, "BACKGROUND")
-        t.bg:SetAllPoints()
-        t.bar = t:CreateTexture(nil, "ARTWORK")
-        t.bar:SetPoint("TOPLEFT")
-        t.bar:SetPoint("BOTTOMLEFT")
-        t.bar:SetWidth(3)
-        t.icon = t:CreateTexture(nil, "ARTWORK")
-        t.icon:SetSize(18, 18)
-        t.icon:SetPoint("LEFT", 14, 0)
-        t.icon:SetTexture(p.icon)
-        t.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        t.text = UI.Text(t, 12)
-        t.text:SetPoint("LEFT", t.icon, "RIGHT", 10, 0)
-        t.text:SetWordWrap(false)
-        t.text:SetText(p.label)
-        t.badge = CreateFrame("Frame", nil, t, "BackdropTemplate")
-        t.badge:SetSize(22, 16)
-        t.badge:SetPoint("RIGHT", -10, 0)
-        UI.Backdrop(t.badge, { 0.85, 0.2, 0.2, 1 }, { 0, 0, 0, 0 })
-        t.badge.text = UI.Text(t.badge, 10)
-        t.badge.text:SetPoint("CENTER")
-        t.badge.text:SetJustifyH("CENTER")
-        t.badge:Hide()
-        t:SetScript("OnEnter", function(s) if frame.current ~= key then s.bg:SetColorTexture(1, 1, 1, 0.03) end end)
-        t:SetScript("OnLeave", function(s) if frame.current ~= key then s.bg:SetColorTexture(1, 1, 1, 0) end end)
-        t:SetScript("OnClick", function() UI.Select(key) end)
-        frame.tabs[key] = t
+    local sideRule = side:CreateTexture(nil, "ARTWORK")
+    sideRule:SetPoint("TOPRIGHT")
+    sideRule:SetPoint("BOTTOMRIGHT")
+    sideRule:SetWidth(1)
+    sideRule:SetColorTexture(unpack(UI.C.softBorder))
+    frame.side = side
+    frame.search = BuildSearch(side)
+
+    local y = -54
+    for _, group in ipairs(UI.NAV) do
+        y = y - 6
+        if group.title then
+            local lbl = UI.Text(side, 11, UI.C.label)
+            lbl:SetPoint("TOPLEFT", 24, y)
+            lbl:SetText(group.title:upper())
+            y = y - 20
+        end
+        for _, key in ipairs(group.keys) do
+            local p = ns.Panels[key]
+            if p then
+                local t = CreateFrame("Button", nil, side)
+                t:SetSize(SIDE - 24, 34)
+                t:SetPoint("TOPLEFT", 12, y)
+                t.bg = t:CreateTexture(nil, "BACKGROUND")
+                t.bg:SetAllPoints()
+                t.bar = t:CreateTexture(nil, "ARTWORK")
+                t.bar:SetPoint("TOPLEFT")
+                t.bar:SetPoint("BOTTOMLEFT")
+                t.bar:SetWidth(3)
+                t.text = UI.Text(t, 14)
+                t.text:SetPoint("LEFT", 14, 0)
+                t.text:SetWordWrap(false)
+                t.text:SetText(p.label)
+                t.badge = CreateFrame("Frame", nil, t, "BackdropTemplate")
+                t.badge:SetSize(22, 18)
+                t.badge:SetPoint("RIGHT", -8, 0)
+                UI.Backdrop(t.badge, UI.C.badge, { 0, 0, 0, 0 })
+                t.badge.text = UI.Text(t.badge, 11)
+                t.badge.text:SetPoint("CENTER")
+                t.badge.text:SetJustifyH("CENTER")
+                t.badge:Hide()
+                t:SetScript("OnEnter", function(s) if frame.current ~= key then s.bg:SetColorTexture(1, 1, 1, 0.04) end end)
+                t:SetScript("OnLeave", function(s) if frame.current ~= key then s.bg:SetColorTexture(1, 1, 1, 0) end end)
+                t:SetScript("OnClick", function() UI.Select(key) end)
+                frame.navButtons[key] = t
+                y = y - 36
+            end
+        end
     end
+    local foot = UI.Text(side, 10, UI.C.dim)
+    foot:SetPoint("BOTTOMLEFT", 24, 14)
+    foot:SetText("Data checked " .. ((ns.Data.Meta and ns.Data.Meta.checked) or "?"))
 
     -- Body / scroll
     frame.body = CreateFrame("Frame", nil, frame)
     frame.body:SetPoint("TOPLEFT", side, "TOPRIGHT", 0, 0)
     frame.body:SetPoint("BOTTOMRIGHT", -1, 1)
     frame.scroll = CreateFrame("ScrollFrame", nil, frame.body, "UIPanelScrollFrameTemplate")
-    frame.scroll:SetPoint("TOPLEFT", 18, -12)
-    frame.scroll:SetPoint("BOTTOMRIGHT", -30, 12)
+    frame.scroll:SetPoint("TOPLEFT", 28, -22)
+    frame.scroll:SetPoint("BOTTOMRIGHT", -34, 14)
 
     frame.picker = BuildPicker(frame)
     frame:SetScript("OnShow", function() UI.Refresh() end)
@@ -292,17 +482,17 @@ function UI.Toggle(key)
         return
     end
     frame:Show()
-    UI.Select(key or frame.current or ns.db.char.window.tab or "overview")
+    UI.Select(key or frame.current or ns.db.char.window.tab or "home")
 end
 
-function UI.Open(key)
+function UI.Open(key, sub)
     UI.Build()
     frame:Show()
-    UI.Select(key or frame.current or ns.db.char.window.tab or "overview")
+    UI.Select(key or frame.current or ns.db.char.window.tab or "home", sub)
 end
 
 function UI.ShowPicker()
-    UI.Open("overview")
+    UI.Open("home")
     frame.forcePicker = true
     UI.Refresh()
 end

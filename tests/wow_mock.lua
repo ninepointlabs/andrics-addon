@@ -103,6 +103,7 @@ local G = {}
 G.WOW_PROJECT_ID = function() return S.projectId end -- resolved below
 G.CreateFrame = function(kind, name) local f = newObject(kind) if name then _G[name] = f end return f end
 G.UIParent = newObject("UIParent")
+G.ChatFontNormal = newObject("Font")
 G.Minimap = newObject("Minimap")
 G.GameTooltip = newObject("GameTooltip")
 G.ItemRefTooltip = newObject("ItemRefTooltip")
