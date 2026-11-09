@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en" data-faction="neutral">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andric's Addon · the Priest companion for WoW Forever</title>
+<meta name="description" content="Andric's Addon: the do-everything Priest companion for World of Warcraft: Forever. Rotation help, gear upgrade tips, leveling, talents, a Fortitude button and a full Learn the Priest mode.">
+<meta name="theme-color" content="#0b0806">
+<link rel="icon" href="https://render.worldofwarcraft.com/us/icons/56/spell_holy_wordfortitude.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="extra.css">
+<script>
+  document.documentElement.classList.add("js");
+  try { var f = localStorage.getItem("andrics-faction"); if (f) document.documentElement.dataset.faction = f; } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Andric's Addon, back to top">
+    <img src="https://render.worldofwarcraft.com/us/icons/56/spell_holy_wordfortitude.jpg" alt="" width="26" height="26" style="border-radius: 4px; border: 1px solid #8a6526">
+    <span>Andric's Addon</span>
+  </a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#buff">Buff Button</a>
+    <a href="#quests">Quests</a>
+    <a href="#loot">Loot</a>
+    <a href="#andric">Andric</a>
+    <a href="#tavern">Tavern</a>
+    <a href="https://github.com/ninepointlabs/andrics-addon">GitHub</a>
+  </nav>
+  <div class="faction" role="group" aria-label="Choose your faction">
+    <button type="button" data-pick="alliance" aria-pressed="false" title="For the Alliance!">
+      <img src="https://omaforge.ninepointlabs.com/assets/art/alliance-crest-sm.webp" alt="Alliance" width="28" height="35">
+    </button>
+    <button type="button" data-pick="horde" aria-pressed="false" title="For the Horde!">
+      <img src="https://omaforge.ninepointlabs.com/assets/art/horde-sigil-sm.webp" alt="Horde" width="28" height="35">
+    </button>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="hero-art" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="kicker">The Priest companion for World of Warcraft: Forever</p>
+    <h1 class="title">Andric's Addon</h1>
+    <p class="lede">
+      Holy, Discipline or Shadow: pick your path and every page follows it. What to cast,
+      what to wear, where to quest, what to train and everything about the class, in one
+      window that shows you what to do next.
+    </p>
+    <div class="cta">
+      <a class="wow-btn" href="#loot">Claim your loot</a>
+      <a class="wow-btn ghost" href="#buff">Try the Buff Button</a>
+    </div>
+    <p class="meta">Free and open source · MIT · WoW Forever only · <span data-version>v0.2.0</span></p>
+  </div>
+  <div class="loading" aria-hidden="true">
+    <p class="loading-tip"><b>Tip:</b> <span id="tip">The Rotation page only lists spells you can actually cast at your level.</span></p>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+  </div>
+</section>
+
+<div class="facts-band">
+  <div class="facts" aria-label="At a glance">
+    <div class="fact"><b>3</b><span>specs, one click apart</span></div>
+    <div class="fact"><b>46</b><span>spells explained</span></div>
+    <div class="fact"><b>40</b><span>talents explained</span></div>
+    <div class="fact"><b>35</b><span>level-up lessons</span></div>
+    <div class="fact"><b>13</b><span>builds drawn</span></div>
+    <div class="fact"><b>120</b><span>items sourced</span></div>
+  </div>
+</div>
+
+<section class="section buff" id="buff">
+  <div class="section-head">
+    <h2 class="heading">The Buff Button</h2>
+    <p class="sub">Power Word: Fortitude for everyone around you, one press at a time.</p>
+  </div>
+
+  <div class="spotlight">
+    <div>
+      <h3>One button. Everyone buffed.</h3>
+      <p>A small Fortitude button sits on your screen. Each press casts Power Word: Fortitude on
+        the next friendly player who needs it, and the button immediately moves on to the next.
+        Keep pressing until everyone around you has it. Its label tells you who's next, and its
+        tooltip says how many are left.</p>
+      <p class="steps-title">Who it picks, in order</p>
+      <ol class="picks">
+        <li><b>You</b>, if your own buff is missing.</li>
+        <li><b>Your group</b>, nearest first when the game reports distance (raid or party).</li>
+        <li><b>Your target</b>, if it's a friendly player.</li>
+        <li><b>Players with friendly nameplates showing</b> (press <kbd>Shift</kbd>+<kbd>V</kbd>): buff the whole town.</li>
+      </ol>
+      <p class="steps-title">It skips anyone who</p>
+      <ul class="rules">
+        <li>already has Fortitude, or Prayer of Fortitude</li>
+        <li>is out of range, dead or offline</li>
+        <li>you buffed a moment ago (while their buff is still on its way)</li>
+      </ul>
+      <p class="steps-title">Make it yours</p>
+      <ul class="rules">
+        <li>Bind it to any key: <em>Settings › Fortitude button › Set key</em>, or <code>/andric fort key</code>. Shift, Ctrl, Alt and extra mouse buttons work.</li>
+        <li>Drag the small bar above it to move it. <code>/andric fort</code> shows or hides it.</li>
+        <li>It appears as soon as you know Power Word: Fortitude.</li>
+      </ul>
+      <p class="steps-title">Blizzard's rules, kept</p>
+      <ul class="rules">
+        <li>One press, one cast. The addon never casts on its own.</li>
+        <li>In combat the game freezes who the button aims at, so it keeps its last pick until combat ends. Buff between pulls.</li>
+      </ul>
+    </div>
+
+    <div class="demo" id="buff-demo" tabindex="0" aria-label="Buff Button demo: press the button or F">
+      <div class="demo-bar"><span>Try it</span><small>a pretend party · same picking order as the addon</small></div>
+      <ul class="party" aria-live="polite"></ul>
+      <div class="demo-foot">
+        <button type="button" class="fort-btn" aria-label="Cast Power Word: Fortitude on the next player"><span class="key">F</span></button>
+        <div class="demo-status"></div>
+      </div>
+      <p class="demo-note">A web demo of the addon's logic, not a screenshot of the game.</p>
+    </div>
+  </div>
+  <div class="in-game">
+    <figure>
+      <button type="button" data-zoom><img src="img/fort-tooltip.webp" alt="The Fortitude button in game, with its tooltip showing who is next and how many are left" width="660" height="533" loading="lazy" decoding="async"></button>
+      <figcaption>In game: hover the button and its tooltip says who's next and how many are left.</figcaption>
+    </figure>
+    <figure>
+      <button type="button" data-zoom><img src="img/fort-cast.webp" alt="Andric casting Power Word: Fortitude from the button on a crowd of players" width="794" height="503" loading="lazy" decoding="async"></button>
+      <figcaption>One press later: Andric casts, and the button's label has already moved on to the next player.</figcaption>
+    </figure>
+  </div>
+  <p class="privacy">Other players' names are blurred in these screenshots.</p>
+</section>
+
+<section class="section quests" id="quests">
+  <div class="section-head">
+    <h2 class="heading">Quest Log</h2>
+    <p class="sub">Everything Andric's Addon does for your Priest, one quest at a time.</p>
+  </div>
+
+  <div class="questlog">
+    <div class="ql-bar">
+      <span class="ql-name">Quest Log</span>
+      <span class="ql-count"><span id="ql-done">0</span>/9 accepted</span>
+    </div>
+    <div class="ql-body">
+      <ol class="ql-list" id="ql-list" aria-label="Quests"></ol>
+
+      <div class="ql-pages">
+
+        <div class="quest" id="q-home" data-zone="The Cathedral" data-level="10">
+          <h3>Know What to Do Next</h3>
+          <p>Every time you open the window, Home tells you what matters now: the spells
+            waiting at your trainer, how close you are to your riding gold, your next class
+            quest, and anything that needs attention, such as a missing buff, an upgrade in
+            your bags or news you haven't read.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>See what to train now and at your next trainer visit</li>
+            <li>Track your savings for riding at 40 (100g) and 60 (1000g)</li>
+            <li>Never miss your level 10 and 20 racial class quests</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Three cards across the top: what your trainer has for you now (or at your next visit), your savings toward Apprentice Riding at 40 and Journeyman at 60 with a progress bar, and your next racial class quest.</p>
+            <p>Below them, <em>Needs attention</em> lists missing buffs, upgrades sitting in your bags, unread news and new lessons, each with a button that takes you there. Next to it: your rotation at a glance.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="rare">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/inv_misc_book_09.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Codex of Next Steps</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-rare">Codex of Next Steps</b>
+                <span>Binds when installed</span>
+                <span class="use">Use: Shows what to do next, sorted by what matters.</span>
+                <i>"Type /andric. Start on Home."</i>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/home.webp" alt="Home: Do next cards for the trainer, riding savings and class quest, plus Needs attention and your rotation at a glance" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-rotation" data-zone="The Battlefield" data-level="12">
+          <h3>Cast the Right Spell</h3>
+          <p>Priority lists for solo leveling, dungeons and raids, for each spec, filtered to
+            the spells you can actually cast at your level. An optional on-screen helper
+            suggests the next spell for Shadow, or shows your priorities and cooldowns while
+            healing. After each fight you get a short summary and a mana tip. It only ever
+            advises: nothing casts by itself.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Follow Solo, Dungeon and Raid priorities for Holy, Discipline and Shadow</li>
+            <li>See only spells your level and talents allow</li>
+            <li>Learn from a summary after every fight</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Each spec has Solo, Dungeon and Raid lists. A step you can cast shows normally; one your level allows but you haven't trained yet is tagged <em>Train it</em>; spells from talents you haven't taken, or other races' spells, stay hidden until they apply.</p>
+            <p>For damage, the helper shows the next spell large with the two after it, plus a row of cooldowns. For healing it shows your priorities and their cooldowns: who to heal stays your call. After a fight, chat gets a line of what you cast and a tip, like finishing mobs with your wand so your mana comes back.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="epic">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/spell_shadow_shadowwordpain.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Whisper of the Next Cast</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-epic">Whisper of the Next Cast</b>
+                <span>Unique</span>
+                <span class="use">Use: Suggests your next spell. You still press the button.</span>
+                <i>"Mind Blast is ready."</i>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/rotation.webp" alt="Rotation for a level 7 Discipline Priest: only the spells you can use, with the plan, tips and the helper toggle" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-fort" data-zone="The Battlefield" data-level="14">
+          <h3>Fortitude for Everyone</h3>
+          <p>One small button on your screen. Each press casts Power Word: Fortitude on the
+            nearest friendly player who doesn't have it yet: you first, then your group, your
+            target, then players whose friendly nameplates are showing. It skips anyone who
+            is already buffed, out of range or dead. Bind it to any key.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Buff the next player with a single press</li>
+            <li>Bind it to a key from Settings</li>
+            <li>Keep the whole town stamina-blessed</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>See <a href="#buff">the Buff Button</a> above for the full picking order and a demo you can press.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="rare">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/spell_holy_wordfortitude.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Button of Endless Fortitude</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-rare">Button of Endless Fortitude</b>
+                <span>Binds to a key</span>
+                <span class="use">Use: Fortitude for the nearest player without it.</span>
+                <i>"One press per cast, as the Light intended."</i>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/fort-tooltip.webp" alt="The Fortitude button and its tooltip in game" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-gear" data-zone="The Armory" data-level="20">
+          <h3>Upgrade or Vendor?</h3>
+          <p>Hover any item and the tooltip says whether it beats what you're wearing for
+            your spec, what improves and what you'd lose, and <em>Equip this</em> when it's
+            worth it. Upgrades sitting in your bags glow, and a new one gets a quick alert.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Compare every item with your equipped one, for your spec</li>
+            <li>See what each stat change means for your mana, crit and healing</li>
+            <li>Spot upgrades in your bags at a glance</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Each spec's stat priority comes from the guides, and the addon turns it into weights for your spec. Shadow uses its leveling priority until 60. Rings and trinkets are compared against the weaker of your two, and a two-hander against your main hand and off hand together.</p>
+            <p><em>Equip this</em> only appears for an upgrade of 1% or more that you can wear right now. Otherwise you'll see "Upgrade once you reach level N". Intellect is shown as max mana and spell crit, and Spirit as mana per two seconds.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="epic">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/inv_chest_cloth_17.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Appraiser's Robe</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-epic">Appraiser's Robe</b>
+                <span>Chest · Cloth</span>
+                <span class="use">Equip: Tells you which robe is better, and why.</span>
+                <i>"No separate upgrade addon needed."</i>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/gear.webp" alt="Gear: the best item per slot at your level, and the selected item's upgrade, what improves, and how to get it" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-drops" data-zone="The Armory" data-level="24">
+          <h3>Where the Loot Drops</h3>
+          <p>The Gear page lists the best recommended item for each slot at your level. Click
+            one to see who drops it and how often, which quest gives it and who starts that
+            quest, or what it takes to craft. Press <em>Mark on map</em> to put a pin on the
+            quest giver or the dungeon entrance.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Browse the best gear for your level, slot by slot</li>
+            <li>Find the boss, the quest giver or the recipe</li>
+            <li>Pin it on your map and follow the arrow</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>The views are <em>For my level</em> (gear you can wear now, plus what unlocks in the next five levels), <em>Best overall</em>, <em>By bracket</em>, <em>Consumables</em> and <em>Weights</em>.</p>
+            <p>Item sources come from the Icy Veins Forever database. Dungeon entrances come from the game's own map, so the pin lands where the game says the entrance is. If a source isn't published yet, the page says so.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="rare">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/inv_misc_map_01.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Map of Likely Loot</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-rare">Map of Likely Loot</b>
+                <span>Binds when installed</span>
+                <span class="use">Use: Marks the quest giver or dungeon entrance on your map.</span>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/gear.webp" alt="Gear detail: how to get an item, with other options for the same slot" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-leveling" data-zone="The Long Road" data-level="30">
+          <h3>The Road to Sixty</h3>
+          <p>Your path laid out by level: upcoming trainer visits and milestones, zones and
+            dungeons for your level and faction, every spell rank and when you learn it, the
+            racial class quests, and your riding trainer and first mount.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Plan your next trainer visits</li>
+            <li>Find zones and dungeons for your level and faction</li>
+            <li>Complete your class quests and claim your first mount</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p><em>Path</em> lists your next trainer visits and milestones by level. <em>Zones &amp; dungeons</em> highlights your bracket, <em>Trainer</em> shows every rank and when you learn it, and <em>Class quests</em> ticks off the ones you've done. <em>Riding &amp; gold</em> shows your trainer, your vendor and your first-mount quest (the first mount is free).</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="uncommon">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/ability_mount_ridinghorse.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Reins of the Long Road</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-uncommon">Reins of the Long Road</b>
+                <span>Requires level 40</span>
+                <span class="use">Use: Reminds you how much gold you still need.</span>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/trainer.webp" alt="Leveling, Trainer: next visit, total cost and every spell rank by level" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-talents" data-zone="The Long Road" data-level="40">
+          <h3>A Build You Can See</h3>
+          <p>Recommended leveling, dungeon, raid and PvP builds for your spec, drawn on
+            Forever's own talent trees with points per talent and the in-game tooltips. With
+            dual spec, talent spec one and two each keep their own Priest profile, and the
+            addon follows whichever you switch to.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>See every recommended build on the real talent trees</li>
+            <li>Read what each build takes, talent by talent</li>
+            <li>Switch specs and let the addon follow</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Pick Leveling, Dungeon, Raid or PvP and the build appears on Forever's three trees, with points per talent and the game's own tooltip on hover. Below it, a list says what the build takes. A build that no longer fits the current trees shows its link instead of a wrong picture.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="epic">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/spell_shadow_unholyfrenzy.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Twin Tomes of Talent</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-epic">Twin Tomes of Talent</b>
+                <span>Unique · Dual spec</span>
+                <span class="use">Use: Shows a build point by point on Forever's trees.</span>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/talents.webp" alt="Talents: the Discipline leveling build drawn on Forever's three trees" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-learn" data-zone="The Library" data-level="10">
+          <h3>Learn the Priest</h3>
+          <p>Every spell and talent explained: what it does, when to use it and which rank.
+            Then how the class works, playing in a group, leveling each spec and the common
+            mistakes. New lessons unlock as you level, and the first time you learn a spell
+            you get a short hint.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Read about every spell and talent</li>
+            <li>Unlock lessons as you level</li>
+            <li>Learn your role in a group</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>The sections are <em>Lessons</em>, <em>Spells</em>, <em>Talents</em>, <em>How the class works</em> (mana and Spirit, downranking, Weakened Soul, threat and more), <em>In a group</em>, <em>Leveling</em> (five tips for each spec) and <em>Common mistakes</em>. Anything the sources couldn't confirm is marked.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="legendary">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/inv_misc_book_07.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Tome of the Whole Priest</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-legendary">Tome of the Whole Priest</b>
+                <span>Soulbound</span>
+                <span class="use">Use: Teaches you everything there is about the class.</span>
+                <i>"Unconfirmed facts are marked. The Light values honesty."</i>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/learn.webp" alt="Learn the Priest: lessons unlocked so far, and what unlocks next" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+        <div class="quest" id="q-news" data-zone="The Library" data-level="18">
+          <h3>Nothing Forgotten</h3>
+          <p>Reminders for Fortitude, Inner Fire, Shadowform, your wand and candles. What's
+            new collects Forever and Priest changes, and an optional companion script on your
+            PC keeps that list current. Every fact carries its source, and where the sources
+            disagree or say nothing, the addon tells you instead of guessing.</p>
+          <h4>Objectives</h4>
+          <ul class="objectives">
+            <li>Keep your buffs, wand and candles in order</li>
+            <li>Catch every Priest change in What's new</li>
+            <li>Check the source behind any fact</li>
+          </ul>
+          <h4>How it works</h4>
+          <div class="how"><p>Reminders appear on Home and as a small pop-up out of combat; choose which ones in Settings. Each page has a <em>Sources &amp; notes</em> link with the sources it uses and any open questions. The search box at the top of the sidebar finds any spell, talent, item, quest or dungeon.</p></div>
+          <h4>Rewards</h4>
+          <div class="rewards">
+            <div class="item" tabindex="0" data-quality="uncommon">
+              <img src="https://render.worldofwarcraft.com/us/icons/56/inv_scroll_05.jpg" alt="" width="40" height="40" loading="lazy" decoding="async">
+              <span class="item-name">Scroll of Honest Notes</span>
+              <div class="tooltip" role="tooltip">
+                <b class="q-uncommon">Scroll of Honest Notes</b>
+                <span>Binds when installed</span>
+                <span class="use">Use: Shows where every fact came from.</span>
+              </div>
+            </div>
+          </div>
+          <figure class="shot"><button type="button" data-zoom><img src="img/news.webp" alt="What's new: Forever and Priest changes, newest first" loading="lazy" decoding="async"></button></figure>
+        </div>
+
+      </div>
+    </div>
+    <div class="ql-foot">
+      <button type="button" class="wow-btn small" id="accept">Accept</button>
+      <button type="button" class="wow-btn small ghost" id="next">Next quest ›</button>
+    </div>
+  </div>
+</section>
+
+<section class="section origin-section" id="andric">
+  <div class="section-head">
+    <h2 class="heading">The Priest Who Started It All</h2>
+    <p class="sub">Every addon has a first player. This one has a name.</p>
+  </div>
+  <div class="origin">
+    <figure class="portrait">
+      <button type="button" data-zoom style="all: unset; cursor: zoom-in; display: block"><img src="img/andric.webp" alt="Andric, a Human Priest in World of Warcraft: Forever" width="596" height="655" loading="lazy" decoding="async"></button>
+      <figcaption>Andric<span>Human Priest of World of Warcraft: Forever</span></figcaption>
+    </figure>
+    <div class="origin-text">
+      <h3>Meet Andric</h3>
+      <p>Andric is the Priest this addon is named for. He set out in Elwynn Forest in Forever's
+        first week with a robe and more questions than answers: which spells to train,
+        whether that drop was any good, what a Discipline Priest is supposed to do when the tank
+        runs off.</p>
+      <p>Andric's Addon is the answer to those questions, built for him and tested on him. Every
+        screenshot on this page is his: the Fortitude button handing out buffs, his trainer list,
+        his talent build, his first lessons.</p>
+      <p>If you see a Human Priest handing out Fortitude to everyone around him, say hello.</p>
+      <p class="signoff">May the Light guide your heals.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section loot-section" id="loot">
+  <div class="section-head">
+    <h2 class="heading">Claim Your Loot</h2>
+    <p class="sub">Every version is on <a href="https://github.com/ninepointlabs/andrics-addon/releases/latest">GitHub Releases</a>. For World of Warcraft: Forever only.</p>
+  </div>
+
+  <div class="loot">
+    <div class="loot-bar"><span>Loot</span><span class="loot-from">Andric's Addon <span data-version>v0.2.0</span></span></div>
+
+    <div class="loot-item" data-quality="legendary">
+      <img src="https://omaforge.ninepointlabs.com/assets/ui/omaforge.svg" alt="" width="48" height="48" loading="lazy" decoding="async">
+      <div class="loot-text">
+        <b class="q-legendary">With OmaForge on Linux</b>
+        <span>Legendary · installs and keeps it updated · or search for “andrics”</span>
+<pre><code>omaforge install -c forever github:ninepointlabs/andrics-addon</code></pre>
+      </div>
+      <div class="loot-actions">
+        <a class="wow-btn small ghost" href="https://omaforge.ninepointlabs.com/">Get OmaForge</a>
+        <button type="button" class="wow-btn small ghost" data-copy>Copy</button>
+      </div>
+    </div>
+
+    <div class="loot-item" data-quality="epic">
+      <img src="https://render.worldofwarcraft.com/us/icons/56/inv_misc_bag_10.jpg" alt="" width="48" height="48" loading="lazy" decoding="async">
+      <div class="loot-text">
+        <b class="q-epic">The zip, by hand</b>
+        <span>Epic · any OS · extract into your Forever AddOns folder</span>
+<pre><code>World of Warcraft/_forever_/Interface/AddOns/AndricsAddon</code></pre>
+      </div>
+      <div class="loot-actions">
+        <a class="wow-btn small" data-download="zip" href="https://github.com/ninepointlabs/andrics-addon/releases/latest">Download</a>
+      </div>
+    </div>
+
+    <div class="loot-item" data-quality="uncommon">
+      <img src="https://render.worldofwarcraft.com/us/icons/56/inv_misc_rune_01.jpg" alt="" width="48" height="48" loading="lazy" decoding="async">
+      <div class="loot-text">
+        <b class="q-uncommon">Then, in game</b>
+        <span>Uncommon · reload, open it and pick your spec</span>
+<pre><code>/reload
+/andric</code></pre>
+      </div>
+      <div class="loot-actions">
+        <button type="button" class="wow-btn small ghost" data-copy>Copy</button>
+      </div>
+    </div>
+  </div>
+  <p class="loot-note">Classic Era and retail clients won't load it: it's built for Forever's Interface 16001.</p>
+</section>
+
+<section class="section tavern" id="tavern">
+  <div class="section-head">
+    <h2 class="heading">The Tavern</h2>
+    <p class="sub">Questions, answered by the innkeeper.</p>
+  </div>
+
+  <div class="gossip">
+    <div class="gossip-bar"><img src="https://render.worldofwarcraft.com/us/icons/56/spell_holy_innerfire.jpg" alt="" width="32" height="32" loading="lazy" decoding="async"><span>Innkeeper Candlewick</span></div>
+    <div class="gossip-body parchment">
+      <p class="greeting">Light be with you, traveler! Warm your hands by the candles. What would you like to know?</p>
+
+      <details>
+        <summary>Does it work on Classic Era or retail?</summary>
+        <p>No. It's built for World of Warcraft: Forever only, and other clients won't load
+          it. That's on purpose: Forever's spells, talents, quests and gear all differ from
+          Classic.</p>
+      </details>
+      <details>
+        <summary>Will it play the game for me?</summary>
+        <p>No. Blizzard doesn't allow that, and it wouldn't be much fun. The rotation helper
+          suggests, and the Fortitude button casts once per press. Everything else is advice
+          and information.</p>
+      </details>
+      <details>
+        <summary>Which specs does it support?</summary>
+        <p>Holy, Discipline and Shadow. Pick one and every page follows it. With dual spec,
+          talent spec one and two each keep their own profile, and the addon switches when
+          you do.</p>
+      </details>
+      <details>
+        <summary>Where does the information come from?</summary>
+        <p>From Blizzard's own articles and development notes, Icy Veins and Wowhead. Every
+          fact keeps its source and the date it was checked: look for the
+          <em>Sources &amp; notes</em> link on each page. Where the sources disagree or say
+          nothing yet, such as gear lists past level 30 or raid gear before the raids open,
+          the addon says so instead of guessing.</p>
+      </details>
+      <details>
+        <summary>How does What's new stay current?</summary>
+        <p>Addons can't go online from inside the game. New releases carry updated research,
+          and an optional companion script on your PC can refresh the list in between: it
+          reads public news feeds and writes a file the addon shows after a
+          <code>/reload</code>.</p>
+      </details>
+      <details>
+        <summary>Do I need any other addons?</summary>
+        <p>No, it has no dependencies. Its bag highlight is drawn separately from Pawn's
+          upgrade arrow, so the two don't overwrite each other.</p>
+      </details>
+      <details>
+        <summary>Is this made by Blizzard?</summary>
+        <p>No. Andric's Addon is an unofficial, free and open source fan project by
+          <a href="https://ninepointlabs.com/">Nine Point Labs</a>, from the makers of
+          <a href="https://myazerothlife.com/">My Azeroth Life</a> and
+          <a href="https://omaforge.ninepointlabs.com/">OmaForge</a>. It isn't affiliated
+          with or endorsed by Blizzard Entertainment.</p>
+      </details>
+      <a class="gossip-bye" href="#top">Farewell.</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="crests" aria-hidden="true">
+    <img src="https://omaforge.ninepointlabs.com/assets/art/alliance-crest-sm.webp" alt="" width="40" height="50" loading="lazy" decoding="async">
+    <img src="https://render.worldofwarcraft.com/us/icons/56/spell_holy_wordfortitude.jpg" alt="" width="40" height="40" loading="lazy" decoding="async" style="border-radius: 50%; border: 1px solid #8a6526">
+    <img src="https://omaforge.ninepointlabs.com/assets/art/horde-sigil-sm.webp" alt="" width="40" height="50" loading="lazy" decoding="async">
+  </div>
+  <nav class="footer-links" aria-label="Links">
+    <a href="https://github.com/ninepointlabs/andrics-addon">Source</a>
+    <a href="https://github.com/ninepointlabs/andrics-addon/releases">Releases</a>
+    <a href="https://github.com/ninepointlabs/andrics-addon/issues">Issues</a>
+    <a href="https://myazerothlife.com/">My Azeroth Life</a>
+    <a href="https://omaforge.ninepointlabs.com/">OmaForge</a>
+  </nav>
+  <p class="legal">
+    Andric's Addon is an unofficial fan project, not affiliated with or endorsed by Blizzard
+    Entertainment. World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or
+    registered trademarks of Blizzard Entertainment, Inc. Game artwork, icons and the Alliance
+    and Horde emblems © Blizzard Entertainment, Inc. (artwork via
+    <a href="https://github.com/ninepointlabs/omaforge/blob/main/site/SOURCES.md">omaforge's sources</a>;
+    icons from Blizzard's public icon CDN). Andric's Addon itself is MIT licensed.
+  </p>
+</footer>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<p class="zone-text" id="zone-text" aria-live="polite"></p>
+
+<dialog class="lightbox" id="lightbox" aria-label="Screenshot">
+  <img alt="">
+  <p>Esc or click to close</p>
+</dialog>
+
+<script src="app.js" defer></script>
+<script src="demo.js" defer></script>
+</body>
+</html>
