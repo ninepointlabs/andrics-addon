@@ -279,7 +279,8 @@ main { padding-top: 26px; }
 }
 .tip-box .section-head { color: var(--gold); border-bottom-color: #3b3b52; }
 .tip-box p { color: #e8e2d0; }
-.tip-box code { display: block; padding: 8px 10px; margin: 6px 0 10px; background: rgba(255, 255, 255, 0.06); border-radius: 3px; font: 0.8rem/1.45 var(--mono); color: #1eff00; overflow-wrap: anywhere; }
+.tip-box code { padding: 0.05em 0.35em; background: rgba(255, 255, 255, 0.08); border-radius: 3px; font: 0.82em var(--mono); color: #1eff00; }
+.tip-box code.cmd { display: block; padding: 8px 10px; margin: 6px 0 10px; font: 0.8rem/1.45 var(--mono); overflow-wrap: anywhere; }
 .tip-box a { color: var(--gold-2); }
 .plain { list-style: none; margin: 0; padding: 0; }
 .plain li { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dotted rgba(58, 42, 21, 0.45); font-size: 1rem; }
