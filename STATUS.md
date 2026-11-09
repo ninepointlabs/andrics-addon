@@ -1,7 +1,17 @@
 # STATUS: Andric's Addon (2026-11-09)
 
-**PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged, no tag, no release.
+**PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged. Tag/release `v0.1.0` cut on the PR branch at Tim's request (see below).
 **Repo:** `ninepointlabs/andrics-addon` (private). Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
+
+## Release v0.1.0 (cut at Tim's request, 2026-11-09)
+
+- Tag `v0.1.0` on `feature/initial-addon` (commit `510ea2e`); `main` is untouched and the PR is still open.
+- The release workflow passed. Assets: `AndricsAddon-v0.1.0.zip` and `release.json` = `{"flavor":"forever","interface":16001}`. The TOC version is stamped `v0.1.0`. This confirms the BigWigs packager handles `_Forever.toc`.
+- `omaforge clients` re-checked before tagging: Forever 1.60.1.70862 / 16001, matching the TOC.
+- **OmaForge install is blocked while the repo is private.** OmaForge sends the GitHub token only to `api.github.com`. It fetches `release.json` and the zip from `browser_download_url` with no auth (`omaforge/core/providers/github.py:128,166`; `download_headers()` returns `{}`), and GitHub returns **404** for those URLs on a private repo (verified). Adding a token alone won't fix it. Options:
+  1. Make the repo public: `gh repo edit ninepointlabs/andrics-addon --visibility public --accept-visibility-change-consequences`.
+  2. Change OmaForge's GitHub provider to download private assets through the API (`/repos/{repo}/releases/assets/{id}` with `Accept: application/octet-stream` and the token).
+- Once access works: `omaforge install -c forever github:ninepointlabs/andrics-addon`.
 
 ## Client / Interface
 
@@ -45,7 +55,7 @@ Then log into a Priest on Forever (or `/reload`) and work through this list:
 - `python3 tools/priest-changes-poller/tests/test_poller.py`: 4/4 pass. A live dry-run reached 8 of 9 feeds (the Wowhead hub page is skipped on purpose) and produced 20 relevant items.
 - `python3 tools/build_data.py --check`: up to date.
 
-**Not verified:** anything in the real client (layout, fonts, the tooltip hook, aura/cooldown reads under the Midnight-style restrictions). I also could not run the BigWigs packager locally (auto-mode blocked downloading and running its script), so it is unconfirmed whether the packager handles the `_Forever.toc` suffix next to the plain `.toc`. Storytracker's plain `.toc` produced `release.json` with `flavor: forever / 16001`.
+**Not verified:** anything in the real client (layout, fonts, the tooltip hook, aura/cooldown reads under the Midnight-style restrictions). The BigWigs packager is now verified by the real v0.1.0 release run (see above).
 
 ## Decisions and assumptions
 
