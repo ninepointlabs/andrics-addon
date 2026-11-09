@@ -10,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1.5"
       - name: Generated data is up to date
         run: python3 tools/build_data.py --check
       - name: Lua syntax
-        run: for f in $(git ls-files '*.lua'); do lua5.1 -e "assert(loadfile('$f'))"; done
+        run: for f in $(git ls-files '*.lua'); do lua -e "assert(loadfile('$f'))"; done
       - name: Addon headless tests
-        run: lua5.1 tests/run.lua
+        run: lua tests/run.lua
       - name: Poller tests
         run: python3 tools/priest-changes-poller/tests/test_poller.py -v
