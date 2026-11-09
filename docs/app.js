@@ -184,6 +184,20 @@
   const deep = quests.findIndex((q) => `#${q.id}` === location.hash);
   show(deep >= 0 ? deep : 0);
 
+  // --- Screenshot lightbox ---------------------------------------------------
+  const box = $("#lightbox");
+  if (box && typeof box.showModal === "function") {
+    $$("[data-zoom]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const img = $("img", b);
+        $("img", box).src = img.currentSrc || img.src;
+        $("img", box).alt = img.alt;
+        box.showModal();
+      }),
+    );
+    box.addEventListener("click", () => box.close());
+  }
+
   // --- Loot -----------------------------------------------------------------
   $$("[data-copy]").forEach((b) =>
     b.addEventListener("click", async () => {

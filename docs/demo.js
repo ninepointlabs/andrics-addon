@@ -7,7 +7,7 @@
   const ICON = "https://render.worldofwarcraft.com/us/icons/56/spell_holy_wordfortitude.jpg";
 
   const START = [
-    { name: "You", note: "Andric · level 24", order: 0 },
+    { name: "You", note: "Andric", order: 0 },
     { name: "Dax", note: "party · 8 yards", order: 1, dist: 8, buffed: true },
     { name: "Bram", note: "party · 12 yards", order: 1, dist: 12 },
     { name: "Cora", note: "party · 48 yards", order: 1, dist: 48, far: true },

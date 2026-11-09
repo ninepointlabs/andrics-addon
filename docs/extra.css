@@ -90,3 +90,26 @@
   .demo { position: static; }
 }
 @media (prefers-reduced-motion: reduce) { .cast-float { animation: none; display: none; } }
+
+/* Real screenshots under the Buff Button spotlight */
+.in-game { max-width: 1120px; margin: 40px auto 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.in-game figure { margin: 0; }
+.in-game button, .quest .shot button { display: block; width: 100%; padding: 0; border: 1px solid var(--bronze); border-radius: 4px; background: #000; cursor: zoom-in; box-shadow: 0 0 0 1px #000, 0 8px 24px rgba(0, 0, 0, 0.55); }
+.in-game img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.in-game figcaption, .quest .shot figcaption { margin-top: 8px; color: var(--dim); font-style: italic; font-size: 0.95rem; text-align: center; }
+.privacy { max-width: 1120px; margin: 14px auto 0; color: var(--dim); font-size: 0.85rem; text-align: center; }
+
+/* The Priest who started it all */
+.origin { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: center; }
+.portrait { margin: 0; position: relative; }
+.portrait img { display: block; width: 100%; height: auto; border: 2px solid var(--gold-2); border-radius: 6px; box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--bronze), 0 18px 40px rgba(0, 0, 0, 0.7); }
+.portrait figcaption { margin-top: 14px; text-align: center; color: var(--gold); font: 700 1.05rem var(--display); letter-spacing: 0.06em; }
+.portrait figcaption span { display: block; color: var(--dim); font: italic 400 0.95rem var(--body); letter-spacing: 0; }
+.origin-text h3 { margin: 0 0 12px; color: var(--gold); font: 700 1.7rem/1.2 var(--display); }
+.origin-text p { margin: 0 0 14px; }
+.origin-text .signoff { color: var(--gold-2); font-family: var(--quest); font-style: italic; font-size: 1.15rem; }
+
+@media (max-width: 860px) {
+  .in-game, .origin { grid-template-columns: 1fr; }
+  .portrait { max-width: 340px; margin: 0 auto; }
+}
