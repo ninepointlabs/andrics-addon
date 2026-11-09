@@ -3,6 +3,8 @@
 **PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged. Tag/release `v0.1.0` cut on the PR branch at Tim's request (see below).
 **Repo:** `ninepointlabs/andrics-addon` (**public** since 2026-11-09, at Tim's request). Topics `wow-addon` and `world-of-warcraft` are set, which OmaForge's GitHub search requires. Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
 
+**Release `v0.1.2`** (2026-11-09, at Tim's request): tag on `feature/initial-addon` at `1fa3dca`. Release workflow passed; `release.json` = forever / 16001; OmaForge on TUF shows `-> v0.1.2`. Adds the tooltip "What improves / What you'd lose" + "Equip this" lines and the bag upgrade highlight and alerts. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.1.2
+
 **Release `v0.1.1`** (2026-11-09, at Tim's request): tag on `feature/initial-addon` at `792dc06`. Release workflow passed; `release.json` = forever / 16001; OmaForge on TUF shows `v0.1.0 -> v0.1.1`. Contains dual-spec auto-switch, the level-filtered rotation, talent builds drawn on the trees, and the gear views. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.1.1
 
 ## Release v0.1.0 (cut at Tim's request, 2026-11-09)
