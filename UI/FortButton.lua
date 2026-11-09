@@ -180,6 +180,8 @@ function Fort.Update()
     end
     btn.reason = reason
     btn.count = count
+    -- Keep an open tooltip in step with the button (it went stale in Tim's screenshot).
+    if GameTooltip:IsShown() and GameTooltip:GetOwner() == btn then btn:GetScript("OnEnter")(btn) end
 end
 
 function Fort.ShouldShow()

@@ -51,9 +51,10 @@ UI.Ctx = ctx
 local function ApplyHeader()
     if not frame then return end
     local a = UI.Accent()
-    frame.logo:SetColorTexture(a[1], a[2], a[3], 1)
     local spec = ns.DB.ActiveSpec()
     local s = ns.Specs[spec]
+    frame.logo:SetTexture(s and s.icon or "Interface\\Icons\\Spell_Holy_WordFortitude")
+    frame.logo:SetTexCoord(0.07, 0.93, 0.07, 0.93)
     frame.specPill.dot:SetColorTexture(a[1], a[2], a[3], 1)
     frame.specPill:SetBackdropBorderColor(a[1], a[2], a[3], 1)
     frame.specPill.label:SetText(s and (spec .. " · " .. s.role .. "   " .. UI.Hex(UI.C.dim) .. "change|r") or ("Pick a spec   " .. UI.Hex(UI.C.dim) .. "change|r"))
@@ -353,7 +354,7 @@ function UI.Build()
     title:SetText(ns.TITLE)
     local tag = UI.Text(head, 11, UI.C.dim)
     tag:SetPoint("LEFT", title, "RIGHT", 10, -1)
-    tag:SetText("WoW Forever · v" .. ns.VERSION)
+    tag:SetText("WoW Forever · " .. (tostring(ns.VERSION):match("^v") and ns.VERSION or ("v" .. ns.VERSION)))
 
     local close = CreateFrame("Button", nil, head, "UIPanelCloseButton")
     close:SetPoint("RIGHT", -8, 0)

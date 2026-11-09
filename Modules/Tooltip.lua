@@ -25,7 +25,13 @@ local function ResearchIndex()
 end
 Tooltip.ResearchIndex = ResearchIndex
 
-local function pctText(v) return ("%+.1f%%"):format(v) end
+-- Against an (almost) empty slot a percentage is meaningless (+5175% in Tim's
+-- screenshot); say "much better/worse" past 300%.
+local function pctText(v)
+    if v >= 300 then return "(much better)" end
+    if v <= -300 then return "(much worse)" end
+    return ("%+.1f%%"):format(v)
+end
 
 -- Build tooltip lines for a link and spec. Pure (returns strings) for testing.
 function Tooltip.LinesFor(link, spec, profile, level, percentScale, opts)

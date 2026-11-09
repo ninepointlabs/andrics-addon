@@ -33,12 +33,68 @@ function UI.SetGearView(v)
     tab = (v == "best" and "Best overall") or (v == "bracket" and "By bracket") or "For my level"
 end
 
+-- "req. 13" when the item itself requires it; "from level 20" when it comes from the source.
+local function levelText(it)
+    if (it.itemLevelReq or 0) >= (it.minLevel or 1) and (it.itemLevelReq or 0) > 1 then return "req. " .. it.itemLevelReq end
+    return "from level " .. (it.minLevel or 1)
+end
+
 local function pick(id)
     return function() detailId = id UI.Refresh() end
 end
 
+local function researchLabels(id)
+    local out = {}
+    for bracket, list in pairs(ns.Data.GearBrackets) do
+        for _, g in ipairs(list) do
+            if g.item_id == id then table.insert(out, { bracket = bracket, source = g.source, rec = g }) end
+        end
+    end
+    for _, w in ipairs(ns.Data.Wands) do
+        if w.item_id == id then table.insert(out, { bracket = "wand list", source = w.source, rec = w }) end
+    end
+    return out
+end
+
+local function findDungeon(label)
+    if not label then return nil end
+    local key = ns.Map.Norm(label)
+    key = ns.Map.DUNGEON_ALIASES[key] or key
+    for _, d in ipairs(ns.Data.Dungeons) do
+        local dn = ns.Map.Norm(d.name)
+        if dn == key or dn:find(key, 1, true) or (key:find("scarlet monastery", 1, true) and dn:find("^sm ")) then return d end
+    end
+    return nil
+end
+
+-- The level an item is realistically available at. Many quest rewards and
+-- crafted items carry no level requirement ("req. 0" in Tim's screenshot), so
+-- also use the source: the quest's minimum level, the dungeon's level range,
+-- or the research gear list's bracket (a "level 30" list item: from level 20).
+local function sourceLevel(id, minLevel)
+    local lvl = minLevel or 1
+    local src = ns.Data.ItemSources[id]
+    for _, q in ipairs(src and src.quests or {}) do
+        local qd = ns.Data.QuestSources[q.quest_id]
+        if qd and qd.min_level then lvl = math.max(lvl, qd.min_level) end
+    end
+    local labels = researchLabels(id)
+    local dungeon = labels[1] and findDungeon(labels[1].source)
+    if dungeon and src and src.drops then
+        lvl = math.max(lvl, tonumber(dungeon.levels:match("^(%d+)")) or 1)
+    end
+    if lvl <= 1 then
+        for _, l in ipairs(labels) do
+            local b = tonumber((l.bracket or ""):match("(%d+)"))
+            if b then lvl = math.max(lvl, b - 10) end
+        end
+    end
+    return lvl
+end
+UI.GearSourceLevel = sourceLevel
+
 -- Compare chip for an item vs. what's equipped.
-local function compareChip(id, c)
+local function compareChip(id, c, atLevel)
     local _, link = C_Item.GetItemInfo(id)
     if not link then return { text = "...", kind = "neutral" } end
     local res = ns.Stats.Compare(link, c.spec, c.level, c.profile, ns.db.global.percentScale)
@@ -47,9 +103,10 @@ local function compareChip(id, c)
     if res.isEquipped then return { text = "Equipped", kind = "neutral" } end
     if res.against and res.against.empty then return { text = "Upgrade", kind = "good" } end
     if not res.delta then return nil end
-    if res.minLevel and res.minLevel > c.level and res.delta > 0.05 then return { text = "At " .. res.minLevel, kind = "warn" } end
-    if res.delta > 0.05 then return { text = res.pct and ("+%.0f%%"):format(res.pct) or "Upgrade", kind = "good" } end
-    if res.delta < -0.05 then return { text = res.pct and ("%.0f%%"):format(res.pct) or "Worse", kind = "bad" } end
+    local need = math.max(res.minLevel or 1, atLevel or 1)
+    if need > c.level and res.delta > 0.05 then return { text = "At " .. need, kind = "warn" } end
+    if res.delta > 0.05 then return { text = (res.pct and res.pct < 300) and ("+%.0f%%"):format(res.pct) or "Upgrade", kind = "good" } end
+    if res.delta < -0.05 then return { text = (res.pct and res.pct > -300) and ("%.0f%%"):format(res.pct) or "Worse", kind = "bad" } end
     return { text = "Same", kind = "neutral" }
 end
 
@@ -81,7 +138,9 @@ local function evaluate(it, c)
         if C_Item.RequestLoadItemDataByID then pcall(C_Item.RequestLoadItemDataByID, it.id) end
         return false
     end
-    it.link, it.minLevel = link, minLevel or 1
+    it.link = link
+    it.itemLevelReq = minLevel or 0
+    it.minLevel = sourceLevel(it.id, minLevel)
     local res = ns.Stats.Compare(link, c.spec, c.level, c.profile, ns.db.global.percentScale)
     if not res or res.pending then return false end
     it.res = res
@@ -121,30 +180,6 @@ end
 ----------------------------------------------------------------------------
 -- Detail panel
 ----------------------------------------------------------------------------
-local function researchLabels(id)
-    local out = {}
-    for bracket, list in pairs(ns.Data.GearBrackets) do
-        for _, g in ipairs(list) do
-            if g.item_id == id then table.insert(out, { bracket = bracket, source = g.source, rec = g }) end
-        end
-    end
-    for _, w in ipairs(ns.Data.Wands) do
-        if w.item_id == id then table.insert(out, { bracket = "wand list", source = w.source, rec = w }) end
-    end
-    return out
-end
-
-local function findDungeon(label)
-    if not label then return nil end
-    local key = ns.Map.Norm(label)
-    key = ns.Map.DUNGEON_ALIASES[key] or key
-    for _, d in ipairs(ns.Data.Dungeons) do
-        local dn = ns.Map.Norm(d.name)
-        if dn == key or dn:find(key, 1, true) or (key:find("scarlet monastery", 1, true) and dn:find("^sm ")) then return d end
-    end
-    return nil
-end
-
 local function renderDetail(L, c, id, others)
     local name, link, _, _, minLevel = C_Item.GetItemInfo(id)
     local labels = researchLabels(id)
@@ -268,7 +303,7 @@ local function renderDetail(L, c, id, others)
         L:Label("Other options for this slot")
         for i, it in ipairs(others) do
             if i > 3 then break end
-            L:Item(it.id, it.name, (it.source or "") .. " · req. " .. it.minLevel, nil, pick(it.id), { chip = compareChip(it.id, c) })
+            L:Item(it.id, it.name, (it.source or "") .. " · " .. levelText(it), nil, pick(it.id), { chip = compareChip(it.id, c, it.minLevel) })
         end
     end
 end
@@ -290,7 +325,7 @@ local function renderSlotsTab(L, c, mine)
         end
     else
         for _, s in ipairs(slots) do
-            local chip = compareChip(s.items[1].id, c)
+            local chip = compareChip(s.items[1].id, c, s.items[1].minLevel)
             if chip and chip.kind == "good" then selected, selectedSlot = s.items[1].id, s break end
         end
         if not selected and slots[1] then selected, selectedSlot = slots[1].items[1].id, slots[1] end
@@ -302,15 +337,15 @@ local function renderSlotsTab(L, c, mine)
     if pending > 0 then L:Text(UI.Hex(UI.C.dim) .. pending .. " item(s) still loading...|r", { size = 12 }) end
     for _, s in ipairs(slots) do
         local it = s.items[1]
-        local sub = (it.source or "") .. " · req. " .. it.minLevel .. (#s.items > 1 and (" · " .. (#s.items - 1) .. " more") or "")
-        L:Item(it.id, s.name .. ": " .. it.name, sub, nil, pick(it.id), { chip = compareChip(it.id, c),
+        local sub = (it.source or "") .. " · " .. levelText(it) .. (#s.items > 1 and (" · " .. (#s.items - 1) .. " more") or "")
+        L:Item(it.id, s.name .. ": " .. it.name, sub, nil, pick(it.id), { chip = compareChip(it.id, c, it.minLevel),
             tint = it.id == selected and UI.Accent() or nil })
     end
     if #slots == 0 and pending == 0 then L:Text("No researched gear fits this view yet.") end
     if mine and #soon > 0 then
         L:Label("Coming up (next 5 levels)")
         for _, it in ipairs(soon) do
-            L:Item(it.id, it.name, (it.source or "") .. " · req. " .. it.minLevel, nil, pick(it.id), { chip = compareChip(it.id, c),
+            L:Item(it.id, it.name, (it.source or "") .. " · " .. levelText(it), nil, pick(it.id), { chip = compareChip(it.id, c, it.minLevel),
                 tint = it.id == selected and UI.Accent() or nil })
         end
     end

@@ -596,6 +596,33 @@ test("fortitude button: picks the next player who needs it", function()
     S.units, S.target, S.known, S.auras = {}, saved.target, saved.known, saved.auras
 end)
 
+test("gear: effective level comes from the source when the item has none", function()
+    -- quest reward with no level on the item: the quest's minimum level wins
+    ns.Data.ItemSources[15444] = { quests = { { name = "Hidden Enemies", quest_id = 5730, choice = true } } }
+    ns.Data.QuestSources[5730] = { min_level = 9 }
+    eq(ns.UI.GearSourceLevel(15444, 0), 9)
+    -- dungeon drop: the dungeon's lower level (Ragefire Chasm 13-18)
+    ns.Data.ItemSources[14150] = { drops = { { npc = "Jergosh the Invoker", npc_id = 11518 } } }
+    eq(ns.UI.GearSourceLevel(14150, 0), 13)
+    -- crafted item on the level 30 list with no requirement: bracket - 10
+    ns.Data.ItemSources[15999] = { crafted = { profession = "Engineering", skill = 270 } }
+    eq(ns.UI.GearSourceLevel(15999, 0), 20)
+    -- the item's own requirement still wins when higher
+    eq(ns.UI.GearSourceLevel(14150, 25), 25)
+end)
+
+test("tooltip: huge percentages read as 'much better'", function()
+    S.itemInfo[1101] = { equipLoc = "INVTYPE_HEAD", classID = 4, subclassID = 1 }
+    S.itemInfo[1102] = { equipLoc = "INVTYPE_HEAD", classID = 4, subclassID = 1 }
+    S.itemLines["item:1101"] = { "Goggles", "Equip: Increases healing done by magical spells and effects by up to 27." }
+    S.itemLines["item:1102"] = { "Hat", "+1 Stamina" }
+    S.equipped[1] = "item:1102"
+    ns.Stats.ClearCache()
+    local all = table.concat(ns.Tooltip.LinesFor("item:1101", "Holy", {}, 30, 10), "\n")
+    truthy(all:find("UPGRADE (much better)", 1, true), all)
+    S.equipped[1] = nil
+end)
+
 test("slash commands", function()
     SlashCmdList.ANDRICSADDON("spec disc")
     eq(ns.DB.ActiveSpec(), "Discipline")

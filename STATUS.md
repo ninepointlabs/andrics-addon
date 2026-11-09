@@ -43,6 +43,12 @@
   - **Working theory:** Forever ignores `[@nameplateN]` macro conditions.
   - **v0.1.6:** strangers are reached by name (`/targetexact Name` then `/cast [@target,...]`, then the previous target is restored or cleared). Group members and you stay direct. The failure line now includes the game's own `SecureCmdOptionParse` check for that unit.
 - **Fortitude button v0.1.6:** Tim confirmed the on-screen button works ("the buff goes out"). The action-bar macro (`/click AndricsFortButton`) did nothing, because Forever's `/click` handler skips buttons with `HasAccessConstraints()` or the forbidden `ScriptedInput` aspect (wow-ui-source@forever `SlashCommands.lua`). **v0.1.7:** the `AndricsFort` macro body is now the button's own command, rewritten via `EditMacro` out of combat whenever the target changes. Casts from the macro also advance the button (`UNIT_SPELLCAST_SENT`). Still untested: the key binding (CLICK binding), which may face the same restriction.
+- **Fixes from Tim's v0.2.0 screenshots (2026-11-09):**
+  - The header showed "vv0.2.0".
+  - The logo was a plain white square (Discipline accent); it's now the spec icon.
+  - Gear showed "req. 0" and treated level-30 quest or crafted items as wearable at level 7. Items now get an effective level from their source: the quest's minimum level, the dungeon's lower bound, or the gear-list bracket minus 10. Rows say "from level N" when the level is derived.
+  - Percentages of 300% or more (e.g. "+5175%" against a near-empty slot) now read "much better".
+  - The Fortitude tooltip went stale while hovering; it now refreshes as the target changes.
 - **Window redesign (v0.2.0, Tim: "cluttered, not intuitive"; mockup approved: https://claude.ai/artifact/3cZdhHVFhtzGetS4j3byoN):**
   - **Navigation:** 13 flat tabs become 8 grouped screens: Home · Play (Rotation, Gear) · Progress (Leveling, Talents) · Learn · What's new · Settings. Trainer, Class quests and Riding & gold are Leveling sub-tabs. Reminders and Sources are Settings sub-tabs.
   - **New pieces:** a Home dashboard, a standard sub-tab bar, cards and chips, two-column layouts, the Gear slot list with a detail panel, sidebar search, and a header spec pill plus A/B switch.
