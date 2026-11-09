@@ -169,6 +169,7 @@ ns.On("HUD_RESET", function() ns.Hud.Place() end)
 ns.On("MINIMAP_TOGGLE", function() ns.UI.MinimapButton() end)
 ns.On("CHANGES_READ", function() ns.UI.UpdateMinimap() end)
 ns.On("TOAST", function(title, text, icon) ns.Hud.Toast(title, text, icon) end)
+ns.On("FORT_KEY_CHANGED", function() ns.UI.Refresh() end)
 ns.On("REMINDERS_CHANGED", function() CheckReminders(true) end)
 
 local function Slash(msg)
@@ -202,7 +203,7 @@ local function Slash(msg)
         ns.db.char.rotation.point = nil
         ns.Hud.Place()
     elseif cmd == "fort" then
-        if arg == "macro" then ns.Fort.CreateMacro()
+        if arg == "key" then ns.Fort.StartKeyCapture()
         elseif arg == "debug" then ns.Fort.Debug()
         else
             ns.db.char.fortButton.enabled = not ns.db.char.fortButton.enabled
@@ -215,7 +216,7 @@ local function Slash(msg)
         ns.UI.Open(tabs[cmd])
     else
         ns.Print("/andric [overview|rotation|learn|leveling|talents|gear|quests|training|mounts|reminders|changes|sources|options]")
-        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [macro|debug]")
+        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [key|debug]")
     end
 end
 

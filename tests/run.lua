@@ -530,31 +530,36 @@ test("fortitude button: picks the next player who needs it", function()
     S.spellNames = nil
     ns.Print = realPrint
     ns.Fort.Debug()
-    -- macro: body mirrors the button (no /click), kept in sync out of combat
-    ns.Fort.CreateMacro()
-    eq(M.macros[1].name, "AndricsFort")
-    truthy(not M.macros[1].body:find("/click", 1, true), "no /click")
-    eq(M.macros[1].body, "#showtooltip Power Word: Fortitude", "nobody to buff: tooltip only")
-    eq(M.pickedMacro, 1)
-    ns.Fort.CreateMacro()
-    eq(#M.macros, 1, "reuses existing macro")
-    S.units.party1.buffs = {}
-    S.time = (S.time or 1000) + 10 -- past the "just buffed" window
-    ns.Fort.Update()
-    eq(M.macros[1].body, "#showtooltip Power Word: Fortitude\n/cast [@party1,help,nodead] Power Word: Fortitude", "synced to the button")
+    -- key binding: override click on the button, saved per character
+    eq(ns.Fort.KeyString("LSHIFT"), nil, "modifier alone ignored")
+    S.shift = true
+    eq(ns.Fort.KeyString("F"), "SHIFT-F")
+    S.shift = false
+    ns.Fort.SetKey("SHIFT-F")
+    eq(M.overrides["SHIFT-F"], "AndricsFortButton:LeftButton")
+    eq(ns.db.char.fortButton.key, "SHIFT-F")
+    eq(b.hotkey:GetText(), "SHIFT-F", "shown on the button")
+    ns.Fort.SetKey(nil)
+    eq(next(M.overrides), nil, "cleared")
     S.combat = true
-    S.units.party1.buffs = { ["Power Word: Fortitude"] = true }
-    ns.Fort.Update()
-    truthy(M.macros[1].body:find("@party1", 1, true), "macro frozen in combat")
+    ns.Fort.SetKey("G")
+    eq(ns.db.char.fortButton.key, nil, "can't rebind in combat")
     S.combat = false
-    -- a cast from the macro (no PostClick) still moves the button on
-    S.units.party1.buffs = {}
-    ns.Fort.Update()
-    S.spellNames = { [1243] = "Power Word: Fortitude" }
-    M.Fire("UNIT_SPELLCAST_SENT", "player", "Bram", "guid", 1243)
-    M.RunTimers()
-    truthy(not M.macros[1].body:find("@party1", 1, true), "skips Bram right after the macro cast him")
-    S.spellNames = nil
+    ns.Fort.StartKeyCapture()
+    local cap = _G.AndricsFortKeyCapture
+    cap.__scripts.OnKeyDown(cap, "G")
+    eq(ns.db.char.fortButton.key, "G", "captured key saved")
+    ns.Fort.SetKey(nil)
+    -- old macro cleanup: removes ours, keeps someone else's
+    M.macros = { { name = "AndricsFort", body = "#showtooltip Power Word: Fortitude\n/click AndricsFortButton" } }
+    ns.db.char.fortButton.macroRemoved = false
+    ns.Fort.RemoveOldMacro()
+    eq(#M.macros, 0, "old macro removed")
+    M.macros = { { name = "AndricsFort", body = "/say hi" } }
+    ns.db.char.fortButton.macroRemoved = false
+    ns.Fort.RemoveOldMacro()
+    eq(#M.macros, 1, "user's own macro with that name is kept")
+    M.macros = {}
     S.units, S.target, S.known, S.auras = {}, saved.target, saved.known, saved.auras
 end)
 

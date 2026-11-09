@@ -10,7 +10,7 @@ dest="$addons/AndricsAddon"
 mkdir -p "$dest"
 rsync -a --delete \
   --include='*.toc' --include='Core/***' --include='Data/***' --include='Modules/***' --include='UI/***' \
-  --include='LICENSE' --include='Bindings.xml' --exclude='*' \
+  --include='LICENSE' --exclude='*' \
   "$repo/" "$dest/"
 echo "Installed to: $dest"
 echo "In game: /reload, then /andric"

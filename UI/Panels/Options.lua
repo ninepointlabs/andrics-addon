@@ -58,11 +58,13 @@ UI.RegisterPanel({
         local fb = ch.fortButton
         L:Check("Show the 'Buff next' Fortitude button", fb.enabled, function(v) fb.enabled = v ns.Fort.Refresh() end,
             "One press casts Power Word: Fortitude on the nearest friendly player who doesn't have it: you, your group, your target, then players with friendly nameplates shown.")
+        L:Text("Key: " .. (fb.key and (UI.Hex(UI.C.good) .. fb.key .. "|r") or (UI.Hex(UI.C.dim) .. "none|r")))
         L:Buttons({
-            { label = "Put macro on cursor", onClick = function() ns.Fort.CreateMacro() end, tip = "Creates the macro 'AndricsFort' and puts it on your cursor so you can drop it on an action bar. The addon keeps rewriting it to buff whoever the button would buff (out of combat)." },
+            { label = "Set key", onClick = function() ns.Fort.StartKeyCapture() end, tip = "Press any key (with Shift/Ctrl/Alt if you like). While the addon is on, that key presses the Fortitude button, even if it's bound to something else in Blizzard's menu." },
+            { label = "Clear key", onClick = function() ns.Fort.SetKey(nil) UI.Refresh() end },
             { label = "Reset button position", onClick = function() fb.point = nil ns.Fort.Place() end },
-        }, 170)
-        L:Text(UI.Hex(UI.C.dim) .. "Key binding: Esc > Options > Keybindings > AddOns > Andric's Addon > 'Buff next player with Power Word: Fortitude'. Drag the small bar above the button to move it. Shows once you know Fortitude.|r", { size = 11 })
+        }, 150)
+        L:Text(UI.Hex(UI.C.dim) .. "Drag the small bar above the button to move it. Shows once you know Fortitude. Out of combat only: key changes and who it targets.|r", { size = 11 })
 
         L:Header("Learning")
         L:Check("Hint the first time I learn a spell", ch.learn.hints, function(v) ch.learn.hints = v end)

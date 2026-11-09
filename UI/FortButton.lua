@@ -171,14 +171,12 @@ function Fort.Update()
         btn:SetAttribute("unit", pick.unit)
         btn.status:SetText((UnitIsUnit(pick.unit, "player") and "you" or (pick.name or "?")) .. (count > 1 and (UI.Hex(UI.C.dim) .. " +" .. (count - 1) .. "|r") or ""))
         setLook(true)
-        Fort.SyncMacro(btn:GetAttribute("macrotext"))
     else
         btn:SetAttribute("type", nil)
         btn:SetAttribute("macrotext", nil)
         btn:SetAttribute("unit", nil)
         btn.status:SetText(UI.Hex(UI.C.dim) .. (reason == "everyone nearby is buffed" and "all buffed" or "none in range") .. "|r")
         setLook(false)
-        Fort.SyncMacro(nil)
     end
     btn.reason = reason
     btn.count = count
@@ -235,6 +233,11 @@ function Fort.Build()
     btn.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
     btn.icon:SetTexture("Interface\\Icons\\Spell_Holy_WordFortitude")
     btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+    btn.hotkey = UI.Text(btn, 10)
+    UI.Font(btn.hotkey, 10, "OUTLINE")
+    btn.hotkey:SetPoint("TOPRIGHT", -2, -2)
+    btn.hotkey:SetJustifyH("RIGHT")
+    btn.hotkey:SetWordWrap(false)
     btn.status = UI.Text(holder, 10)
     btn.status:SetPoint("TOP", btn, "BOTTOM", 0, -2)
     btn.status:SetWidth(110)
@@ -249,7 +252,7 @@ function Fort.Build()
         else
             GameTooltip:AddLine("Nobody to buff: " .. (s.reason or "?"), 0.7, 0.7, 0.7)
         end
-        GameTooltip:AddLine("Click or use your key binding: one cast per press.", 0.6, 0.6, 0.6, true)
+        GameTooltip:AddLine("Click or press " .. (Fort.Key() or "your key (set one in Options)") .. ": one cast per press.", 0.6, 0.6, 0.6, true)
         GameTooltip:AddLine("Nearest = you, your group, your target, then players with friendly nameplates shown (Shift+V).", 0.6, 0.6, 0.6, true)
         if InCombatLockdown() then GameTooltip:AddLine("In combat the target can't change until combat ends.", 1, 0.5, 0.3, true) end
         GameTooltip:Show()
@@ -280,6 +283,8 @@ function Fort.Refresh()
         ticker = nil
     end
     if show then Fort.Update() end
+    Fort.ApplyKey()
+    pcall(Fort.RemoveOldMacro)
 end
 
 -- Click diagnostics: for ~1.5s after a press, report whether a cast started,
@@ -363,54 +368,90 @@ function Fort.Debug()
     else
         print("  next=none (" .. tostring(b.reason) .. ")")
     end
-    local mi = GetMacroIndexByName(Fort.MACRO_NAME)
-    print("  action-bar macro: " .. (mi > 0 and ("present, body: " .. (select(3, GetMacroInfo(mi)) or "?"):gsub("\n", " | ")) or "not created"))
+    print("  key: " .. tostring(Fort.Key()))
 end
 
--- Action-bar macro. Forever's /click refuses addon secure buttons (the /click
--- handler skips buttons with HasAccessConstraints()/forbidden ScriptedInput;
--- wow-ui-source@forever SlashCommands.lua), so instead of "/click" the macro
--- body IS the button's current command, rewritten out of combat whenever the
--- target changes. In combat it keeps its last target, same as the button.
-Fort.MACRO_NAME = "AndricsFort"
-Fort.MACRO_ICON = "INV_MISC_QUESTIONMARK" -- with #showtooltip the bar shows the spell icon
+-- Key binding: an override binding that clicks the button directly (the
+-- button itself works on Forever; /click from macros is refused). Stored per
+-- character, applied out of combat, doesn't touch Blizzard's binding sets.
+Fort.CLICK = "AndricsFortButton"
 
-function Fort.MacroBody(macrotext)
-    local body = "#showtooltip " .. spellName(Fort.SPELL_ID, "Power Word: Fortitude")
-    if macrotext then body = body .. "\n" .. macrotext end
-    return body
+function Fort.Key()
+    return ns.db and ns.db.char.fortButton.key
 end
 
-local lastMacroBody
-function Fort.SyncMacro(macrotext)
-    if InCombatLockdown() then return end
-    local body = Fort.MacroBody(macrotext)
-    if body == lastMacroBody then return end
-    local index = GetMacroIndexByName(Fort.MACRO_NAME)
-    if index == 0 then return end -- only maintain it once the player created it
-    if pcall(EditMacro, index, Fort.MACRO_NAME, Fort.MACRO_ICON, body) then lastMacroBody = body end
+function Fort.ApplyKey()
+    if not holder or InCombatLockdown() then return end
+    ClearOverrideBindings(holder)
+    local key = Fort.Key()
+    if key then SetOverrideBindingClick(holder, true, key, Fort.CLICK, "LeftButton") end
+    btn.hotkey:SetText(key and ((GetBindingText and GetBindingText(key, true)) or key) or "")
 end
 
-function Fort.CreateMacro()
-    if InCombatLockdown() then ns.Print("Can't create macros in combat.") return end
-    local body = Fort.MacroBody(btn and btn:GetAttribute("macrotext"))
-    local index = GetMacroIndexByName(Fort.MACRO_NAME)
-    if index == 0 then
-        local ok, res = pcall(CreateMacro, Fort.MACRO_NAME, Fort.MACRO_ICON, body, nil)
-        if not ok or not res then
-            ns.Print("Couldn't create the macro (your general macro slots may be full).")
-            return
-        end
-        index = res
-        ns.Print("Created macro '" .. Fort.MACRO_NAME .. "'. It's on your cursor: drop it on an action bar. It follows the button's target automatically.")
-    else
-        pcall(EditMacro, index, Fort.MACRO_NAME, Fort.MACRO_ICON, body)
-        ns.Print("Macro '" .. Fort.MACRO_NAME .. "' updated and on your cursor: drop it on an action bar.")
+function Fort.SetKey(key)
+    if InCombatLockdown() then ns.Print("Can't change key bindings in combat.") return end
+    ns.db.char.fortButton.key = key
+    Fort.ApplyKey()
+    ns.Print(key and ("Fortitude button bound to " .. key .. ".") or "Fortitude button key cleared.")
+    ns.Fire("FORT_KEY_CHANGED")
+end
+
+-- Turn a key press into a binding string like "ALT-CTRL-SHIFT-F" (nil = ignore).
+local MODIFIERS = { LSHIFT = true, RSHIFT = true, LCTRL = true, RCTRL = true, LALT = true, RALT = true, LMETA = true, RMETA = true, UNKNOWN = true }
+function Fort.KeyString(key)
+    if not key or MODIFIERS[key] then return nil end
+    local prefix = (IsAltKeyDown() and "ALT-" or "") .. (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "")
+    return prefix .. key
+end
+
+local capture
+function Fort.StartKeyCapture()
+    if InCombatLockdown() then ns.Print("Can't change key bindings in combat.") return end
+    if not capture then
+        capture = CreateFrame("Frame", "AndricsFortKeyCapture", UIParent, "BackdropTemplate")
+        capture:SetSize(360, 90)
+        capture:SetPoint("CENTER", 0, 120)
+        capture:SetFrameStrata("FULLSCREEN_DIALOG")
+        UI.Backdrop(capture, UI.C.bg, UI.Accent())
+        capture.text = UI.Text(capture, 14)
+        capture.text:SetPoint("CENTER")
+        capture.text:SetWidth(330)
+        capture.text:SetJustifyH("CENTER")
+        capture:EnableKeyboard(true)
+        capture:SetPropagateKeyboardInput(false)
+        capture:SetScript("OnKeyDown", function(self, key)
+            if key == "ESCAPE" then self:Hide() return end
+            local k = Fort.KeyString(key)
+            if k then
+                self:Hide()
+                Fort.SetKey(k)
+            end
+        end)
+        capture:SetScript("OnMouseDown", function(self, mouseButton)
+            -- Allow extra mouse buttons (Button4/Button5), not left/right clicks.
+            if mouseButton == "Button4" or mouseButton == "Button5" or mouseButton == "MiddleButton" then
+                local k = Fort.KeyString(mouseButton == "MiddleButton" and "BUTTON3" or mouseButton:upper())
+                self:Hide()
+                Fort.SetKey(k)
+            end
+        end)
     end
-    lastMacroBody = body
-    PickupMacro(index)
+    capture.text:SetText("Press a key for the Fortitude button\n" .. UI.Hex(UI.C.dim) .. "(modifiers like Shift/Ctrl/Alt work; Esc cancels)|r")
+    capture:Show()
 end
 
--- Key binding labels (Bindings.xml).
-BINDING_HEADER_ANDRICSADDON = "Andric's Addon"
-_G["BINDING_NAME_CLICK AndricsFortButton:LeftButton"] = "Buff next player with Power Word: Fortitude"
+-- One-time cleanup of the v0.1.4-v0.1.7 'AndricsFort' macro, only if it's still ours.
+function Fort.RemoveOldMacro()
+    if InCombatLockdown() or ns.db.char.fortButton.macroRemoved then return end
+    local index = GetMacroIndexByName("AndricsFort")
+    if index and index > 0 then
+        local _, _, body = GetMacroInfo(index)
+        local ours = body and (body:find("/click AndricsFortButton", 1, true) or body:find("^#showtooltip Power Word: Fortitude"))
+        if ours then
+            pcall(DeleteMacro, index)
+            ns.Print("Removed the old 'AndricsFort' macro (the macro didn't work on Forever). Use Options > Set key to bind the Fortitude button instead.")
+        end
+    end
+    ns.db.char.fortButton.macroRemoved = true
+end
+

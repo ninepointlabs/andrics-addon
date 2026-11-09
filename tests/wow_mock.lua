@@ -185,7 +185,7 @@ G.IsPlayerSpell = function(id) return S.known[id] == true end
 G.IsSpellKnown = function(id) return S.known[id] == true end
 G.GetTime = function() return S.time or 1000 end
 G.GetCursorPosition = function() return 0, 0 end
-G.IsShiftKeyDown = function() return false end
+G.IsShiftKeyDown = function() return S.shift or false end
 G.IsModifiedClick = function() return false end
 G.ChatEdit_InsertLink = function() end
 G.hooksecurefunc = function(a, b, c)
@@ -262,6 +262,13 @@ G.EditMacro = function(i, name, icon, body) M.macros[i].body = body end
 G.PickupMacro = function(i) M.pickedMacro = i end
 G.GetMacroInfo = function(i) local m = M.macros[i] return m and m.name, 134400, m and m.body end
 G.GetCVarBool = function() return false end
+M.overrides = {}
+G.SetOverrideBindingClick = function(owner, prio, key, name, button) M.overrides[key] = name .. ":" .. button end
+G.ClearOverrideBindings = function() M.overrides = {} end
+G.GetBindingText = function(k) return k end
+G.IsAltKeyDown = function() return S.alt or false end
+G.IsControlKeyDown = function() return S.ctrl or false end
+G.DeleteMacro = function(i) table.remove(M.macros, i) end
 G.UnitName = function(u) if u == "player" then return "Andric" end return S.units[u] and S.units[u].name end
 G.GetUnitName = function(u, withRealm) local x = S.units[u] if not x then return u == "player" and "Andric" or nil end return x.realm and (x.name .. "-" .. x.realm) or x.name end
 G.SecureCmdOptionParse = function(s) local unit = s:match("^%[@([%w]+),") return (unit and G.UnitExists(unit)) and "x" or nil, unit end
