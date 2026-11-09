@@ -57,14 +57,28 @@ test("dual-spec ready profiles", function()
     eq(ns.DB.SwitchProfile("B"), false)
     ns.DB.SwitchProfile("A")
     eq(fired, 3, "SPEC_CHANGED fires on active changes only")
-    -- auto-switch hook is inert unless opted in
-    eq(ns.DualSpec.OnTalentGroupChanged(2), false)
-    ns.db.char.autoSwitch = true
-    truthy(ns.DualSpec.OnTalentGroupChanged(2))
+    truthy(M.events.ACTIVE_TALENT_GROUP_CHANGED, "dual-spec event registered")
+    -- auto-switch follows the talent group (on by default) and can be turned off
+    eq(ns.db.char.autoSwitch, true)
+    eq(ns.DualSpec.IsAvailable(), true)
+    S.numSpecGroups, S.specGroup = 2, 2
+    eq(ns.DualSpec.HasDualSpec(), true)
+    M.Fire("ACTIVE_TALENT_GROUP_CHANGED", 2, 1)
     eq(ns.DB.ActiveId(), "B")
-    ns.DB.SwitchProfile("A")
+    eq(ns.DB.ActiveSpec(), "Holy")
+    S.specGroup = 1
+    M.Fire("ACTIVE_TALENT_GROUP_CHANGED", 1, 2)
+    eq(ns.DB.ActiveId(), "A")
     ns.db.char.autoSwitch = false
-    eq(ns.DualSpec.IsAvailable(), false)
+    M.Fire("ACTIVE_TALENT_GROUP_CHANGED", 2, 1)
+    eq(ns.DB.ActiveId(), "A", "no switch when disabled")
+    ns.db.char.autoSwitch = true
+    S.specGroup = 2
+    truthy(ns.DualSpec.Sync(), "sync to active group")
+    eq(ns.DB.ActiveId(), "B")
+    S.specGroup = 1
+    ns.DualSpec.Sync()
+    S.numSpecGroups = 1
 end)
 
 test("DB.Init keeps saved values and fills defaults", function()

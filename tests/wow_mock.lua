@@ -180,6 +180,8 @@ G.IsShiftKeyDown = function() return false end
 G.IsModifiedClick = function() return false end
 G.ChatEdit_InsertLink = function() end
 G.hooksecurefunc = function() end
+G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
+G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 
 local OPTIONAL = {
     issecretvalue = true, WOW_PROJECT_CAMELOT = true, AuraUtil = true, GetSpellInfo = true, strtrim = true,

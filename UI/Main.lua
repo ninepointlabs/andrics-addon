@@ -44,7 +44,7 @@ local function ApplyAccent()
         local b = frame.profileButtons[id]
         local p = ns.DB.Profile(id)
         b.label:SetText(id .. (p.spec and (": " .. p.spec:sub(1, 4)) or ": -"))
-        b.tip = ("Profile %s%s. Two profiles per character, ready for dual spec. Switch manually for now."):format(id, p.spec and (" (" .. p.spec .. ")") or "")
+        b.tip = ("Profile %s%s. Profile A follows talent spec 1, B follows talent spec 2 (dual spec at 40). You can also switch by hand."):format(id, p.spec and (" (" .. p.spec .. ")") or "")
         b:SetActive(ns.DB.ActiveId() == id)
     end
 end
@@ -159,7 +159,7 @@ local function BuildPicker(parent)
         f.cards[key] = c
     end
     f:SetScript("OnShow", function()
-        f.title:SetText(("Pick a spec for profile %s"):format(ns.DB.ActiveId()))
+        f.title:SetText(("Pick a spec for profile %s (talent spec %s)"):format(ns.DB.ActiveId(), ns.DB.ActiveId() == "A" and "1" or "2"))
     end)
     f:Hide()
     return f

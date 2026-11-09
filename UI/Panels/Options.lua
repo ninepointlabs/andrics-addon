@@ -5,7 +5,7 @@ UI.RegisterPanel({
     key = "options", label = "Options", icon = "Interface\\Icons\\INV_Misc_Gear_01",
     render = function(L, c)
         local g, ch = ns.db.global, ns.db.char
-        L:Header("Profiles (dual-spec ready)", "Two profiles per character. Each keeps its own spec, weights and rotation context.")
+        L:Header("Profiles & dual spec", "Profile A = talent spec 1, profile B = talent spec 2. Each keeps its own spec, weights and rotation context.")
         for _, id in ipairs(ns.DB.PROFILE_IDS) do
             local p = ns.DB.Profile(id)
             local items = {}
@@ -19,11 +19,18 @@ UI.RegisterPanel({
             L:Buttons(items, 110)
         end
         L:Buttons({ { label = "Switch to profile " .. ns.DB.OtherProfileId(), onClick = function() ns.DB.SwitchProfile(ns.DB.OtherProfileId()) UI.Refresh() end } }, 170)
-        local cb = L:Check("Auto-switch profile when talents change", ch.autoSwitch, function(v) ch.autoSwitch = v end,
-            "Waiting on Forever: there is no dual-spec API to listen to yet. The hook is in Core/DualSpec.lua.")
+        local cb = L:Check("Auto-switch profile with my talent spec", ch.autoSwitch, function(v)
+            ch.autoSwitch = v
+            if v then ns.DualSpec.Sync() end
+            UI.Refresh()
+        end, "Swapping talent specs (dual spec, level 40) swaps the addon profile: spec 1 -> A, spec 2 -> B.")
         if not ns.DualSpec.IsAvailable() then
             cb:Disable()
-            L:Text(UI.Hex(UI.C.dim) .. "Unavailable until Forever adds dual spec.|r", { size = 11, indent = 28 })
+            L:Text(UI.Hex(UI.C.dim) .. "This client doesn't expose the talent-group API.|r", { size = 11, indent = 28 })
+        else
+            local g = ns.DualSpec.ActiveGroup()
+            L:Text(UI.Hex(UI.C.dim) .. (ns.DualSpec.HasDualSpec() and ("Dual spec learned. Active talent spec: " .. tostring(g or "?") .. ".")
+                or "Dual spec not learned yet (level 40, at your class trainer). Profile B is ready for it.") .. "|r", { size = 11, indent = 28 })
         end
 
         L:Header("Tooltips")

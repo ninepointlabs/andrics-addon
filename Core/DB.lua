@@ -49,7 +49,7 @@ DB.charDefaults = {
     schema = DB.SCHEMA,
     active = "A",
     profiles = {},
-    autoSwitch = false, -- dual-spec auto switch; inert until Forever exposes an API
+    autoSwitch = true, -- follow the active talent spec (Core/DualSpec.lua): group 1 = A, group 2 = B
     reminders = {
         enabled = true, fortitude = true, innerFire = true, shadowform = true,
         wand = true, candles = true, candleMin = 10,

@@ -1036,10 +1036,10 @@ ns.Data.Learn = {
     {
       id = "dual-spec",
       title = "Dual specialization",
-      body = "Some sources say Dual Specialization unlocks at 40. Andric's Addon doesn't assume it exists: until you see it in game, plan on respeccing at a trainer instead.",
-      unconfirmed = true,
-      flag = "Blizzard's pre-launch deep dive and wowforeverinfo claim Dual Spec at 40; the addon owner believes Forever has no dual spec yet",
-      sources = { "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior", "https://wowforeverinfo.com/guides/priest-leveling/" },
+      body = "At level 40 you can learn Dual Specialization at your class trainer: two talent setups you can swap between, for example Shadow for questing and Holy or Discipline for dungeons. Andric's Addon follows it: talent spec 1 uses profile A and talent spec 2 uses profile B, each with its own spec choice, gear weights and rotation.",
+      unconfirmed = false,
+      flag = "",
+      sources = { "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior" },
     },
     {
       id = "legacy-talents",

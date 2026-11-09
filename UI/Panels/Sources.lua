@@ -7,7 +7,6 @@ local CONFLICTS = {
     "Penance spell ID: Wowhead 402284 vs Icy Veins DB 402174.",
     "Prayer of Mending spell ID: 401863 / 401859 / 1240827 depending on the page.",
     "Tier 1 set bonuses are datamined placeholders (Wowhead).",
-    "Dual spec: Blizzard's Priest deep dive (and wowforeverinfo) say it unlocks at 40, but it was not confirmed in the live client; the addon keeps manual A/B profiles until the API is verified.",
     "Prayer of Healing: Icy Veins lists a 5th rank at 60, likely from a book (unconfirmed).",
     "Divine Grace (Human lvl 10) cooldown: Blizzard 5 min vs Wowhead Discipline abilities page 10 min.",
     "Wand Specialization: Icy Veins 13% vs wowforeverinfo 25%.",

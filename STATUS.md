@@ -26,7 +26,7 @@ Then log into a Priest on Forever (or `/reload`) and work through this list:
 
 1. **First run:** about 3 seconds after login the spec picker opens. Pick a spec, and the window accent changes (gold for Holy/Disc, purple for Shadow).
 2. **`/andric` and `/priest`:** each toggles the window. Try the minimap button (left-click opens, right-click goes to Options, drag moves it) and the addon compartment entry.
-3. **Profiles:** use the header buttons A/B. Set B to another spec under Options, switch, and every panel should follow.
+3. **Profiles / dual spec:** pick a spec for profile A, then for profile B (Options). On a 40+ character with dual spec, swap talent specs: chat says "switched to profile B" and every panel follows. Below 40 the header A/B buttons switch by hand.
 4. **Tooltips:** hover bag items, vendor items and the Gear tab rows. You should see "Andric's Addon · <spec>", Upgrade or Downgrade versus equipped, stat deltas, and "Recommended: …" for listed items. Rings and trinkets compare against your weaker one.
 5. **Rotation:** the on-screen helper appears once a spec is set; drag it to move. Attack a mob, and Shadow should suggest Mind Blast / SW:Pain / wand. After combat, chat shows a fight summary with tips. Healers see a priority list plus cooldowns. If the helper shows "some info hidden", Forever is returning secret values for auras or cooldowns. Please tell me where it happened.
 6. **Learn the Priest:** check lessons (unlocked and coming up), Spells, Talents, Mechanics, Group play, Leveling and Mistakes. The first time you train a new spell, a hint toast should appear.
@@ -60,7 +60,7 @@ Then log into a Priest on Forever (or `/reload`) and work through this list:
 
 ## Open questions / gaps
 
-1. **Dual spec: the brief and Blizzard disagree.** Blizzard's Priest deep dive says *"Dual Specialization also becomes available at level 40."* The brief says Forever doesn't have it yet. In-game it's flagged, not asserted. On a level-40+ character, can you check whether a second talent spec exists? If it does, I need the real API or event name to wire `Core/DualSpec.lua` (nothing has been guessed).
+1. **Dual spec: resolved.** Tim confirmed it's available at 40. `Core/DualSpec.lua` now uses the same API as Blizzard's own Forever talent frame (`C_SpecializationInfo.GetActiveSpecGroup()`, `GetNumSpecGroups()`, event `ACTIVE_TALENT_GROUP_CHANGED`; source: Gethe/wow-ui-source@forever, build 70862). Talent spec 1 maps to profile A and spec 2 to B. Auto-switch is on by default and can be turned off in Options. Still needs an in-game check: swap specs at 40+ and the header should flip A/B.
 2. **Percent-stat factor** (10 per 1% hit/crit): fine as a default, or do you have a preferred value?
 3. **Gaps the addon flags instead of filling:** zones for 30–60, per-rank trainer costs (only the ~206–207g total), the Night Elf level-20 Elune's Grace quest ID, 40–60 gear lists, raid BiS (raids open Dec 9), and Benediction/Anathema. WeakAuras support is unconfirmed (not used).
 4. **Conflicts shown in-game:**

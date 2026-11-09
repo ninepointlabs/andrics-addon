@@ -129,9 +129,8 @@ end
 -- Blizzard's Priest deep dive says Dual Specialization unlocks at 40; it was not
 -- seen in the client when this addon was written. Flag rather than assert.
 function Progress.MilestoneFlag(m)
-    if m and m.what and m.what:find("Dual Spec") then
-        return "Blizzard's pre-launch deep dive says Dual Specialization unlocks at 40; not verified in the live client yet."
-    end
+    -- Dual Spec at 40 is confirmed (Blizzard deep dive + in game); nothing to flag.
+    return nil
 end
 
 function Progress.MoneyText(copper)
