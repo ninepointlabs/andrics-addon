@@ -22,10 +22,13 @@ local function OnLogin()
     ns.DualSpec.Register(f)
 
     for _, ev in ipairs({ "PLAYER_LEVEL_UP", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "UNIT_AURA",
-        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED", "GET_ITEM_INFO_RECEIVED", "GROUP_ROSTER_UPDATE" }) do
+        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED", "GET_ITEM_INFO_RECEIVED", "GROUP_ROSTER_UPDATE",
+        "UI_ERROR_MESSAGE", "ADDON_ACTION_BLOCKED", "ADDON_ACTION_FORBIDDEN" }) do
         pcall(f.RegisterEvent, f, ev)
     end
     pcall(f.RegisterUnitEvent, f, "UNIT_SPELLCAST_SUCCEEDED", "player")
+    pcall(f.RegisterUnitEvent, f, "UNIT_SPELLCAST_SENT", "player")
+    pcall(f.RegisterUnitEvent, f, "UNIT_SPELLCAST_FAILED", "player")
 
     if not ns.isPriest then
         ns.Print("You're not a Priest; the window still works for reading. Tooltip tips use the active profile's spec.")
@@ -200,6 +203,7 @@ local function Slash(msg)
         ns.Hud.Place()
     elseif cmd == "fort" then
         if arg == "macro" then ns.Fort.CreateMacro()
+        elseif arg == "debug" then ns.Fort.Debug()
         else
             ns.db.char.fortButton.enabled = not ns.db.char.fortButton.enabled
             ns.Fort.Refresh()
@@ -211,7 +215,7 @@ local function Slash(msg)
         ns.UI.Open(tabs[cmd])
     else
         ns.Print("/andric [overview|rotation|learn|leveling|talents|gear|quests|training|mounts|reminders|changes|sources|options]")
-        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [macro]")
+        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [macro|debug]")
     end
 end
 

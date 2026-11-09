@@ -470,10 +470,11 @@ test("fortitude button: picks the next player who needs it", function()
     -- button attributes follow the pick
     ns.Fort.Refresh()
     local b = _G.AndricsFortButton
-    eq(b:GetAttribute("type"), "spell"); eq(b:GetAttribute("unit"), "party1")
+    eq(b:GetAttribute("type"), "macro"); eq(b:GetAttribute("unit"), "party1")
+    eq(b:GetAttribute("macrotext"), "/cast [@party1,help,nodead] Power Word: Fortitude")
     eq(b:GetAttribute("useOnKeyDown"), nil, "acts on release")
     -- pressing it moves on to the next (stranger with nameplate) right away
-    b.__scripts.PostClick(b)
+    b.__scripts.PostClick(b, "LeftButton", false)
     pick = ns.Fort.Pick(GetTime())
     eq(pick.unit, "nameplate1", "after casting on Bram, next is the stranger")
     -- in combat the target can't change
@@ -492,6 +493,34 @@ test("fortitude button: picks the next player who needs it", function()
     eq(reason, "everyone nearby is buffed", "Prayer of Fortitude counts")
     ns.Fort.Update()
     eq(b:GetAttribute("type"), nil, "button disarmed when nobody needs it")
+    -- click diagnostics: error text, blocked action, nothing at all, success
+    local said = {}
+    local realPrint = ns.Print
+    ns.Print = function(m) table.insert(said, tostring(m)) end
+    S.units.party1.buffs = {}
+    ns.Fort.Update()
+    b.__scripts.PostClick(b, "LeftButton", false)
+    M.Fire("UI_ERROR_MESSAGE", 51, "Target is too low level")
+    M.RunTimers()
+    truthy(table.concat(said, "\n"):find("failed:|r Target is too low level", 1, true), table.concat(said, "\n"))
+    said = {}
+    ns.Fort.Watch({ name = "Bram", unit = "party1" })
+    M.Fire("ADDON_ACTION_BLOCKED", "AndricsAddon", "CastSpellByName()")
+    M.RunTimers()
+    truthy(table.concat(said, "\n"):find("blocked", 1, true))
+    said = {}
+    ns.Fort.Watch({ name = "Bram", unit = "party1" })
+    M.RunTimers()
+    truthy(table.concat(said, "\n"):find("no cast started", 1, true))
+    said = {}
+    ns.Fort.Watch({ name = "Bram", unit = "party1" })
+    S.spellNames = { [1243] = "Power Word: Fortitude", [10938] = "Power Word: Fortitude" }
+    M.Fire("UNIT_SPELLCAST_SENT", "player", "Bram", "guid", 10938)
+    M.RunTimers()
+    eq(#said, 0, "success is silent")
+    S.spellNames = nil
+    ns.Print = realPrint
+    ns.Fort.Debug()
     -- macro
     ns.Fort.CreateMacro()
     eq(M.macros[1].name, "AndricsFort")

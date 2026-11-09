@@ -129,6 +129,10 @@ local function setLook(active)
     btn:SetBackdropBorderColor(unpack(active and UI.Accent() or UI.C.border))
 end
 
+function Fort.MacroText(unit)
+    return ("/cast [@%s,help,nodead] %s"):format(unit, spellName(Fort.SPELL_ID, "Power Word: Fortitude"))
+end
+
 -- Re-aim the secure button (out of combat only).
 function Fort.Update()
     if not btn then return end
@@ -139,13 +143,16 @@ function Fort.Update()
     local pick, reason, count = Fort.Pick()
     current = pick
     if pick then
-        btn:SetAttribute("type", "spell")
-        btn:SetAttribute("spell", spellName(Fort.SPELL_ID, "Power Word: Fortitude"))
+        -- Cast through a /cast line (same as an action-bar macro; picks your
+        -- highest rank the normal way) rather than the template's spell action.
+        btn:SetAttribute("type", "macro")
+        btn:SetAttribute("macrotext", Fort.MacroText(pick.unit))
         btn:SetAttribute("unit", pick.unit)
         btn.status:SetText((UnitIsUnit(pick.unit, "player") and "you" or (pick.name or "?")) .. (count > 1 and (UI.Hex(UI.C.dim) .. " +" .. (count - 1) .. "|r") or ""))
         setLook(true)
     else
         btn:SetAttribute("type", nil)
+        btn:SetAttribute("macrotext", nil)
         btn:SetAttribute("unit", nil)
         btn.status:SetText(UI.Hex(UI.C.dim) .. (reason == "everyone nearby is buffed" and "all buffed" or "none in range") .. "|r")
         setLook(false)
@@ -225,9 +232,11 @@ function Fort.Build()
         GameTooltip:Show()
     end)
     btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    -- After a press, remember who we just buffed and move on.
-    btn:HookScript("PostClick", function()
+    -- After a press, remember who we just buffed, watch what the game did, move on.
+    btn:HookScript("PostClick", function(_, mouseButton, down)
+        if down then return end -- the action fires on release; ignore the press half
         if current and current.guid then recent[current.guid] = GetTime() end
+        Fort.Watch(current)
         C_Timer.After(0.3, Fort.Update)
     end)
     Fort.Place()
@@ -248,6 +257,71 @@ function Fort.Refresh()
         ticker = nil
     end
     if show then Fort.Update() end
+end
+
+-- Click diagnostics: for ~1.5s after a press, report whether a cast started,
+-- failed (red error text) or was blocked by the client.
+local watch
+function Fort.Watch(target)
+    watch = { at = GetTime(), name = target and target.name or "?", unit = target and target.unit, events = {} }
+    C_Timer.After(1.5, function()
+        local w = watch
+        watch = nil
+        if not w then return end
+        if w.sent or w.succeeded then
+            if ns.db.global.debug then ns.Print("Fortitude cast on " .. w.name .. (w.succeeded and " succeeded." or " started.")) end
+        elseif w.error then
+            ns.Print("|cffff5050Fortitude on " .. w.name .. " failed:|r " .. w.error)
+        elseif w.blocked then
+            ns.Print("|cffff5050The game blocked the Fortitude button|r (" .. w.blocked .. "). Please tell Andric's Addon's author; /andric fort debug shows details.")
+        else
+            ns.Print("|cffff5050Fortitude button pressed but no cast started|r (target " .. w.name .. ", " .. tostring(w.unit) .. "). Type /andric fort debug and share the output.")
+        end
+    end)
+end
+
+local function isFort(spellID)
+    local n = spellID and ns.Auras.SpellName(spellID)
+    return n ~= nil and n == spellName(Fort.SPELL_ID, "Power Word: Fortitude")
+end
+ns.On("WOW_UNIT_SPELLCAST_SENT", function(unit, _, _, spellID)
+    if watch and unit == "player" and isFort(spellID) then watch.sent = true end
+end)
+ns.On("WOW_UNIT_SPELLCAST_SUCCEEDED", function(unit, _, spellID)
+    if watch and unit == "player" and isFort(spellID) then watch.succeeded = true end
+end)
+ns.On("WOW_UNIT_SPELLCAST_FAILED", function(unit, _, spellID)
+    if watch and unit == "player" and isFort(spellID) and not watch.error then watch.error = "spell failed" end
+end)
+ns.On("WOW_UI_ERROR_MESSAGE", function(_, message)
+    if watch and type(message) == "string" then watch.error = message end
+end)
+local function blocked(addon, func)
+    if watch then watch.blocked = tostring(addon) .. ": " .. tostring(func) end
+end
+ns.On("WOW_ADDON_ACTION_BLOCKED", blocked)
+ns.On("WOW_ADDON_ACTION_FORBIDDEN", blocked)
+
+-- /andric fort debug
+function Fort.Debug()
+    Fort.Build()
+    local b = btn
+    local function a(n) return tostring(b:GetAttribute(n)) end
+    ns.Print("Fortitude button debug:")
+    print(("  shown=%s combat=%s knowsFort=%s enabled=%s"):format(tostring(holder:IsShown()), tostring(InCombatLockdown()),
+        tostring(ns.Progress.KnowsSpell(Fort.SPELL_ID)), tostring(ns.db.char.fortButton.enabled)))
+    print(("  type=%s unit=%s useOnKeyDown=%s"):format(a("type"), a("unit"), a("useOnKeyDown")))
+    print("  macrotext=" .. a("macrotext"))
+    print(("  spell name=%s  cvar ActionButtonUseKeyDown=%s"):format(tostring(spellName(Fort.SPELL_ID, "?")),
+        tostring(GetCVarBool and GetCVarBool("ActionButtonUseKeyDown"))))
+    if current then
+        print(("  next=%s (%s) inRange=%s hasBuff=%s"):format(tostring(current.name), current.unit,
+            tostring(Fort.InRange(current.unit)), tostring(Fort.HasBuff(current.unit))))
+    else
+        print("  next=none (" .. tostring(b.reason) .. ")")
+    end
+    local mi = GetMacroIndexByName(Fort.MACRO_NAME)
+    print("  action-bar macro: " .. (mi > 0 and ("present, body: " .. (select(3, GetMacroInfo(mi)) or "?"):gsub("\n", " | ")) or "not created"))
 end
 
 -- Action-bar macro that presses the button (/click). Created on request.

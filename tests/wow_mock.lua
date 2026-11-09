@@ -260,6 +260,8 @@ G.GetMacroIndexByName = function(n) for i, m in ipairs(M.macros) do if m.name ==
 G.CreateMacro = function(name, icon, body) table.insert(M.macros, { name = name, body = body }) return #M.macros end
 G.EditMacro = function(i, name, icon, body) M.macros[i].body = body end
 G.PickupMacro = function(i) M.pickedMacro = i end
+G.GetMacroInfo = function(i) local m = M.macros[i] return m and m.name, 134400, m and m.body end
+G.GetCVarBool = function() return false end
 G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
 G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 
