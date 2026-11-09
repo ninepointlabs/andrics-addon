@@ -328,9 +328,9 @@ Entertainment.
 
 ## The Priest who started it all
 
-<img src="docs/img/andric.webp" alt="Andric, a Human Priest in World of Warcraft: Forever" width="260" align="right">
+<img src="docs/img/andric.webp" alt="Andric Grammaris, a Human Priest in World of Warcraft: Forever" width="260" align="right">
 
-**Andric** is the Priest this addon is named for. He set out in Elwynn Forest in Forever's first week
+**Andric Grammaris** is the Priest this addon is named for. He set out in Elwynn Forest in Forever's first week
 with a robe and more questions than answers: which spells to train, whether that drop was any good, what
 a Discipline Priest is supposed to do when the tank runs off.
 
