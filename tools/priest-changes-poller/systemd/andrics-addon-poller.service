@@ -1,0 +1,13 @@
+# Example user unit (no secrets). Install with the steps in ../README.md.
+# Adjust the paths if your repo or WoW install live elsewhere.
+[Unit]
+Description=Andric's Addon: poll WoW Forever Priest change feeds
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/Projects/wow-forever-priest-addon/tools/priest-changes-poller/poller.py \
+  --output "%h/Projects/wow-forever-priest-addon/Data/Changes.lua" \
+  --output "%h/Games/battlenet/drive_c/Program Files (x86)/World of Warcraft/_forever_/Interface/AddOns/AndricsAddon/Data/Changes.lua"
+Nice=10

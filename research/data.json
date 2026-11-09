@@ -1,0 +1,3566 @@
+{
+ "meta": {
+  "game": "World of Warcraft: Forever",
+  "launch": "2026-11-04 15:00 PST",
+  "client_version": "1.60.1",
+  "latest_build_seen": "1.60.1.70862 (wow-ui-source forever branch commit 2026-11-07T04:46Z = Nov 6, 10:46 PM CST)",
+  "launch_build": "1.60.1.70790",
+  "toc_interface": 16001,
+  "wow_project_id": "18 (WOW_PROJECT_CAMELOT)",
+  "toc_suffixes": [
+   "_Forever.toc",
+   "_Camelot.toc"
+  ],
+  "toc_game_type": [
+   "forever",
+   "camelot"
+  ],
+  "toc_family": "mainline",
+  "api_note": "Mainline (modern) UI architecture; Midnight addon restrictions (secret values) apply per Tautellini doc - verify in client",
+  "max_level": 60,
+  "notes": "Interface/suffix/game-type values from Tautellini doc (community) cross-checked with Questie_Forever.toc, Details_Camelot.toc, BigWigs and DBM TOCs listing 16001.",
+  "source_url": "https://github.com/Gethe/wow-ui-source/tree/forever",
+  "checked": "2026-11-09"
+ },
+ "sources": {
+  "bz_deep": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+  "bz_launch": "https://news.blizzard.com/en-us/article/24302093",
+  "bz_hotfix": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-6-2026",
+  "bz_dev": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+  "bz_tuning": "https://us.forums.blizzard.com/en/wow/t/class-tuning-incoming-november-10/2404092",
+  "bz_dungxp": "https://us.forums.blizzard.com/en/wow/t/dungeon-enemy-xp-increased-november-8/2406595",
+  "bz_known": "https://us.forums.blizzard.com/en/wow/t/2402363",
+  "iv_overview": "https://www.icy-veins.com/wow-forever/priest-class-overview",
+  "iv_shadow_lvl": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+  "iv_disc_lvl": "https://www.icy-veins.com/wow-forever/discipline-priest-leveling",
+  "iv_holy_lvl": "https://www.icy-veins.com/wow-forever/holy-priest-leveling",
+  "iv_quests": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+  "iv_forever": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+  "iv_roadmap": "https://www.icy-veins.com/wow-forever/roadmap",
+  "iv_raids": "https://www.icy-veins.com/wow-forever/raid-overview",
+  "iv_dungeons": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+  "iv_zones": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+  "iv_races": "https://www.icy-veins.com/wow-forever/race-guide",
+  "iv_prof": "https://www.icy-veins.com/wow-forever/professions-overview",
+  "iv_camping": "https://www.icy-veins.com/wow-forever/camping",
+  "iv_legacy": "https://www.icy-veins.com/wow-forever/legacy-system",
+  "ivdb": "https://db.icy-veins.com/wow-forever/",
+  "wh_shadow": "https://www.wowhead.com/forever/guide/classes/priest/shadow/overview",
+  "wh_abil": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+  "wh_talents": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds",
+  "wh_disc_talents": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+  "wh_holy_talents": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+  "wh_l20": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+  "wh_l30": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+  "wh_stats": "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
+  "wh_ench": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+  "wh_bis": "https://www.wowhead.com/forever/guide/classes/priest/shadow/bis-gear",
+  "wh_lvltips": "https://www.wowhead.com/forever/guide/classes/priest/shadow/leveling-tips",
+  "wh_riding": "https://www.wowhead.com/forever/guide/riding-mounts",
+  "wh_rss": "https://www.wowhead.com/news/rss/forever",
+  "wh_nogold": "https://www.wowhead.com/forever/news/quests-give-no-gold-at-level-60-in-wow-forever-intentional-change-according-to-383803",
+  "wh_taldramir": "https://www.wowhead.com/forever/news/taldramir-the-whispering-wood-revealed-as-wow-forever-legendary-383747",
+  "ui_src": "https://github.com/Gethe/wow-ui-source/tree/forever",
+  "taut": "https://github.com/Tautellini/TautelliniAddons/blob/main/docs/forever-addon-development.md",
+  "questie": "https://github.com/Questie/Questie",
+  "dbm": "https://github.com/DeadlyBossMods/DeadlyBossMods",
+  "details": "https://github.com/Tercioo/Details-Damage-Meter",
+  "bigwigs": "https://github.com/BigWigsMods/BigWigs",
+  "weakauras": "https://github.com/WeakAuras/WeakAuras2",
+  "fstatus": "https://foreverstatus.com/addons"
+ },
+ "races_racials": [
+  {
+   "race": "Human",
+   "level": 10,
+   "spell": "Divine Grace",
+   "wowhead_spell_id": 1277370,
+   "ivdb_spell_id": 1277378,
+   "quest": "Divine Grace",
+   "quest_id": 94773,
+   "effect": "Instant heal on an ally below 50% health that removes Weakened Soul; not usable on self; 5 min CD",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Human",
+   "level": 20,
+   "spell": "Feedback",
+   "wowhead_spell_id": 13896,
+   "ivdb_spell_id": 19275,
+   "quest": "Arcane Feedback",
+   "quest_id": 5676,
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Dwarf",
+   "level": 10,
+   "spell": "Desperate Prayer",
+   "wowhead_spell_id": 13908,
+   "ivdb_spell_id": 19243,
+   "quest": "Desperate Prayer",
+   "quest_id": 5634,
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Dwarf",
+   "level": 20,
+   "spell": "Chastise",
+   "wowhead_spell_id": 1277331,
+   "ivdb_spell_id": 1277335,
+   "quest": "Chastise",
+   "quest_id": 5641,
+   "effect": "Damage + 2s root, Humanoids only, 2 min CD",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Gnome",
+   "level": 10,
+   "spell": "Confounding Flash",
+   "wowhead_spell_id": 1277455,
+   "quest": "Confounding Flash",
+   "quest_id": 94817,
+   "effect": "Confuses up to 5 enemies for 3s, 0.5s cast, 2 min CD",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Gnome",
+   "level": 20,
+   "spell": "Contingency Plan",
+   "wowhead_spell_id": 1277462,
+   "ivdb_spell_id": 1277640,
+   "quest": "Contingency Plan",
+   "quest_id": 94820,
+   "effect": "Ward that triggers below 35% health: absorb + HoT. CD 5 min per Blizzard; Wowhead lists 10 min (conflict)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Night Elf",
+   "level": 10,
+   "spell": "Starshards",
+   "wowhead_spell_id": 10797,
+   "ivdb_spell_id": 19305,
+   "quest": "Stars of Elune",
+   "quest_id": 5627,
+   "effect": "Damage increased; now 30s CD",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Night Elf",
+   "level": 20,
+   "spell": "Elune's Grace",
+   "wowhead_spell_id": 2651,
+   "quest": null,
+   "quest_id": null,
+   "effect": "50% reduced chance to be hit by melee/ranged for 15s or 3 misses; 5 min CD",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Troll",
+   "level": 10,
+   "spell": "Hex of Weakness",
+   "wowhead_spell_id": 9035,
+   "ivdb_spell_id": 19285,
+   "quest": "Hex of Weakness",
+   "quest_id": 5652,
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Troll",
+   "level": 20,
+   "spell": "Shadowguard",
+   "wowhead_spell_id": 18137,
+   "ivdb_spell_id": 19312,
+   "quest": "Shadowguard",
+   "quest_id": 5642,
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Undead",
+   "level": 10,
+   "spell": "Touch of Weakness",
+   "wowhead_spell_id": 2652,
+   "ivdb_spell_id": 19266,
+   "quest": "Touch of Weakness",
+   "quest_id": 5658,
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Undead",
+   "level": 20,
+   "spell": "Dark Sacrifice",
+   "wowhead_spell_id": 1277324,
+   "ivdb_spell_id": 1277328,
+   "quest": "Dark Sacrifice",
+   "quest_id": 5644,
+   "effect": "Converts health to mana, scales with Spirit; no longer breaks CC (Nov 3)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  }
+ ],
+ "racial_passive_changes": [
+  {
+   "date": "2026-10-26/27",
+   "change": "Human: Spirit bonus 10% (was 5%); Ruthless 1% crit",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-26/27",
+   "change": "Dwarf: gains Artisan's Precision +1% hit",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-26/27",
+   "change": "Troll: Berserking lasts 15s",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-26/27",
+   "change": "Undead: Touch of the Grave ICD 15s",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  }
+ ],
+ "race_recommendations": {
+  "shadow": "Alliance races roughly equal (Dwarf edge vs Beasts); Horde: Undead marginally ahead, Troll better vs Beasts / with Shadowguard",
+  "healer": "Undead, Troll, Human, Gnome recommended; Gnome has Eureka! and Expansive Mind (+5% mana)",
+  "not_priest": "Skyborne cannot be a Priest",
+  "source_url": "https://www.icy-veins.com/wow-forever/race-guide",
+  "checked": "2026-11-09"
+ },
+ "class_trainers": {
+  "turn_in_npcs": [
+   "Laurena (Stormwind)",
+   "Rohan (Ironforge)",
+   "Mims (Ironforge, Gnome)",
+   "Alathea (Darnassus)",
+   "Ur'kyo (Orgrimmar)",
+   "Aelthalyste (Undercity)"
+  ],
+  "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+  "checked": "2026-11-09"
+ },
+ "quests": [
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Night Elf",
+   "name": "In Favor of Elune",
+   "quest_id": 5622,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Night Elf",
+   "name": "Garments of the Moon",
+   "quest_id": 5621,
+   "reward": "Moon Robes of Elune",
+   "reward_item_id": 16604,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Human/Dwarf/Gnome",
+   "name": "In Favor of the Light",
+   "quest_id": 5623,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Human/Dwarf/Gnome",
+   "name": "Garments of the Light",
+   "quest_id": 5624,
+   "reward": "Friar's Robes of the Light",
+   "reward_item_id": 16605,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Troll",
+   "name": "In Favor of Spirituality",
+   "quest_id": 5649,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Troll",
+   "name": "Garments of Spirituality",
+   "quest_id": 5648,
+   "reward": "Juju Hex Robes",
+   "reward_item_id": 16606,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Undead",
+   "name": "In Favor of Darkness",
+   "quest_id": 5651,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class",
+   "level": 4,
+   "races": "Undead",
+   "name": "Garments of Darkness",
+   "quest_id": 5650,
+   "reward": "Acolyte's Sacrificial Robes",
+   "reward_item_id": 16607,
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Human",
+   "name": "Divine Grace",
+   "quest_id": 94773,
+   "reward_spell": "Divine Grace",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 20,
+   "races": "Human",
+   "name": "Arcane Feedback",
+   "quest_id": 5676,
+   "reward_spell": "Feedback",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Dwarf",
+   "name": "Desperate Prayer",
+   "quest_id": 5634,
+   "reward_spell": "Desperate Prayer",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 20,
+   "races": "Dwarf",
+   "name": "Chastise",
+   "quest_id": 5641,
+   "reward_spell": "Chastise",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Gnome",
+   "name": "Confounding Flash",
+   "quest_id": 94817,
+   "reward_spell": "Confounding Flash",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 20,
+   "races": "Gnome",
+   "name": "Contingency Plan",
+   "quest_id": 94820,
+   "reward_spell": "Contingency Plan",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Night Elf",
+   "name": "Stars of Elune",
+   "quest_id": 5627,
+   "reward_spell": "Starshards",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Troll",
+   "name": "Hex of Weakness",
+   "quest_id": 5652,
+   "reward_spell": "Hex of Weakness",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 20,
+   "races": "Troll",
+   "name": "Shadowguard",
+   "quest_id": 5642,
+   "reward_spell": "Shadowguard",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 10,
+   "races": "Undead",
+   "name": "Touch of Weakness",
+   "quest_id": 5658,
+   "reward_spell": "Touch of Weakness",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "class-racial",
+   "level": 20,
+   "races": "Undead",
+   "name": "Dark Sacrifice",
+   "quest_id": 5644,
+   "reward_spell": "Dark Sacrifice",
+   "source_url": "https://www.icy-veins.com/wow-forever/priest-class-quests",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "reagent",
+   "level": 38,
+   "min_level": 36,
+   "faction": "Alliance",
+   "zone": "Riverglades",
+   "name": "Keeping the Light On",
+   "quest_id": 95613,
+   "notes": "Bring 5 Holy Candles to Sister Rowland, Farholde Keep",
+   "source_url": "https://db.icy-veins.com/wow-forever/quests/95613",
+   "checked": "2026-11-09"
+  }
+ ],
+ "spells_by_level": [
+  {
+   "name": "Smite",
+   "wowhead_base_spell_id": 585,
+   "ivdb_max_rank_id": 10934,
+   "rank_learn_levels": [
+    1,
+    6,
+    14,
+    22,
+    30,
+    38,
+    46,
+    54
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Power Word: Fortitude",
+   "wowhead_base_spell_id": 1243,
+   "ivdb_max_rank_id": 10938,
+   "rank_learn_levels": [
+    1,
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Lesser Heal",
+   "wowhead_base_spell_id": 2050,
+   "ivdb_max_rank_id": 2053,
+   "rank_learn_levels": [
+    1,
+    4,
+    10
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shadow Word: Pain",
+   "wowhead_base_spell_id": 589,
+   "ivdb_max_rank_id": 10894,
+   "rank_learn_levels": [
+    4,
+    10,
+    18,
+    26,
+    34,
+    42,
+    50,
+    58
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Power Word: Shield",
+   "wowhead_base_spell_id": 17,
+   "ivdb_max_rank_id": 10901,
+   "rank_learn_levels": [
+    6,
+    12,
+    18,
+    24,
+    30,
+    36,
+    42,
+    48,
+    54,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Fade",
+   "wowhead_base_spell_id": 586,
+   "ivdb_max_rank_id": 10942,
+   "rank_learn_levels": [
+    8,
+    20,
+    30,
+    40,
+    50,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Renew",
+   "wowhead_base_spell_id": 139,
+   "ivdb_max_rank_id": 25315,
+   "rank_learn_levels": [
+    8,
+    14,
+    20,
+    26,
+    32,
+    38,
+    44,
+    50,
+    56,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mind Blast",
+   "wowhead_base_spell_id": 8092,
+   "ivdb_max_rank_id": 10947,
+   "rank_learn_levels": [
+    10,
+    16,
+    22,
+    28,
+    34,
+    40,
+    46,
+    52,
+    58
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Resurrection",
+   "wowhead_base_spell_id": 2006,
+   "ivdb_max_rank_id": 20770,
+   "rank_learn_levels": [
+    10,
+    22,
+    34,
+    46,
+    58
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Inner Fire",
+   "wowhead_base_spell_id": 588,
+   "ivdb_max_rank_id": 10952,
+   "rank_learn_levels": [
+    12,
+    20,
+    30,
+    40,
+    50,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Cure Disease",
+   "wowhead_base_spell_id": 528,
+   "ivdb_max_rank_id": 2870,
+   "rank_learn_levels": [
+    14
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Psychic Scream",
+   "wowhead_base_spell_id": 8122,
+   "ivdb_max_rank_id": 10890,
+   "rank_learn_levels": [
+    14,
+    28,
+    42,
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Heal",
+   "wowhead_base_spell_id": 2054,
+   "ivdb_max_rank_id": 6064,
+   "rank_learn_levels": [
+    16,
+    22,
+    28,
+    34
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Dispel Magic",
+   "wowhead_base_spell_id": 527,
+   "ivdb_max_rank_id": 988,
+   "rank_learn_levels": [
+    18,
+    36
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Devouring Plague",
+   "wowhead_base_spell_id": 2944,
+   "ivdb_max_rank_id": 19280,
+   "rank_learn_levels": [
+    20,
+    28,
+    36,
+    44,
+    52,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mind Flay (talent)",
+   "wowhead_base_spell_id": 15407,
+   "ivdb_max_rank_id": 18807,
+   "rank_learn_levels": [
+    20,
+    28,
+    36,
+    44,
+    52,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Fear Ward",
+   "wowhead_base_spell_id": 6346,
+   "ivdb_max_rank_id": 6346,
+   "rank_learn_levels": [
+    20
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Flash Heal",
+   "wowhead_base_spell_id": 2061,
+   "ivdb_max_rank_id": 10917,
+   "rank_learn_levels": [
+    20,
+    26,
+    32,
+    38,
+    44,
+    50,
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Holy Fire",
+   "wowhead_base_spell_id": 14914,
+   "ivdb_max_rank_id": 15261,
+   "rank_learn_levels": [
+    20,
+    24,
+    30,
+    36,
+    42,
+    48,
+    54,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mind Soothe",
+   "wowhead_base_spell_id": 453,
+   "ivdb_max_rank_id": 10953,
+   "rank_learn_levels": [
+    20,
+    36,
+    52
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shackle Undead",
+   "wowhead_base_spell_id": 9484,
+   "ivdb_max_rank_id": 10955,
+   "rank_learn_levels": [
+    20,
+    40,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mind Vision",
+   "wowhead_base_spell_id": 2096,
+   "ivdb_max_rank_id": 10909,
+   "rank_learn_levels": [
+    22,
+    44
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mana Burn",
+   "wowhead_base_spell_id": 8129,
+   "ivdb_max_rank_id": 10876,
+   "rank_learn_levels": [
+    24,
+    32,
+    40,
+    48,
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Divine Spirit",
+   "wowhead_base_spell_id": 14752,
+   "ivdb_max_rank_id": 27841,
+   "rank_learn_levels": [
+    30,
+    40,
+    50,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shadow Protection",
+   "wowhead_base_spell_id": 976,
+   "ivdb_max_rank_id": 10958,
+   "rank_learn_levels": [
+    30,
+    42,
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mind Control",
+   "wowhead_base_spell_id": 605,
+   "ivdb_max_rank_id": 10912,
+   "rank_learn_levels": [
+    30,
+    44,
+    58
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Prayer of Healing",
+   "wowhead_base_spell_id": 596,
+   "ivdb_max_rank_id": 25316,
+   "rank_learn_levels": [
+    30,
+    40,
+    50,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09",
+   "notes": "IV lists a 5th rank at 60, likely from a book (unconfirmed)"
+  },
+  {
+   "name": "Shadow Word: Death",
+   "wowhead_base_spell_id": 1309595,
+   "ivdb_max_rank_id": 1309636,
+   "rank_learn_levels": [
+    32,
+    40,
+    48,
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09",
+   "notes": "Baseline at 32 in Forever; 18s CD; backlash 30% max HP if target survives, none on miss (Nov 3)"
+  },
+  {
+   "name": "Abolish Disease",
+   "wowhead_base_spell_id": 552,
+   "ivdb_max_rank_id": 552,
+   "rank_learn_levels": [
+    32
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Levitate",
+   "wowhead_base_spell_id": 1706,
+   "ivdb_max_rank_id": 1706,
+   "rank_learn_levels": [
+    34
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Greater Heal",
+   "wowhead_base_spell_id": 2060,
+   "ivdb_max_rank_id": 25314,
+   "rank_learn_levels": [
+    40,
+    46,
+    52,
+    58,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Prayer of Fortitude",
+   "wowhead_base_spell_id": 21562,
+   "ivdb_max_rank_id": 21564,
+   "rank_learn_levels": [
+    48,
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09",
+   "notes": "Taught by Codex: Prayer of Fortitude (17413) r1 / Codex II (17414) r2; Holy Candle r1, Sacred Candle r2"
+  },
+  {
+   "name": "Prayer of Shadow Protection",
+   "wowhead_base_spell_id": 27683,
+   "ivdb_max_rank_id": 27683,
+   "rank_learn_levels": [
+    56
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09",
+   "notes": "Taught by Codex 22393; Sacred Candle"
+  },
+  {
+   "name": "Prayer of Spirit",
+   "wowhead_base_spell_id": 27681,
+   "ivdb_max_rank_id": 27681,
+   "rank_learn_levels": [
+    60
+   ],
+   "id_source": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  }
+ ],
+ "talent_and_other_spell_ids": [
+  {
+   "name": "Shadowform",
+   "spell_id": 15473,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Vampiric Embrace",
+   "spell_id": 15286,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Silence",
+   "spell_id": 15487,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Holy Nova",
+   "spell_id": 15237,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Inner Focus",
+   "spell_id": 14751,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Power Infusion",
+   "spell_id": 10060,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Penance (Wowhead id)",
+   "spell_id": 402284,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Penance (IV db id)",
+   "spell_id": 402174,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Prayer of Mending (Wowhead shadow page)",
+   "spell_id": 401863,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Prayer of Mending (IV db)",
+   "spell_id": 401859,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Prayer of Mending (Wowhead holy builds)",
+   "spell_id": 1240827,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Binding Heal (replaced by Holy Binding Nov 3)",
+   "spell_id": 401937,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Spirit Tap",
+   "spell_id": 15270,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Meditation",
+   "spell_id": 14521,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wand Specialization (IV db)",
+   "spell_id": 6057,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wand Specialization (Wowhead)",
+   "spell_id": 14524,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Twilight Focus",
+   "spell_id": 14913,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shadow Focus",
+   "spell_id": 15260,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blackout",
+   "spell_id": 15326,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Devouring Contagion",
+   "spell_id": 1309950,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Dark Inspiration",
+   "spell_id": 1326159,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Mental Strength",
+   "spell_id": 18551,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Twin Disciplines",
+   "spell_id": 1225132,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Divine Aegis",
+   "spell_id": 431622,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Renewed Hope",
+   "spell_id": 425280,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Litany of Light",
+   "spell_id": 1317006,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Holy Precision",
+   "spell_id": 1309957,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Spiritual Guidance",
+   "spell_id": 14901,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Spirit of Redemption",
+   "spell_id": 20711,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Inspiration",
+   "spell_id": 14892,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Soul Warding",
+   "spell_id": 402000,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Power in Light",
+   "spell_id": 1309969,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Searing Light",
+   "spell_id": 14909,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Improved Renew",
+   "spell_id": 14908,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Holy Specialization",
+   "spell_id": 14889,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Silent Resolve",
+   "spell_id": 14523,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Improved Power Word: Shield",
+   "spell_id": 14748,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/abilities",
+   "checked": "2026-11-09"
+  }
+ ],
+ "milestones": {
+  "items": [
+   {
+    "level": 10,
+    "what": "Talents start; level-10 racial quest; Mind Blast"
+   },
+   {
+    "level": 12,
+    "what": "Inner Fire"
+   },
+   {
+    "level": 20,
+    "what": "Level-20 racial quest; Fear Ward + Devouring Plague baseline; earliest Mind Flay talent"
+   },
+   {
+    "level": 30,
+    "what": "Divine Spirit + Shadow Protection"
+   },
+   {
+    "level": 32,
+    "what": "Shadow Word: Death baseline"
+   },
+   {
+    "level": 40,
+    "what": "Shadowform (31-pt Shadow); Dual Spec; Apprentice Riding"
+   },
+   {
+    "level": 60,
+    "what": "Journeyman Riding (epic)"
+   }
+  ],
+  "talent_milestones": "11/16/21/31-point milestones (Blizzard deep dive)",
+  "trainer_costs": "Total 1-60 training ~206-207g for every class (Blizzard Nov 3 notes); per-rank costs not sourced",
+  "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+  "checked": "2026-11-09"
+ },
+ "talent_changes": [
+  {
+   "tree": "Discipline",
+   "change": "Penance is the 21-point talent (2s channel, 12s CD); Power Infusion requires Penance",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Discipline",
+   "change": "Soul Warding is the 16-point talent",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Discipline",
+   "change": "New: Divine Aegis, Renewed Hope, Twin Disciplines, Power in Light, Holy Precision (up to 18% hit)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Discipline",
+   "change": "Wand Specialization 2 points / 13%; Mental Strength = 2-10% Intellect (Oct 16)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Discipline",
+   "change": "Removed: Unbreakable Will, Improved PW:Fortitude, Force of Will",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Holy",
+   "change": "Twilight Focus (was Healing Focus): 3 pts, 70% pushback protection, all spells",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Holy",
+   "change": "Prayer of Mending 31-point: 10s CD, 5 jumps",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Holy",
+   "change": "Binding Heal replaced by Holy Binding (Nov 3): Flash Heal on others heals you for 50%",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Holy",
+   "change": "New Litany of Light; Spiritual Guidance damage ~1/3 of healing bonus; removed Improved Prayer of Healing and Lightwell",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Shadow",
+   "change": "Shadow Focus gives hit; Vampiric Embrace 16-point (30s, 30s CD, unresistable)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Shadow",
+   "change": "New: Improved Mind Flay (each tick +10/20%), Devouring Contagion (spreads DP to 2), Early Demise, Dark Inspiration (party Spirit 3-15%)",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Shadow",
+   "change": "Shadowform: Shadow spells 50% cheaper, +100% crit damage bonus, non-healing spells usable",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  },
+  {
+   "tree": "Baseline",
+   "change": "Fade threat reduction doubled; Prayer of Healing heals target's party; Renew from multiple Priests stacks",
+   "source_url": "https://news.blizzard.com/en-us/article/24301514/world-of-warcraft-forever-class-deep-dives-priest-and-warrior",
+   "checked": "2026-11-09"
+  }
+ ],
+ "builds": [
+  {
+   "spec": "Shadow",
+   "purpose": "Leveling",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/vkndmh02330500003-3-30542201201312051_t0/0B2CEFahJaaNmdQdddSt0cccDffM1A2p0fff",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Shadow",
+   "purpose": "Raid",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v200530400003-3-50042201251302051_t0/2AEFddddhJNmKQSt0CDffM1A0ff",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Shadow",
+   "purpose": "Dungeon",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v200530200003--50542201251302051_t0/2AEFddddhJNmKQSt0CDffM2C",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Shadow",
+   "purpose": "PvP",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v200530020033-3-55002221201312051_t0/2B0CDGKmm2EFahGJmN1A2aQpaaSt0m2a",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "Leveling",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2520015031333011-30505110102-005_t0/0BaaaeffffMjkNkkrq1AccEf2C0Haa1cccgM0f1j",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "Raid",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2005005031330011531-0350501303_t0/0CFMKjqhhrSThv1CEHbbKbg",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "Dungeon",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2025015021330011531-0150510303_t0/0BcccFeMjKqcrS1CEfHbK0Tcvhh",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "PvP",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v20053002013332115-320501320001-05_t0/0CDGjKMqPNr1AbbDGfhn2B0S1h",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "Level 30",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2520013001305001_t0/0effkfkjAkNr",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "purpose": "Leveling",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/vkndmh02500500103-03505103230121531_t5/1n",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "purpose": "Raid",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v200500500133001-10505103230121531_t0/0cccFKjM1CEHKfPRSqt0cc1naJ0q",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "purpose": "Dungeon",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2025005001330011-0350510303002053_t0/0BcccFKjMqccr1CEHbbKfbPRS",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "purpose": "PvP",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2005305201333011331-3020511302_t0/0CFKjMqNrsssTGv1AccEfgHkk0D",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "purpose": "Level 30",
+   "talent_calc_url": "https://www.wowhead.com/forever/talent-calc/priest/v2-03505103200101_t0/1BccEcccfHJnq",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/holy/talent-builds",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Alt route",
+   "purpose": "Leveling",
+   "notes": "Disc/Meditation first, respec Shadow at 40 (respec 1g, rising). Order: 2 Wand Spec, 5 Spirit Tap, 5 Twin Disciplines, 3 Mental Strength, 3 Meditation",
+   "talent_calc_url": "https://www.icy-veins.com/wow-forever/talent-calculator",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "purpose": "Leveling option",
+   "notes": "Optional respec at 35 to go deep Discipline for Penance, keeping 5 Spirit Tap; Twilight Focus if solo / Silent Resolve in groups",
+   "source_url": "https://www.icy-veins.com/wow-forever/discipline-priest-leveling",
+   "checked": "2026-11-09"
+  }
+ ],
+ "rotations": {
+  "shadow": "Buffs (Fortitude, Inner Fire) > PW:Shield > Mind Blast > SW:Pain > Devouring Plague* > Mind Flay* (*mana allowing) > wand. Before Mind Flay open with Smite. AoE = multi-dot SW:Pain.",
+  "holy": [
+   "Fort + Inner Fire > PW:S > Holy Fire > Smite > Mind Blast > SW:P > wand; AoE: Holy Nova on Searing Light procs",
+   "https://www.icy-veins.com/wow-forever/holy-priest-leveling"
+  ],
+  "disc_heal": [
+   "PW:S as needed > Penance (first tick instant) > Heal > Renew",
+   "https://www.icy-veins.com/wow-forever/discipline-priest-leveling"
+  ],
+  "mana": "Five-second rule; out-of-casting regen = Spirit/4 + 12.5 per 2s (Wowhead). Wands do not scale with spell damage (Sep 24 dev notes).",
+  "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/leveling-tips",
+  "checked": "2026-11-09"
+ },
+ "stat_priority": [
+  {
+   "spec": "Shadow",
+   "priority": "Hit to 17% cap (Shadow Focus covers part) > Crit > Spell/Shadow damage > Intellect > Spirit > Stamina",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Holy",
+   "priority": "Healing Power > Intellect > MP5 > Spirit > Crit > Stamina",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Discipline",
+   "priority": "Healing Power > Intellect > Spirit > Crit > Spell Damage > Stamina",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Leveling",
+   "priority": "Spell power > Crit > Hit > Intellect > Spirit > Stamina > MP5",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "spec": "Conversions",
+   "priority": "1 Int = 15 mana; 59.2 Int = 1% spell crit; healing power also grants 1/3 as damage in Forever",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/stat-priority",
+   "checked": "2026-11-09"
+  }
+ ],
+ "zones_by_level": [
+  {
+   "levels": "10-13",
+   "alliance": "Loch Modan / Darkshore",
+   "horde": "The Barrens",
+   "dungeons": "Hall of Thanes / Ragefire Chasm",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "14-17",
+   "alliance": "Westfall / Darkshore",
+   "horde": "Silverpine Forest",
+   "dungeons": "Hall of Thanes / Ragefire + Ruins of Lordaeron",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "18-20",
+   "alliance": "Westfall / Redridge",
+   "horde": "The Barrens / Stonetalon",
+   "dungeons": "Hall of Thanes / Wailing Caverns",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "21-23",
+   "alliance": "Redridge / Duskwood",
+   "horde": "Hillsbrad / Stonetalon",
+   "dungeons": "Stockade / Shadowfang + Wailing Caverns",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "24-26",
+   "alliance": "Ashenvale / Duskwood",
+   "horde": "Ashenvale / Duskwood",
+   "dungeons": "BFD + Stockade / BFD + Shadowfang",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "27-28",
+   "alliance": "Wetlands / Ashenvale",
+   "horde": "Hillsbrad / Wetlands",
+   "dungeons": "Excavation Site + BFD",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  },
+  {
+   "levels": "29-30",
+   "alliance": "Wetlands / Ashenvale",
+   "horde": "Wetlands / Thousand Needles",
+   "dungeons": "Excavation Site + Gnomeregan / Excavation Site + Razorfen Kraul",
+   "source_url": "https://www.icy-veins.com/wow-forever/zones-and-maps",
+   "checked": "2026-11-09"
+  }
+ ],
+ "new_zones": [
+  {
+   "zone": "Zephras Isle",
+   "levels": "1-12",
+   "notes": "Skyborne start",
+   "source_url": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "zone": "Riverglades",
+   "levels": "35-45",
+   "notes": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "zone": "Shen'Dralas",
+   "levels": "?",
+   "notes": "Between Mulgore/Desolace and Feralas; quests for Maraudon and Razorfen Downs",
+   "source_url": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "zone": "Mount Hyjal",
+   "levels": "60",
+   "notes": "Barrow Deeps / Hyjal Summit raids",
+   "source_url": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+   "checked": "2026-11-09"
+  }
+ ],
+ "dungeons": [
+  {
+   "name": "Ragefire Chasm",
+   "levels": "13-18",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Hall of Thanes",
+   "levels": "13-20",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Ruins of Lordaeron",
+   "levels": "15-22",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wailing Caverns",
+   "levels": "15-24",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "The Deadmines",
+   "levels": "17-26",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shadowfang Keep",
+   "levels": "20-30",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blackfathom Deeps",
+   "levels": "24-32",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "The Stockade",
+   "levels": "24-32",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Excavation Site: Wetlands",
+   "levels": "26-33",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "City of Dalaran",
+   "levels": "28-35",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Gnomeregan",
+   "levels": "29-38",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Razorfen Kraul",
+   "levels": "29-38",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "SM Graveyard",
+   "levels": "30-38",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "SM Library",
+   "levels": "33-41",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "The Drowned City",
+   "levels": "35-40",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "SM Armory",
+   "levels": "36-44",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Razorfen Downs",
+   "levels": "37-46",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "SM Cathedral",
+   "levels": "38-46",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Krol'dok Stronghold",
+   "levels": "40-45",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Uldaman",
+   "levels": "41-51",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Zul'Farrak",
+   "levels": "44-54",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Maraudon",
+   "levels": "46-55",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Alcaz Island Prison",
+   "levels": "48-53",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Sunken Temple",
+   "levels": "50-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blackrock Depths",
+   "levels": "52-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Dire Maul East",
+   "levels": "54-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blackmaw Hold",
+   "levels": "55-60",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Lower Blackrock Spire",
+   "levels": "55-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Dire Maul North/West",
+   "levels": "56-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Scholomance",
+   "levels": "58-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Shaper's Terrace",
+   "levels": "58-60",
+   "new_in_forever": true,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Stratholme",
+   "levels": "58-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Upper Blackrock Spire",
+   "levels": "59-60",
+   "new_in_forever": false,
+   "source_url": "https://www.icy-veins.com/wow-forever/dungeons-overview",
+   "checked": "2026-11-09"
+  }
+ ],
+ "raids": [
+  {
+   "name": "Barrow Deeps",
+   "size": 10,
+   "bosses": 8,
+   "location": "Mount Hyjal",
+   "opens": "2026-12-09",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Hyjal Summit",
+   "size": 20,
+   "bosses": 13,
+   "location": "Mount Hyjal",
+   "opens": "2026-12-09",
+   "notes": "Has a legendary",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Onyxia's Lair",
+   "size": 40,
+   "location": "Dustwallow Marsh",
+   "opens": "2026-12-09",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  }
+ ],
+ "raid_rules": {
+  "rules": [
+   "No world buffs in raids",
+   "No heroic/flex modes",
+   "Item stats hidden until first looted"
+  ],
+  "source_url": "https://www.icy-veins.com/wow-forever/raid-overview",
+  "checked": "2026-11-09"
+ },
+ "roadmap": [
+  {
+   "when": "2026-11-04",
+   "what": "Launch: level 60 cap, dungeons, PvP",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "when": "2026-12-09",
+   "what": "Raids: Barrow Deeps, Hyjal Summit, Onyxia's Lair",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "when": "Winter 2026",
+   "what": "Hardcore ruleset",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "when": "Spring 2027",
+   "what": "2 raids (10/20), 2 dungeons, new zone/quests, legendary questline, PvP season refresh",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "when": "Summer 2027",
+   "what": "Revamped iconic raid, new raid, 2 dungeons, profession and Legacy updates",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  }
+ ],
+ "gear_by_bracket": [
+  {
+   "bracket": "level 20",
+   "name": "Ephemeral Choker",
+   "item_id": 270227,
+   "source": "Hall of Thanes",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Aetherwisp Bracers",
+   "item_id": 271096,
+   "source": "Hall of Thanes",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Golemheart Stave",
+   "item_id": 270228,
+   "source": "Hall of Thanes",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Fang of Magmatus",
+   "item_id": 271095,
+   "source": "Hall of Thanes",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Robes of the Disgraced Thane",
+   "item_id": 270261,
+   "source": "Hall of Thanes",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Crystalline Cuffs",
+   "item_id": 14148,
+   "source": "Ragefire Chasm",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Robe of Evocation",
+   "item_id": 14150,
+   "source": "Ragefire Chasm",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Searing Dagger",
+   "item_id": 273003,
+   "source": "Ragefire Chasm",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Satyrskin Cloak",
+   "item_id": 273005,
+   "source": "Ragefire Chasm",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Leftover Abomination Skin",
+   "item_id": 271206,
+   "source": "Ruins of Lordaeron",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Tuskwrap Belt",
+   "item_id": 271210,
+   "source": "Ruins of Lordaeron",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Rotmender's Treads",
+   "item_id": 271214,
+   "source": "Ruins of Lordaeron",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Coldspire Staff",
+   "item_id": 271215,
+   "source": "Ruins of Lordaeron",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Rotmender's Leggings",
+   "item_id": 271207,
+   "source": "Ruins of Lordaeron",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Snake Eye Kaleidoscope",
+   "item_id": 273088,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Slither Cord",
+   "item_id": 273089,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Sporid Cape",
+   "item_id": 6629,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Slime-encrusted Pads",
+   "item_id": 6461,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Deep Fathom Ring",
+   "item_id": 6463,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Feyscale Cloak",
+   "item_id": 6632,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Firebelcher",
+   "item_id": 5243,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Buzzer Blade",
+   "item_id": 2169,
+   "source": "Deadmines",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Lavishly Jeweled Ring",
+   "item_id": 1156,
+   "source": "Deadmines",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Emberstone Staff",
+   "item_id": 5201,
+   "source": "Deadmines",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Cookie's Stirring Rod",
+   "item_id": 5198,
+   "source": "Deadmines",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Lookie's Spyglass",
+   "item_id": 273298,
+   "source": "Deadmines",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Deepblaze",
+   "item_id": 279896,
+   "source": "Quest (Hall of Thanes)",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Dwarven Tome",
+   "item_id": 279898,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Tomb Robber's Gloves",
+   "item_id": 280096,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Staff of Orgrimmar",
+   "item_id": 15444,
+   "source": "Quest 5726 Hidden Enemies",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Featherbead Bracers",
+   "item_id": 15452,
+   "source": "Quest 5724",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Ghastly Trousers",
+   "item_id": 15449,
+   "source": "Quest 5725",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Blight Gloves",
+   "item_id": 279877,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Slain Baron's Signet",
+   "item_id": 279867,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Gnarled Necromancer's Staff",
+   "item_id": 251534,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Tabitha's Cuffs",
+   "item_id": 251486,
+   "source": "Quest",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Sizzle Stick",
+   "item_id": 8071,
+   "source": "Quest 1487",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Talbar Mantle",
+   "item_id": 10657,
+   "source": "Quest 6981",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Crescent Staff",
+   "item_id": 6505,
+   "source": "Quest 914",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Apothecary Gloves",
+   "item_id": 10919,
+   "source": "Quest 962",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Sable Wand",
+   "item_id": 7607,
+   "source": "Quest 2040",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Staff of Westfall",
+   "item_id": 2042,
+   "source": "Quest 166",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Greater Magic Wand",
+   "item_id": 11288,
+   "source": "Enchanting",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Novice Arcanist's Sash",
+   "item_id": 253885,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Spidersilk Boots",
+   "item_id": 4320,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 20",
+   "name": "Woolen Boots",
+   "item_id": 2583,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-20",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Ghamoo-ra's Bind",
+   "item_id": 6908,
+   "source": "BFD",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Cursed Murloc Eye",
+   "item_id": 273840,
+   "source": "BFD",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Glowing Thresher Cape",
+   "item_id": 6901,
+   "source": "BFD",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Rod of the Sleepwalker",
+   "item_id": 1155,
+   "source": "BFD",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Gaze Dreamer Pants",
+   "item_id": 6903,
+   "source": "BFD",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Glinteye Slippers",
+   "item_id": 273024,
+   "source": "Excavation Site",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Raptor's Gaze",
+   "item_id": 273027,
+   "source": "Excavation Site",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Ring of Power Regulation",
+   "item_id": 273030,
+   "source": "Excavation Site",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Dark Horde Band",
+   "item_id": 273806,
+   "source": "Stockade",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Hydrocane",
+   "item_id": 9452,
+   "source": "Gnomeregan",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Acidic Walkers",
+   "item_id": 9454,
+   "source": "Gnomeregan",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Electrocutioner Lagnut",
+   "item_id": 9447,
+   "source": "Gnomeregan",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Spidertank Oilrag",
+   "item_id": 9448,
+   "source": "Gnomeregan",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Thermaplugg Medal of Honor",
+   "item_id": 274068,
+   "source": "Gnomeregan",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Thornweaver Drape",
+   "item_id": 274149,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Roogug's Severed Head",
+   "item_id": 274152,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Death Prophet Spine",
+   "item_id": 274158,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Death Speaker Scepter",
+   "item_id": 2816,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Death Speaker Mantle",
+   "item_id": 6685,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Death Speaker Robes",
+   "item_id": 6682,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Swinetusk Shank",
+   "item_id": 6691,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Agamaggan's Clutch",
+   "item_id": 6693,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Batwing Mantle",
+   "item_id": 6697,
+   "source": "Razorfen Kraul",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Bloodmage Mantle",
+   "item_id": 7684,
+   "source": "SM Graveyard",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Blighted Leggings",
+   "item_id": 7709,
+   "source": "SM Graveyard",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Necrotic Wand",
+   "item_id": 7708,
+   "source": "SM Graveyard",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Embalmed Shroud",
+   "item_id": 7691,
+   "source": "SM Graveyard",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Chestnut Mantle",
+   "item_id": 17695,
+   "source": "Quest 6565",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Gravestone Scepter",
+   "item_id": 7001,
+   "source": "Quest 1200/6561",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Witch's Finger",
+   "item_id": 16887,
+   "source": "Quest 6922",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Curl of Life",
+   "item_id": 271670,
+   "source": "Quest 95646",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Explorer's League Dustcover",
+   "item_id": 271716,
+   "source": "Quest 98824",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Healer's Staff",
+   "item_id": 271767,
+   "source": "Quest 98824",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Daewyn's Girdle",
+   "item_id": 271769,
+   "source": "Quest 95795",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Knife-Polishing Rag",
+   "item_id": 271740,
+   "source": "Quest 95682",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Furs of the Earthen Ring",
+   "item_id": 271719,
+   "source": "Quest 98823",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Hardened Root Staff",
+   "item_id": 1317,
+   "source": "Quest 386",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Town Clerk's Mittens",
+   "item_id": 270029,
+   "source": "Quest 377",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Magistrate's Pantaloons",
+   "item_id": 270036,
+   "source": "Quest 378",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Shilly Mitts",
+   "item_id": 9609,
+   "source": "Quest 2928",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Fairywing Mantle",
+   "item_id": 9536,
+   "source": "Quest 2904",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Talvash's Gold Ring",
+   "item_id": 9538,
+   "source": "Quest 2948",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Civinad Robes",
+   "item_id": 9623,
+   "source": "Quest 2841",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Nogg's Gold Ring",
+   "item_id": 9588,
+   "source": "Quest 2950",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Snake Hoop",
+   "item_id": 6750,
+   "source": "Quest 1144",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Berylline Pads",
+   "item_id": 4197,
+   "source": "Quest 1102",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Mantle of Woe",
+   "item_id": 7750,
+   "source": "Quest 1051",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Glimmering Staff",
+   "item_id": 249392,
+   "source": "Crafted",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Soulstaff",
+   "item_id": 249393,
+   "source": "Crafted",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Orb of Mystic Insight",
+   "item_id": 249394,
+   "source": "Crafted",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Greater Mystic Wand",
+   "item_id": 217287,
+   "source": "Enchanting",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Filigreed Shadow Circlet",
+   "item_id": 253981,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Shadow Gown",
+   "item_id": 253967,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Shadow Gloves",
+   "item_id": 253919,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Shadow Sash",
+   "item_id": 253931,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Shadow Leggings",
+   "item_id": 253993,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Black Slippers",
+   "item_id": 254007,
+   "source": "Tailoring",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Green Lens",
+   "item_id": 10504,
+   "source": "Engineering",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Spellpower Goggles Xtreme Plus",
+   "item_id": 15999,
+   "source": "Engineering",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Minor Recombobulator",
+   "item_id": 4381,
+   "source": "Engineering",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Mechanical Dragonling",
+   "item_id": 4396,
+   "source": "Engineering",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  },
+  {
+   "bracket": "level 30",
+   "name": "Hillman's Cloak",
+   "item_id": 3719,
+   "source": "Leatherworking",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/level-30",
+   "checked": "2026-11-09"
+  }
+ ],
+ "wands": [
+  {
+   "name": "Necrotic Wand",
+   "item_id": 7708,
+   "dps": 33.2,
+   "source": "Azshir the Sleepless, SM Graveyard",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wand of Mana Concentration",
+   "item_id": 273043,
+   "dps": 31.2,
+   "source": "City of Dalaran",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Gyromatic Icemaker",
+   "item_id": 9489,
+   "dps": 30.4,
+   "source": "Gnomeregan",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Unstable Power Core",
+   "item_id": 279847,
+   "dps": 29.7,
+   "source": "Quest: Source of Power (Dalaran)",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Gravestone Scepter",
+   "item_id": 7001,
+   "dps": 29.0,
+   "source": "Quest: Blackfathom Villainy",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Excavation Rod",
+   "item_id": 5246,
+   "dps": 24.2,
+   "source": "Quest: Ormer's Revenge",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Moonbeam Wand",
+   "item_id": 5818,
+   "dps": 24.2,
+   "source": "Quest: Answered Questions",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Firebelcher",
+   "item_id": 5243,
+   "dps": 23.2,
+   "source": "Wailing Caverns",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Cookie's Stirring Rod",
+   "item_id": 5198,
+   "dps": 22.3,
+   "source": "Deadmines",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Spellcrafter Wand",
+   "item_id": 6677,
+   "dps": 20.3,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Deepblaze",
+   "item_id": 279896,
+   "dps": 18.5,
+   "source": "Hall of Thanes quest",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Sizzle Stick",
+   "item_id": 8071,
+   "dps": 17.6,
+   "source": "Quest",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Sable Wand",
+   "item_id": 7607,
+   "dps": 16.9,
+   "source": "Quest",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Torchlight Wand",
+   "item_id": 5240,
+   "dps": 15.8,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Flaring Baton",
+   "item_id": 5326,
+   "dps": 13.7,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Spark of the People's Militia",
+   "item_id": 12296,
+   "dps": 12.8,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Cinder Wand",
+   "item_id": 5242,
+   "dps": 11.8,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Elven Wand",
+   "item_id": 5604,
+   "dps": 9.4,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Riptear's Spare Arm",
+   "item_id": 286743,
+   "dps": 9.4,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Windbough Wand",
+   "item_id": 263430,
+   "dps": 7.2,
+   "source": "",
+   "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Novice's Practice Wand",
+   "item_id": 247789,
+   "source": "Enchanting",
+   "dps": null,
+   "required_level": 1,
+   "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Lesser Magic Wand",
+   "item_id": 11287,
+   "source": "Enchanting",
+   "dps": 11.3,
+   "required_level": 5,
+   "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Greater Magic Wand",
+   "item_id": 11288,
+   "source": "Enchanting",
+   "dps": 17.5,
+   "required_level": 13,
+   "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Lesser Mystic Wand",
+   "item_id": 11289,
+   "source": "Enchanting",
+   "dps": 25.4,
+   "required_level": null,
+   "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Greater Mystic Wand",
+   "item_id": 217287,
+   "source": "Enchanting",
+   "dps": null,
+   "required_level": null,
+   "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+   "checked": "2026-11-09"
+  }
+ ],
+ "other_weapons": {
+  "note": "IV leveling guide also lists staves/main-hands/off-hands with spell power (e.g. Staff of the Shade 2549 +37 Shadow, Swinetusk Shank 6691 +40). See raw/www_icy_veins_com_wow_forever_shadow_priest_leveling.md.",
+  "source_url": "https://www.icy-veins.com/wow-forever/shadow-priest-leveling",
+  "checked": "2026-11-09"
+ },
+ "bis": {
+  "status": "Phase 1 BiS pages are placeholders on Wowhead (raids open Dec 9; item stats hidden until first looted)",
+  "tier1_datamined_placeholder": {
+   "healer": {
+    "2": "+10 Spirit",
+    "3": "Fear Ward CD -60s",
+    "4": "+26 healing / +9 damage",
+    "5": "Penance & Prayer of Mending CD -1s"
+   },
+   "shadow": {
+    "2": "+1% hit",
+    "3": "Shackle +10s",
+    "4": "+21 damage vs Undead",
+    "5": "Devouring Plague CD -60s"
+   }
+  },
+  "flag": "Wowhead marks Tier 1 bonuses as placeholder datamining",
+  "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/bis-gear",
+  "checked": "2026-11-09"
+ },
+ "consumables_enchants": [
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Greater Healing Potion",
+   "item_id": 1710,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Mana Potion",
+   "item_id": 3827,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Briny Seafood Stew",
+   "item_id": 274971,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Sweet Nectar",
+   "item_id": 1708,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Lesser Wizard Oil",
+   "item_id": 20746,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Spellblasting Potion",
+   "item_id": 250934,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "consumable",
+   "bracket": "level 30",
+   "name": "Lesser Arcane Elixir",
+   "item_id": 250342,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Weapon",
+   "name": "Revelation (Shadow)",
+   "spell_id": 1248805,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Weapon",
+   "name": "Insight",
+   "spell_id": 1248757,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Bracer",
+   "name": "Spirit",
+   "spell_id": 13642,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Chest",
+   "name": "Greater Intellect",
+   "spell_id": 13663,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Cloak",
+   "name": "Greater Defense",
+   "spell_id": 13746,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "enchant",
+   "slot": "Boots",
+   "name": "Lesser Spirit",
+   "spell_id": 13687,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "Camp Tent",
+   "item_id": 279978,
+   "profession": "Leatherworking",
+   "notes": "",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "Mana Well",
+   "item_id": 279956,
+   "profession": "Alchemy",
+   "notes": "",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "Enchanted Lute",
+   "item_id": 279976,
+   "profession": "Enchanting",
+   "notes": "",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "Incense Candle",
+   "item_id": 279962,
+   "profession": "Herbalism",
+   "notes": "",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "First Aid Kit",
+   "item_id": 279968,
+   "profession": "First Aid",
+   "notes": "Does not stack with Fortitude",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "camp",
+   "name": "Faction Banner",
+   "item_id": 279972,
+   "profession": "",
+   "notes": "Does not stack with Divine Spirit",
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "type": "note",
+   "name": "Wizard Oils",
+   "notes": "Minor 8 / Lesser 16 / Wizard Oil 24 spell power (reverted to Era values)",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  }
+ ],
+ "reagents": [
+  {
+   "name": "Holy Candle",
+   "item_id": 17028,
+   "item_level": 48,
+   "stack": 20,
+   "used_by": "Prayer of Fortitude r1",
+   "source_url": "https://db.icy-veins.com/wow-forever/items/17028",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Sacred Candle",
+   "item_id": 17029,
+   "item_level": 60,
+   "stack": 20,
+   "used_by": "Prayer of Fortitude r2, Prayer of Spirit, Prayer of Shadow Protection",
+   "vendors": "Reagent vendors e.g. Brother Cassius (Stormwind), Barim Jurgenstaad (Ironforge), Chepi (Thunder Bluff), Alaindia (Darnassus)",
+   "source_url": "https://db.icy-veins.com/wow-forever/items/17029",
+   "checked": "2026-11-09"
+  }
+ ],
+ "legacy_talents": [
+  {
+   "name": "Well Rested",
+   "spell_id": 1225478,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Talented",
+   "spell_id": 1225474,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "The Quick and the Dead",
+   "spell_id": 1225500,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "High Alert",
+   "spell_id": 1225477,
+   "source_url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/enchants-consumables",
+   "checked": "2026-11-09"
+  }
+ ],
+ "professions": {
+  "leveling": "Tailoring + Enchanting",
+  "raiding": "Engineering + Alchemy",
+  "alternatives": [
+   "Alchemy + Herbalism",
+   "Engineering + Mining"
+  ],
+  "gnome_engineering_spec_spell": 20593,
+  "source_url": "https://www.icy-veins.com/wow-forever/professions-overview",
+  "checked": "2026-11-09"
+ },
+ "riding": [
+  {
+   "skill": "Apprentice Riding",
+   "spell_id": 33388,
+   "level": 40,
+   "speed": "60%",
+   "training": "100g",
+   "mount_cost": "20g (first mount free via quest)",
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "skill": "Journeyman Riding",
+   "spell_id": 33391,
+   "level": 60,
+   "speed": "100%",
+   "training": "1000g",
+   "mount_cost": "200g epic",
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "skill": "Discounts/rules",
+   "notes": "Honored with home faction = 10% off; Exalted lets you learn another race's riding for 100g; no Priest class mount; no WoW Token",
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  }
+ ],
+ "mounts": [
+  {
+   "race": "Human",
+   "trainer": "Randal Hunter",
+   "trainer_npc_id": 4732,
+   "location": "Eastvale Logging Camp 84.2,65.0",
+   "vendor": "Katie Hunter",
+   "vendor_npc_id": 384,
+   "first_mount_quest": "Your First Horse",
+   "quest_id": 97045,
+   "mount_item_ids": [
+    5655,
+    5656,
+    2414
+   ],
+   "epic_mount_item_ids": [
+    18776,
+    18777,
+    18778
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Dwarf",
+   "trainer": "Ultham Ironhorn",
+   "trainer_npc_id": 4772,
+   "location": "Gol'Bolar Quarry 63.8,50.2",
+   "vendor": "Veron Amberstill",
+   "vendor_npc_id": 1261,
+   "first_mount_quest": "(first mount quest)",
+   "quest_id": 97017,
+   "mount_item_ids": [
+    5864,
+    5872,
+    5873
+   ],
+   "epic_mount_item_ids": [
+    18787,
+    18786,
+    18785
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Night Elf",
+   "trainer": "Jartsam",
+   "trainer_npc_id": 4753,
+   "location": "Darnassus 38.6,16.0",
+   "vendor": "Lelanai",
+   "vendor_npc_id": 4730,
+   "first_mount_quest": "(first mount quest)",
+   "quest_id": 95511,
+   "mount_item_ids": [
+    8629,
+    8631,
+    8632,
+    274706
+   ],
+   "epic_mount_item_ids": [
+    18902,
+    18766,
+    18767
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Gnome",
+   "trainer": "Binjy Featherwhistle",
+   "trainer_npc_id": 7954,
+   "location": "Kharanos 49.2,48.0",
+   "vendor": "Milli Featherwhistle",
+   "vendor_npc_id": 7955,
+   "first_mount_quest": "(first mount quest)",
+   "quest_id": 97046,
+   "mount_item_ids": [
+    8563,
+    8595,
+    13321,
+    13322
+   ],
+   "epic_mount_item_ids": [
+    18774,
+    18773,
+    18772
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Undead",
+   "trainer": "Velma Warnam",
+   "trainer_npc_id": 4773,
+   "location": "Brill 60.0,52.6",
+   "vendor": "Zachariah Post",
+   "vendor_npc_id": 4731,
+   "first_mount_quest": "(first mount quest)",
+   "quest_id": 96997,
+   "mount_item_ids": [
+    13331,
+    13332,
+    13333,
+    276063
+   ],
+   "epic_mount_item_ids": [
+    274799,
+    18791,
+    13334
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Troll",
+   "trainer": "Xar'Ti",
+   "trainer_npc_id": 7953,
+   "location": "Sen'jin Village 55.2,75.6",
+   "vendor": "Zjolnir",
+   "vendor_npc_id": 7952,
+   "first_mount_quest": "(first mount quest)",
+   "quest_id": 96989,
+   "mount_item_ids": [
+    8588,
+    8591,
+    8592
+   ],
+   "epic_mount_item_ids": [
+    18790,
+    18789,
+    18788
+   ],
+   "source_url": "https://www.wowhead.com/forever/guide/riding-mounts",
+   "checked": "2026-11-09"
+  },
+  {
+   "race": "Any",
+   "notes": "Cerulean Prideclaw pre-purchase mount still requires riding skill",
+   "source_url": "https://news.blizzard.com/en-us/article/24302093",
+   "checked": "2026-11-09"
+  }
+ ],
+ "addons": [
+  {
+   "name": "Questie",
+   "status": "Forever TOC (Questie_Forever.toc, Interface 16001)",
+   "source_url": "https://github.com/Questie/Questie",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Deadly Boss Mods",
+   "status": "16001 in DBM-Core TOC",
+   "source_url": "https://github.com/DeadlyBossMods/DeadlyBossMods",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Details!",
+   "status": "Details_Camelot.toc 16001",
+   "source_url": "https://github.com/Tercioo/Details-Damage-Meter",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "BigWigs",
+   "status": "16001 in TOC",
+   "source_url": "https://github.com/BigWigsMods/BigWigs",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "WeakAuras",
+   "status": "NOT confirmed: Vanilla TOC 11509 only",
+   "source_url": "https://github.com/WeakAuras/WeakAuras2",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "ElvUI, Bartender4, Dominos, Plater, BetterBags, UnitFramesImproved",
+   "status": "Listed as working by foreverstatus.com (third party, unverified)",
+   "source_url": "https://foreverstatus.com/addons",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Built-in Cooldown Manager",
+   "status": "Blizzard UI has Blizzard_CooldownViewer; Priest tracks all spells by default",
+   "source_url": "https://www.icy-veins.com/wow-forever/wow-forever-overview",
+   "checked": "2026-11-09"
+  }
+ ],
+ "addon_dev": {
+  "notes": [
+   "Forever is Mainline-family; Classic Era addons don't load",
+   "Midnight-style restrictions incl. secret values apply (verify)",
+   "TOC lookup: _Forever/_Camelot, then _Mainline, then plain .toc",
+   "Use '## Interface: 16001'; dual: '120105, 16001'",
+   "Runtime: WOW_PROJECT_ID == 18",
+   "Check in game: /run print(GetBuildInfo()) print('project', WOW_PROJECT_ID)",
+   "Install folder _forever_ (verify)"
+  ],
+  "source_url": "https://github.com/Tautellini/TautelliniAddons/blob/main/docs/forever-addon-development.md",
+  "checked": "2026-11-09"
+ },
+ "changes_log": [
+  {
+   "date": "2026-09-24",
+   "change": "Wands no longer gain damage from spell damage; Wizard Oils reverted to Era values",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-01",
+   "change": "Devouring Plague can crit; SW:Death Early Demise fix; Inner Focus crit no longer applies to periodic effects",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-08",
+   "change": "Penance: damage/healing reduced (2s channel bug), rank 1 mana +50%, ranks 2/4 healing increased",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-15/16",
+   "change": "DP CD 24s (was 60s); SW:D CD 18s (was 12s); VE 30s CD, unresistable; Mental Strength 2-10% Int (row 2); Improved PW:S row 3; Twin Disciplines covers SW:D/Mind Flay/Starshards/Penance; Dark Inspiration added; Improved Mind Flay reworked; Devouring Contagion 2 targets; Improved Fade and Shadow Infinity removed; Power in Light buffs Smite/Penance on Holy Fire/SW:P targets",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-10-26/27",
+   "change": "Racial passives: Human Spirit 10%, Dwarf +1% hit, Troll Berserking 15s, Undead Touch of the Grave 15s ICD",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-11-02/03",
+   "change": "PW:S overwritable by equal/higher rank; SW:D backlash 30% max HP, none on miss; Dark Sacrifice no longer breaks CC; Holy Binding replaces Binding Heal; Devouring Contagion not from critters; VE healing can't crit; Cure/Abolish Disease no longer cancel Shadowform; training 1-60 ~206-207g; low-rank talent proc penalty removed; higher-level creature HP/damage raised",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-11-06",
+   "change": "Hotfixes: no Priest spell changes; The Quick and the Dead legacy talent fixed",
+   "source_url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-6-2026",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-11-08",
+   "change": "Dungeon enemy XP +50%",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/dungeon-enemy-xp-increased-november-8/2406595",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-11-10 (scheduled)",
+   "change": "Class tuning: Hunter/Warlock pets, Affliction, Enhancement - no Priest changes. Future tuning on Tuesdays",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/class-tuning-incoming-november-10/2404092",
+   "checked": "2026-11-09"
+  },
+  {
+   "date": "2026-11-07",
+   "change": "Quests give no gold at 60 (reported intentional by a streamer; not Blizzard-confirmed) - affects saving for 1000g epic riding",
+   "source_url": "https://www.wowhead.com/forever/news/quests-give-no-gold-at-level-60-in-wow-forever-intentional-change-according-to-383803",
+   "checked": "2026-11-09"
+  }
+ ],
+ "change_sources": [
+  {
+   "name": "Blizzard Tracker RSS (blue posts incl. Forever hotfixes/tuning)",
+   "type": "rss",
+   "source_url": "https://us.forums.blizzard.com/en/wow/groups/blizzard-tracker/posts.rss",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Forever Development Notes thread RSS",
+   "type": "rss",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696.rss",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wowhead Forever news RSS",
+   "type": "rss",
+   "source_url": "https://www.wowhead.com/news/rss/forever",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Wowhead Forever hub",
+   "type": "page",
+   "source_url": "https://www.wowhead.com/forever",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blizzard hotfixes article (updated in place)",
+   "type": "page",
+   "source_url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-6-2026",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Blizzard WoW news feed",
+   "type": "rss (returned HTML on test - verify)",
+   "source_url": "https://news.blizzard.com/en-us/feed/world-of-warcraft",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Gethe/wow-ui-source forever branch commits (build number changes)",
+   "type": "atom",
+   "source_url": "https://github.com/Gethe/wow-ui-source/commits/forever.atom",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Icy Veins roadmap + priest guides (Last Updated / changelog)",
+   "type": "page",
+   "source_url": "https://www.icy-veins.com/wow-forever/roadmap",
+   "checked": "2026-11-09"
+  },
+  {
+   "name": "Discourse JSON for any thread (append .json)",
+   "type": "api",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696.json",
+   "checked": "2026-11-09"
+  }
+ ],
+ "gaps": [
+  {
+   "gap": "Zones by level 30-60: Wowhead /forever/zones pages blocked (403) this run; Icy Veins only covers 10-30",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Pre-raid/Phase 1 BiS: Wowhead pages are placeholders; item stats hidden until looted",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Per-rank trainer costs not found (only ~206-207g total 1-60)",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Night Elf level-20 Elune's Grace quest ID not captured",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Contingency Plan CD: Blizzard 5 min vs Wowhead 10 min",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Penance/Prayer of Mending spell IDs differ between Wowhead and Icy Veins DB",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Benediction/Anathema (Classic Molten Core/Kazzak quest) - not confirmed for Forever; Molten Core is not in the announced roadmap",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "WeakAuras Forever support unconfirmed",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  },
+  {
+   "gap": "Level 40-60 gear lists (Wowhead only has level 20 and 30 pages so far)",
+   "source_url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696",
+   "checked": "2026-11-09"
+  }
+ ]
+}

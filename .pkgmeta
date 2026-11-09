@@ -1,0 +1,9 @@
+package-as: AndricsAddon
+
+ignore:
+  - README.md
+  - STATUS.md
+  - research
+  - content
+  - tools
+  - tests
