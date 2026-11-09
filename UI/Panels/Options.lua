@@ -54,6 +54,16 @@ UI.RegisterPanel({
         L:Check("Post-fight summary in chat", ch.summary.enabled, function(v) ch.summary.enabled = v end)
         L:Buttons({ { label = "Reset helper position", onClick = function() ch.rotation.point = nil ns.Fire("HUD_RESET") end } }, 170)
 
+        L:Header("Fortitude button")
+        local fb = ch.fortButton
+        L:Check("Show the 'Buff next' Fortitude button", fb.enabled, function(v) fb.enabled = v ns.Fort.Refresh() end,
+            "One press casts Power Word: Fortitude on the nearest friendly player who doesn't have it: you, your group, your target, then players with friendly nameplates shown.")
+        L:Buttons({
+            { label = "Put macro on cursor", onClick = function() ns.Fort.CreateMacro() end, tip = "Creates the macro 'AndricsFort' (/click AndricsFortButton) and puts it on your cursor so you can drop it on an action bar." },
+            { label = "Reset button position", onClick = function() fb.point = nil ns.Fort.Place() end },
+        }, 170)
+        L:Text(UI.Hex(UI.C.dim) .. "Key binding: Esc > Options > Keybindings > AddOns > Andric's Addon > 'Buff next player with Power Word: Fortitude'. Drag the small bar above the button to move it. Shows once you know Fortitude.|r", { size = 11 })
+
         L:Header("Learning")
         L:Check("Hint the first time I learn a spell", ch.learn.hints, function(v) ch.learn.hints = v end)
 

@@ -66,6 +66,10 @@ local function newObject(kind)
                 return function() return 0, 0 end
             elseif k == "GetEffectiveScale" then
                 return function() return 1 end
+            elseif k == "SetAttribute" then
+                return function(self, name, v) rawset(self, "__attr_" .. name, v == nil and false or v) end
+            elseif k == "GetAttribute" then
+                return function(self, name) local v = rawget(self, "__attr_" .. name) if v == false then return nil end return v end
             elseif k == "GetItem" then
                 return function(self) return "Item", self.__item end
             elseif k:match("^Create") then
@@ -146,7 +150,7 @@ G.C_Spell = {
 }
 G.C_UnitAuras = {
     GetAuraDataBySpellName = function(unit, name)
-        local set = unit == "player" and S.auras or S.targetAuras
+        local set = unit == "player" and S.auras or (S.units[unit] and S.units[unit].buffs) or S.targetAuras
         return set[name] and { name = name } or nil
     end,
 }
@@ -165,7 +169,7 @@ G.UnitRace = function() return S.race, S.race end
 G.UnitClass = function() return "Priest", S.class end
 G.UnitName = function() return "Andric" end
 G.UnitFactionGroup = function() return S.faction, S.faction end
-G.UnitExists = function(u) return u == "player" or (u == "target" and S.target) end
+G.UnitExists = function(u) return u == "player" or (u == "target" and S.target) or (S.units[u] ~= nil) end
 G.UnitCanAttack = function() return true end
 G.UnitIsDead = function() return false end
 G.UnitAffectingCombat = function() return S.combat end
@@ -238,6 +242,24 @@ G.C_EncounterJournal = {
         return {}
     end,
 }
+-- Simple unit world for the Fortitude button: S.units[token] = {guid, name, player, friend, dead, offline, range, buffs={}, dist}
+S.units = {}
+local function U(u) if u == "player" then return S.units.player or { guid = "P", name = "Andric", player = true, friend = true, buffs = S.auras } end return S.units[u] end
+G.IsInRaid = function() return false end
+G.IsInGroup = function() return S.units.party1 ~= nil end
+G.UnitGUID = function(u) return U(u) and U(u).guid end
+G.UnitIsPlayer = function(u) return U(u) and U(u).player or false end
+G.UnitCanAssist = function(_, u) return U(u) and U(u).friend or false end
+G.UnitIsDeadOrGhost = function(u) return U(u) and U(u).dead or false end
+G.UnitIsConnected = function(u) return not (U(u) and U(u).offline) end
+G.UnitIsUnit = function(a, b) return U(a) and U(b) and U(a).guid == U(b).guid or false end
+G.UnitDistanceSquared = function(u) if U(u) and U(u).dist then return U(u).dist, true end return 0, false end
+G.C_Spell.IsSpellInRange = function(_, u) local x = U(u) if not x then return nil end return x.range end
+M.macros = {}
+G.GetMacroIndexByName = function(n) for i, m in ipairs(M.macros) do if m.name == n then return i end end return 0 end
+G.CreateMacro = function(name, icon, body) table.insert(M.macros, { name = name, body = body }) return #M.macros end
+G.EditMacro = function(i, name, icon, body) M.macros[i].body = body end
+G.PickupMacro = function(i) M.pickedMacro = i end
 G.C_SpecializationInfo = { GetActiveSpecGroup = function() return S.specGroup or 1 end }
 G.GetNumSpecGroups = function() return S.numSpecGroups or 1 end
 

@@ -53,5 +53,6 @@ UI\Panels\Sources.lua
 UI\Panels\Options.lua
 UI\Hud.lua
 UI\Bags.lua
+UI\FortButton.lua
 UI\Minimap.lua
 Core\Boot.lua

@@ -25,6 +25,8 @@ Forever only: `AndricsAddon_Forever.toc`, `## Interface: 16001`, refuses to run 
 
 **Gear details:** click any item in the Gear tab for its comparison, who drops it (and the drop chance) in which dungeon, which quest rewards it (level, faction, quest giver and coordinates), or how it's crafted. **Mark on map** sets a map pin with the guide arrow on the quest giver or the dungeon entrance (entrances come from the game's own map data).
 
+**Fortitude button ("Buff next"):** a small on-screen button. Each press casts Power Word: Fortitude on the next friendly player who doesn't have it (Prayer of Fortitude counts) and is in range. Order: you, your group (nearest first when the game reports distance), your target, then players whose friendly nameplates are showing. Bind it to a key (Keybindings > AddOns > Andric's Addon), put it on a bar with the macro the addon creates (`/click AndricsFortButton`), or `/andric fort` to show/hide it. Blizzard rules: one cast per press, and the target can only change out of combat.
+
 **Bags:** upgrades you can equip now get a green glow and arrow on their bag slot (our own overlay, so it doesn't fight Pawn's arrow). When a new one lands in your bags you get a chat line and a toast, once per item. Both can be turned off in Options.
 
 **Dual-spec ready:** each character has two profiles (A/B) with their own spec, weights and rotation context. Switch manually from the header. `Core/DualSpec.lua` is the hook for automatic switching once Forever's dual-spec API is confirmed.

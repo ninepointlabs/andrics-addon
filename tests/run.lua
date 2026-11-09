@@ -449,6 +449,59 @@ test("gear detail: sources, quest pin, dungeon entrance pin", function()
     ns.UI.OpenGearDetail(nil)
 end)
 
+test("fortitude button: picks the next player who needs it", function()
+    local saved = { target = S.target, known = S.known, auras = S.auras }
+    S.target = false
+    S.known = { [1243] = true }
+    S.units = {
+        party1 = { guid = "G1", name = "Bram", player = true, friend = true, range = true, buffs = {}, dist = 400 },
+        party2 = { guid = "G2", name = "Cora", player = true, friend = true, range = false, buffs = {}, dist = 4000 },
+        party3 = { guid = "G3", name = "Dax", player = true, friend = true, range = true, buffs = { ["Power Word: Fortitude"] = true }, dist = 100 },
+        party4 = { guid = "G4", name = "Eli", player = true, friend = true, range = true, buffs = {}, dist = 50, dead = true },
+        nameplate1 = { guid = "N1", name = "Stranger", player = true, friend = true, range = true, buffs = {} },
+        nameplate2 = { guid = "N2", name = "Wolf", player = false, friend = false, range = true, buffs = {} },
+    }
+    S.auras = {} -- you lack it too
+    local pick = ns.Fort.Pick(100)
+    eq(pick.unit, "player", "yourself first")
+    S.auras = { ["Power Word: Fortitude"] = true }
+    pick = ns.Fort.Pick(100)
+    eq(pick.unit, "party1", "nearest group member who needs it (Dax has it, Eli dead, Cora out of range)")
+    -- button attributes follow the pick
+    ns.Fort.Refresh()
+    local b = _G.AndricsFortButton
+    eq(b:GetAttribute("type"), "spell"); eq(b:GetAttribute("unit"), "party1")
+    eq(b:GetAttribute("useOnKeyDown"), nil, "acts on release")
+    -- pressing it moves on to the next (stranger with nameplate) right away
+    b.__scripts.PostClick(b)
+    pick = ns.Fort.Pick(GetTime())
+    eq(pick.unit, "nameplate1", "after casting on Bram, next is the stranger")
+    -- in combat the target can't change
+    S.combat = true
+    S.units.nameplate1.buffs = { ["Power Word: Fortitude"] = true }
+    ns.Fort.Update()
+    eq(b:GetAttribute("unit"), "party1", "frozen in combat")
+    S.combat = false
+    -- everyone buffed except Cora (out of range)
+    S.units.party1.buffs = { ["Power Word: Fortitude"] = true }
+    local none, reason = ns.Fort.Pick(GetTime() + 10)
+    eq(none, nil)
+    truthy(reason:find("out of range", 1, true), reason)
+    S.units.party2.buffs = { ["Prayer of Fortitude"] = true }
+    none, reason = ns.Fort.Pick(GetTime() + 10)
+    eq(reason, "everyone nearby is buffed", "Prayer of Fortitude counts")
+    ns.Fort.Update()
+    eq(b:GetAttribute("type"), nil, "button disarmed when nobody needs it")
+    -- macro
+    ns.Fort.CreateMacro()
+    eq(M.macros[1].name, "AndricsFort")
+    truthy(M.macros[1].body:find("/click AndricsFortButton", 1, true))
+    eq(M.pickedMacro, 1)
+    ns.Fort.CreateMacro()
+    eq(#M.macros, 1, "reuses existing macro")
+    S.units, S.target, S.known, S.auras = {}, saved.target, saved.known, saved.auras
+end)
+
 test("slash commands", function()
     SlashCmdList.ANDRICSADDON("spec disc")
     eq(ns.DB.ActiveSpec(), "Discipline")

@@ -58,6 +58,7 @@ DB.charDefaults = {
     rotation = { enabled = true, showInCombatOnly = false, scale = 1, point = nil },
     learn = { hints = true, seenSpells = {}, readLessons = {} },
     summary = { enabled = true },
+    fortButton = { enabled = true, point = nil },
     window = { tab = "overview" },
     lastLevel = nil,
 }

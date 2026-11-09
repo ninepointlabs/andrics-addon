@@ -18,10 +18,11 @@ local function OnLogin()
     ns.UI.RegisterSettings()
     ns.Tooltip.Install() -- gear tips are useful on any class's tooltip for Priest gear; still spec-based
     pcall(ns.Bags.Install)
+    pcall(ns.Fort.Refresh)
     ns.DualSpec.Register(f)
 
     for _, ev in ipairs({ "PLAYER_LEVEL_UP", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "UNIT_AURA",
-        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED", "GET_ITEM_INFO_RECEIVED" }) do
+        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED", "GET_ITEM_INFO_RECEIVED", "GROUP_ROSTER_UPDATE" }) do
         pcall(f.RegisterEvent, f, ev)
     end
     pcall(f.RegisterUnitEvent, f, "UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -123,6 +124,7 @@ f:SetScript("OnEvent", function(_, event, ...)
             for _, t in ipairs(fight.tips) do print("  |cffffd200>|r " .. t) end
         end
         ns.Hud.Refresh()
+        pcall(ns.Fort.Refresh)
         C_Timer.After(2, function() CheckReminders(false) end)
         SoftRefresh()
         BagRefresh()
@@ -131,6 +133,9 @@ f:SetScript("OnEvent", function(_, event, ...)
         if unit == "player" then ns.Summary.OnCast(spellID) end
     elseif event == "SPELLS_CHANGED" then
         ns.Learn.ScanSpells(false)
+        pcall(ns.Fort.Refresh)
+    elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_TARGET_CHANGED" then
+        if not InCombatLockdown() then pcall(ns.Fort.Update) end
     elseif event == "UNIT_AURA" then
         local unit = ...
         if unit == "player" then SoftRefresh() end
@@ -193,13 +198,20 @@ local function Slash(msg)
     elseif cmd == "reset-hud" then
         ns.db.char.rotation.point = nil
         ns.Hud.Place()
+    elseif cmd == "fort" then
+        if arg == "macro" then ns.Fort.CreateMacro()
+        else
+            ns.db.char.fortButton.enabled = not ns.db.char.fortButton.enabled
+            ns.Fort.Refresh()
+            ns.Print("Fortitude button " .. (ns.db.char.fortButton.enabled and "shown" or "hidden") .. ".")
+        end
     elseif cmd == "remind" then
         CheckReminders(true)
     elseif tabs[cmd] then
         ns.UI.Open(tabs[cmd])
     else
         ns.Print("/andric [overview|rotation|learn|leveling|talents|gear|quests|training|mounts|reminders|changes|sources|options]")
-        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind")
+        ns.Print("/andric spec [holy|disc|shadow] · /andric profile [A|B] · /andric hud · /andric reset-hud · /andric remind · /andric fort [macro]")
     end
 end
 
