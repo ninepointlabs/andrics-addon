@@ -126,7 +126,11 @@ G.C_Item = {
         if not info then return nil end
         return id, "Armor", "Cloth", info.equipLoc, 134400, info.classID, info.subclassID
     end,
-    GetItemInfo = function(id) return "Item", S.itemInfo[id] and ("|Hitem:" .. id .. "|h") or nil end,
+    GetItemInfo = function(id)
+        local info = S.itemInfo[id]
+        if not info then return nil end
+        return "Item", "item:" .. id, 2, 20, info.minLevel or 1
+    end,
     GetItemIconByID = function() return 134400 end,
     GetItemNameByID = function(id) return "Item " .. id end,
     GetItemCount = function(id) return S.bags[id] or 0 end,

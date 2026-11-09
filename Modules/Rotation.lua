@@ -60,6 +60,30 @@ function Rotation.Known(name)
     return ns.Progress.KnowsSpell(id)
 end
 
+-- Can the player use this step at their level?
+--   "known"     spell is in the spellbook (or a wand is equipped)
+--   "trainable" not detected as known, but a trainer rank (or racial class quest)
+--               is available at this level
+--   "no_wand"   wand step without a wand equipped
+--   nil         can't be learned yet (talent not taken, level too low, other race)
+function Rotation.Availability(name, level, race)
+    if name == Rotation.WAND then return Rotation.Known(name) and "known" or "no_wand" end
+    if Rotation.Known(name) then return "known" end
+    for _, s in ipairs(ns.Data.Spells) do
+        if (s.name == name or s.display == name) then
+            if not s.talent and s.rank_learn_levels[1] <= level then return "trainable" end
+            return nil
+        end
+    end
+    for _, r in ipairs(ns.Data.Racials) do
+        if r.spell == name then
+            if r.race == race and r.level <= level then return "trainable" end
+            return nil
+        end
+    end
+    return nil -- talents: only once taken
+end
+
 -- Evaluate one condition. state: table of readers (injectable for tests).
 -- Returns true/false, or nil when the client won't tell us (secret/unknown).
 function Rotation.Check(step, state)

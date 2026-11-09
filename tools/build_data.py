@@ -25,6 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH = ROOT / "research" / "data.json"
 LEARN = ROOT / "content" / "learn.json"
+TALENTS = ROOT / "research" / "talents_priest.json"
 OUT = ROOT / "Data"
 
 SPECS = ("Shadow", "Holy", "Discipline")
@@ -77,6 +78,46 @@ def key_spells(rotation_text: str, spell_names: list[str]) -> list[str]:
                 found.append(name)
                 break
     return found
+
+
+# --- talent builds --------------------------------------------------------------
+# Wowhead Forever talent-calc URLs look like
+#   .../talent-calc/priest/v2<disc>-<holy>-<shadow>_t0/<order>   or   v<letters><disc>-...
+# "v" plus a version tag (one digit, or a run of lower-case letters), then one digit
+# per talent (points spent) in grid order (row by row, empty cells skipped), trees
+# separated by "-", trailing zeros/trees omitted. The rule was derived from the
+# research builds: every level-60 build decodes to exactly 51 points with all max
+# ranks and row requirements satisfied. Anything that fails validation is shipped
+# as invalid (the addon then shows the link only).
+BUILD_RE = re.compile(r"/talent-calc/priest/v(?:[a-z]+|\d)([0-9-]*)")
+
+
+def decode_build(url: str, trees: list[dict]) -> dict:
+    m = BUILD_RE.search(url or "")
+    if not m:
+        return {"valid": False, "reason": "not a Wowhead talent-calc build link"}
+    parts = m.group(1).split("-")
+    if len(parts) > len(trees):
+        return {"valid": False, "reason": "more trees than the class has"}
+    parts += [""] * (len(trees) - len(parts))
+    out_trees, total = [], 0
+    for tree, digits in zip(trees, parts):
+        talents = tree["talents"]
+        if len(digits) > len(talents):
+            return {"valid": False, "reason": f"{tree['name']}: more talents than the tree has"}
+        pts = [int(c) for c in digits] + [0] * (len(talents) - len(digits))
+        for t, p in zip(talents, pts):
+            if p > t["max_rank"]:
+                return {"valid": False, "reason": f"{t['name']}: {p} points but max rank is {t['max_rank']} (tree changed?)"}
+            above = sum(pp for tt, pp in zip(talents, pts) if tt["row"] < t["row"])
+            if p and above < t["required_points"]:
+                return {"valid": False, "reason": f"{t['name']} needs {t['required_points']} points above it"}
+        spent = sum(pts)
+        total += spent
+        out_trees.append({"points": pts, "spent": spent})
+    if total > 51:
+        return {"valid": False, "reason": f"{total} points (max 51 at level 60)"}
+    return {"valid": True, "total": total, "level": total + 9, "trees": out_trees}
 
 
 # --- Lua serialisation ----------------------------------------------------------
@@ -153,7 +194,7 @@ def to_int(v):
         return v
 
 
-def build(data: dict, learn: dict | None) -> dict[str, str]:
+def build(data: dict, learn: dict | None, talents: dict | None = None) -> dict[str, str]:
     files: dict[str, str] = {}
     src = "research/data.json"
 
@@ -252,6 +293,20 @@ def build(data: dict, learn: dict | None) -> dict[str, str]:
         "AddonDev": data["addon_dev"],
     }, src, files)
 
+    if talents is not None:
+        trees = talents["trees"]
+        decoded = []
+        for b in data["builds"]:
+            if not b.get("talent_calc_url"):
+                continue
+            rec = {"spec": b["spec"], "purpose": b["purpose"], "url": b["talent_calc_url"],
+                   "source_url": b["source_url"], "checked": b["checked"]}
+            rec.update(decode_build(b["talent_calc_url"], trees))
+            decoded.append(rec)
+        meta = {k: talents[k] for k in ("version", "client_build", "source_url", "page_url", "checked")}
+        write("Talents.lua", {"TalentTrees": trees, "TalentTreesMeta": meta, "DecodedBuilds": decoded},
+              "research/talents_priest.json + research/data.json builds", files)
+
     if learn is not None:
         write("Learn.lua", {"Learn": learn}, "content/learn.json", files)
     else:
@@ -264,12 +319,14 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="fail if generated files are out of date")
     ap.add_argument("--data", type=Path, default=RESEARCH)
     ap.add_argument("--learn", type=Path, default=LEARN)
+    ap.add_argument("--talents", type=Path, default=TALENTS)
     ap.add_argument("--out", type=Path, default=OUT)
     args = ap.parse_args()
 
     data = json.loads(args.data.read_text(encoding="utf-8"))
     learn = json.loads(args.learn.read_text(encoding="utf-8")) if args.learn.exists() else None
-    files = build(data, learn)
+    talents = json.loads(args.talents.read_text(encoding="utf-8")) if args.talents.exists() else None
+    files = build(data, learn, talents)
 
     args.out.mkdir(parents=True, exist_ok=True)
     stale = []

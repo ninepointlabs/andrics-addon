@@ -24,6 +24,112 @@ local function upgradeText(id, c)
 end
 
 local bracketSel
+local gearView -- "mine" | "best" | "bracket"
+
+local SLOT_GROUPS = {
+    { "Head", { INVTYPE_HEAD = true } }, { "Neck", { INVTYPE_NECK = true } },
+    { "Shoulder", { INVTYPE_SHOULDER = true } }, { "Back", { INVTYPE_CLOAK = true } },
+    { "Chest", { INVTYPE_CHEST = true, INVTYPE_ROBE = true } }, { "Wrist", { INVTYPE_WRIST = true } },
+    { "Hands", { INVTYPE_HAND = true } }, { "Waist", { INVTYPE_WAIST = true } },
+    { "Legs", { INVTYPE_LEGS = true } }, { "Feet", { INVTYPE_FEET = true } },
+    { "Rings", { INVTYPE_FINGER = true } }, { "Trinkets", { INVTYPE_TRINKET = true } },
+    { "Weapon", { INVTYPE_WEAPON = true, INVTYPE_WEAPONMAINHAND = true, INVTYPE_2HWEAPON = true } },
+    { "Off hand", { INVTYPE_HOLDABLE = true, INVTYPE_WEAPONOFFHAND = true } },
+    { "Wand", { INVTYPE_RANGEDRIGHT = true, INVTYPE_RANGED = true } },
+}
+
+-- Every researched item (gear lists + wands), deduped, with where it comes from.
+local function candidates()
+    local seen, out = {}, {}
+    local function add(id, name, source, bracket)
+        if not id then return end
+        if seen[id] then
+            if bracket and not seen[id].bracket then seen[id].bracket = bracket end
+            return
+        end
+        seen[id] = { id = id, name = name, source = source, bracket = bracket }
+        table.insert(out, seen[id])
+    end
+    for bracket, list in pairs(ns.Data.GearBrackets) do
+        for _, g in ipairs(list) do add(g.item_id, g.name, g.source, bracket) end
+    end
+    for _, w in ipairs(ns.Data.Wands) do add(w.item_id, w.name, w.source ~= "" and w.source or "wand list", nil) end
+    return out
+end
+
+-- Fill in slot, required level and spec score. Returns false if the client
+-- hasn't cached the item yet (a refresh follows GET_ITEM_INFO_RECEIVED).
+local function evaluate(it, c)
+    local _, _, _, equipLoc = C_Item.GetItemInfoInstant(it.id)
+    it.equipLoc = equipLoc
+    local _, link, _, _, minLevel = C_Item.GetItemInfo(it.id)
+    if not link then
+        if C_Item.RequestLoadItemDataByID then pcall(C_Item.RequestLoadItemDataByID, it.id) end
+        return false
+    end
+    it.link, it.minLevel = link, minLevel or 1
+    local res = ns.Stats.Compare(link, c.spec, c.level, c.profile, ns.db.global.percentScale)
+    if not res or res.pending then return false end
+    it.res = res
+    it.score = res.score or 0
+    return true
+end
+
+function UI.SetGearView(v) gearView = v end
+
+local function renderSlots(L, c, view)
+    local all, pending = candidates(), 0
+    local ready = {}
+    for _, it in ipairs(all) do
+        if evaluate(it, c) then
+            if not it.res.unusable then table.insert(ready, it) end
+        else
+            pending = pending + 1
+        end
+    end
+    local soon = {}
+    if view == "mine" then
+        L:Text(UI.Hex(UI.C.dim) .. ("Researched gear you can equip at level %d, best first for %s. Right column = vs. what you wear now."):format(c.level, c.spec or "your spec") .. "|r", { size = 11 })
+    else
+        L:Text(UI.Hex(UI.C.dim) .. "Every researched item ranked for " .. (c.spec or "your spec") .. ", regardless of level. Right column = required level and vs. equipped.|r", { size = 11 })
+    end
+    if pending > 0 then L:Text(UI.Hex(UI.C.dim) .. pending .. " item(s) still loading from the server; the list fills in by itself.|r", { size = 11 }) end
+    local shownAny = false
+    for _, group in ipairs(SLOT_GROUPS) do
+        local list = {}
+        for _, it in ipairs(ready) do
+            if group[2][it.equipLoc] then
+                if view == "best" or it.minLevel <= c.level then
+                    table.insert(list, it)
+                elseif it.minLevel <= c.level + 5 then
+                    table.insert(soon, it)
+                end
+            end
+        end
+        table.sort(list, function(a, b) return a.score > b.score end)
+        if #list > 0 then
+            shownAny = true
+            L:Text(UI.Hex(UI.Accent()) .. group[1] .. "|r", { size = 12 })
+            for i, it in ipairs(list) do
+                if view == "mine" and i > 4 then break end
+                local sub = (it.source or "") .. (it.bracket and (" · " .. it.bracket .. " list") or "") .. " · req. " .. it.minLevel
+                local right = upgradeText(it.id, c)
+                if view == "best" and it.minLevel > c.level then right = UI.Hex(UI.C.warn) .. "at " .. it.minLevel .. "|r  " .. right end
+                if i == 1 and view == "mine" then sub = UI.Hex(UI.C.good) .. "Best for you · |r" .. sub end
+                L:Item(it.id, it.name, sub, right)
+            end
+        end
+    end
+    if not shownAny and pending == 0 then L:Text("No researched gear fits this view yet.") end
+    if view == "mine" and #soon > 0 then
+        table.sort(soon, function(a, b) return a.minLevel < b.minLevel end)
+        L:Header("Coming up (next 5 levels)")
+        for _, it in ipairs(soon) do
+            L:Item(it.id, it.name, (it.source or "") .. " · req. " .. it.minLevel, upgradeText(it.id, c))
+        end
+    end
+    L:Flag("The research only has Wowhead's level 20 and 30 gear lists (plus wands). Level 40-60 lists and raid BiS aren't published yet.")
+end
 
 UI.RegisterPanel({
     key = "gear", label = "Gear", icon = "Interface\\Icons\\INV_Chest_Cloth_17",
@@ -50,7 +156,18 @@ UI.RegisterPanel({
             end, "Leveling priority (Icy Veins): Spell power > Crit > Hit > Intellect > Spirit > Stamina > MP5")
         end
 
-        L:Header("Recommended gear by bracket", "From Wowhead's Forever Priest level 20/30 guides. Right column = vs. what you wear now.")
+        L:Header("Gear", "Researched items scored with your spec's weights.")
+        gearView = gearView or "mine"
+        L:Buttons({
+            { label = "For my level", active = gearView == "mine", onClick = function() gearView = "mine" UI.Refresh() end },
+            { label = "Best overall", active = gearView == "best", onClick = function() gearView = "best" UI.Refresh() end },
+            { label = "By bracket", active = gearView == "bracket", onClick = function() gearView = "bracket" UI.Refresh() end },
+        }, 130)
+        if gearView ~= "bracket" then
+            renderSlots(L, c, gearView)
+            return
+        end
+        L:Text(UI.Hex(UI.C.dim) .. "From Wowhead's Forever Priest level 20/30 guides. Right column = vs. what you wear now.|r", { size = 11 })
         local order = ns.Data.GearBracketOrder
         bracketSel = bracketSel or (c.level >= 25 and "level 30" or "level 20")
         local items = {}

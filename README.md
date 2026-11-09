@@ -9,11 +9,11 @@ Forever only: `AndricsAddon_Forever.toc`, `## Interface: 16001`, refuses to run 
 | Tab | What it does |
 |---|---|
 | Overview | Level, active spec/profile, next trainer visit, riding gold goal, next class quest, next milestone, unread badges |
-| Rotation | Priority lists per spec for solo, dungeon and raid, plus an on-screen helper (next-spell suggestion for damage, priority list and cooldowns for healing) and a post-fight summary with mana tips. Advice only: nothing is automated |
+| Rotation | Only spells you can use at your level; priority lists per spec for solo, dungeon and raid, plus an on-screen helper (next-spell suggestion for damage, priority list and cooldowns for healing) and a post-fight summary with mana tips. Advice only: nothing is automated |
 | Learn the Priest | Every spell and talent (what, when, which rank, per spec), class mechanics, group play and etiquette, leveling per spec, common mistakes, and lessons that unlock as you level. Optional hint the first time you learn a spell |
 | Leveling | Zones by level for your faction, dungeons near your level, new Forever zones, spec leveling notes, professions |
-| Talents & builds | Wowhead talent-calc links per spec and purpose (click to copy), Forever talent changes, legacy talents |
-| Gear | Spec stat priority and weights, level 20/30 gear lists with "vs equipped" column, wands, consumables and enchants. Placeholders for 40–60 and raid BiS (not published yet) |
+| Talents & builds | Each recommended build (leveling/raid/dungeon/PvP) drawn on Forever's three talent trees with points per talent and in-game tooltips, plus a list of what it takes; Forever talent changes, legacy talents |
+| Gear | Spec weights; **For my level** (best researched gear you can equip now, per slot, plus what unlocks in the next 5 levels), **Best overall** (everything ranked for your spec), **By bracket** (level 20/30 lists, 40–60 and raid BiS placeholders), wands, consumables |
 | Class quests | Level 4 robes and the level 10/20 racial quests with IDs and completion checks |
 | Spells & training | Ranks by level, what's trainable now, next trainer level |
 | Mounts & gold | 100g at 40 (Apprentice), 1000g at 60 (Journeyman) progress bars, race trainer, vendor and first-mount quest |
@@ -33,6 +33,7 @@ Nothing is typed in by hand:
 
 - `research/data.json`: structured Forever Priest facts; every record has `source_url` and `checked`
 - `content/learn.json`: teaching text and rotation priorities, each entry sourced and flagged when unconfirmed (see `content/README.md`)
+- `research/talents_priest.json`: Forever's Priest talent trees (Icy Veins calculator data for the current client build), refreshed by `tools/fetch_talents.py`. Wowhead build links are decoded onto these trees and validated (max ranks, row requirements, 51 points at 60); builds that don't fit show as a link only
 - `tools/build_data.py` regenerates `Data/*.lua` from both (`--check` fails if stale)
 - `tools/priest-changes-poller/` writes `Data/Changes.lua` from public feeds (see its README)
 

@@ -55,12 +55,26 @@ UI.RegisterPanel({
         if ctxData.unconfirmed then L:Flag(ctxData.flag ~= "" and ctxData.flag or "Unconfirmed") end
         if ctxData.summary then L:Text(ctxData.summary) end
         L:Space(4)
-        for i, step in ipairs(ctxData.priority or {}) do
-            local known = ns.Rotation.Known(step.spell)
-            local id = ns.Rotation.SpellId(step.spell)
-            local sub = whenText(step.when)
-            if step.note and step.note ~= "" then sub = (sub ~= "" and (sub .. " - ") or "") .. step.note end
-            L:Spell(id, ("%d. %s"):format(i, step.spell), sub, known and "" or (UI.Hex(UI.C.dim) .. "not learned yet|r"), ns.Rotation.Icon(step.spell))
+        -- Only spells usable at your level; the rest unlock as you level/talent.
+        local n, hidden = 0, 0
+        for _, step in ipairs(ctxData.priority or {}) do
+            local avail = ns.Rotation.Availability(step.spell, c.level, c.race)
+            if avail then
+                n = n + 1
+                local id = ns.Rotation.SpellId(step.spell)
+                local sub = whenText(step.when)
+                if step.note and step.note ~= "" then sub = (sub ~= "" and (sub .. " - ") or "") .. step.note end
+                local right = ""
+                if avail == "trainable" then right = UI.Hex(UI.C.warn) .. "available - visit trainer|r"
+                elseif avail == "no_wand" then right = UI.Hex(UI.C.warn) .. "equip a wand|r" end
+                L:Spell(id, ("%d. %s"):format(n, step.spell:gsub(" %(talent%)", "")), sub, right, ns.Rotation.Icon(step.spell))
+            else
+                hidden = hidden + 1
+            end
+        end
+        if n == 0 then L:Text(UI.Hex(UI.C.dim) .. "Nothing in this list is available at your level yet.|r") end
+        if hidden > 0 then
+            L:Text(UI.Hex(UI.C.dim) .. hidden .. " more step(s) unlock with levels or talents; they'll appear here when you can use them.|r", { size = 11 })
         end
         if ctxData.tips and #ctxData.tips > 0 then
             L:Header("Tips")

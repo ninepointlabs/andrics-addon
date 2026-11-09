@@ -1,23 +1,143 @@
 local _, ns = ...
 local UI = ns.UI
 
-local PURPOSE_ICON = {
-    Leveling = "Interface\\Icons\\INV_Misc_Map_01", Raid = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
-    Dungeon = "Interface\\Icons\\INV_Misc_Key_03", PvP = "Interface\\Icons\\Ability_DualWield",
-}
+-- Selected build per spec (session only).
+local selected = {}
+
+local CELL, GAP, TREE_GAP = 36, 7, 26
+
+-- One talent cell: icon, points badge, tooltip with the in-game spell.
+local function acquireCell(L)
+    return L:Acquire("talentCell", function()
+        local f = CreateFrame("Button", nil, L.content, "BackdropTemplate")
+        f:SetSize(CELL, CELL)
+        UI.Backdrop(f, { 0, 0, 0, 0.6 }, UI.C.border)
+        f.icon = f:CreateTexture(nil, "ARTWORK")
+        f.icon:SetPoint("TOPLEFT", 1, -1)
+        f.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+        f.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        f.pts = UI.Text(f, 10)
+        UI.Font(f.pts, 10, "OUTLINE")
+        f.pts:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 3, -3)
+        f.pts:SetJustifyH("RIGHT")
+        f.pts:SetWordWrap(false)
+        f:SetScript("OnEnter", function(s)
+            GameTooltip:SetOwner(s, "ANCHOR_RIGHT")
+            local ok = s.spellId and pcall(GameTooltip.SetSpellByID, GameTooltip, s.spellId)
+            if not ok then
+                GameTooltip:SetText(s.talent.name, 1, 1, 1)
+                GameTooltip:AddLine(s.talent.desc_max, 1, 0.82, 0, true)
+            end
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine(("This build: %d/%d"):format(s.points, s.talent.max_rank), unpack(s.points > 0 and UI.Accent() or UI.C.dim))
+            GameTooltip:Show()
+        end)
+        f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        return f
+    end)
+end
+
+local function drawTrees(L, build)
+    local trees = ns.Data.TalentTrees
+    local maxRow = 1
+    for _, tree in ipairs(trees) do
+        for _, t in ipairs(tree.talents) do maxRow = math.max(maxRow, t.row) end
+    end
+    local treeW = 4 * CELL + 3 * GAP
+    local top = L.y
+    for ti, tree in ipairs(trees) do
+        local x0 = (ti - 1) * (treeW + TREE_GAP)
+        local label = L:Acquire("treeLabel", function() return UI.Text(L.content, 12) end)
+        label:SetWidth(treeW)
+        label:SetPoint("TOPLEFT", L.content, "TOPLEFT", x0, -top)
+        local spent = build.trees[ti].spent
+        label:SetText((spent > 0 and UI.Hex(UI.Accent()) or UI.Hex(UI.C.dim)) .. tree.name .. "|r  " .. UI.Hex(UI.C.dim) .. spent .. " pts|r")
+        for i, t in ipairs(tree.talents) do
+            local p = build.trees[ti].points[i] or 0
+            local cell = acquireCell(L)
+            cell.talent, cell.points = t, p
+            cell.spellId = t.rank_spell_ids[math.max(1, p)]
+            cell.icon:SetTexture(t.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
+            cell.icon:SetDesaturated(p == 0)
+            cell.icon:SetAlpha(p == 0 and 0.35 or 1)
+            local full = p > 0 and p == t.max_rank
+            cell:SetBackdropBorderColor(unpack(p == 0 and UI.C.border or (full and UI.Accent() or UI.C.good)))
+            cell.pts:SetText(p > 0 and ((full and UI.Hex(UI.Accent()) or UI.Hex(UI.C.good)) .. p .. "/" .. t.max_rank .. "|r") or "")
+            cell:SetPoint("TOPLEFT", L.content, "TOPLEFT", x0 + (t.col - 1) * (CELL + GAP), -(top + 20 + (t.row - 1) * (CELL + GAP)))
+        end
+    end
+    L.y = top + 20 + maxRow * (CELL + GAP) + 6
+end
+
+local function buildList(L, build)
+    for ti, tree in ipairs(ns.Data.TalentTrees) do
+        local lines = {}
+        for i, t in ipairs(tree.talents) do
+            local p = build.trees[ti].points[i] or 0
+            if p > 0 then
+                table.insert(lines, ("%s%s %d/%d|r  %s%s|r"):format(p == t.max_rank and UI.Hex(UI.Accent()) or UI.Hex(UI.C.good),
+                    t.name, p, t.max_rank, UI.Hex(UI.C.dim), t.desc_max))
+            end
+        end
+        if #lines > 0 then
+            L:Text(tree.name .. " (" .. build.trees[ti].spent .. ")", { size = 13 })
+            for _, line in ipairs(lines) do L:Text(line, { size = 11, indent = 10 }) end
+        end
+    end
+end
 
 UI.RegisterPanel({
     key = "talents", label = "Talents & builds", icon = "Interface\\Icons\\Ability_Marksmanship",
     render = function(L, c)
         local spec = c.spec
         if not spec then L:Text("Pick a spec first.") return end
-        L:Header(spec .. " builds", "Wowhead talent calculator links. Click to copy, then paste in your browser.")
-        for _, b in ipairs(ns.Data.Builds[spec] or {}) do
-            L:Link(b.purpose, b.talent_calc_url, b.notes)
+        local builds = {}
+        for _, b in ipairs(ns.Data.DecodedBuilds or {}) do
+            if b.spec == spec then table.insert(builds, b) end
+        end
+        L:Header(spec .. " builds", "Wowhead's recommended builds, drawn on Forever's talent trees. Hover a talent for its in-game tooltip.")
+        if #builds == 0 then
+            L:Text("No builds in the research for this spec.")
+        else
+            local cur = selected[spec]
+            if not cur then
+                for _, b in ipairs(builds) do
+                    if (c.level < 60 and b.purpose == "Leveling") or (c.level >= 60 and b.purpose == "Raid") then cur = b.purpose end
+                end
+                cur = cur or builds[1].purpose
+            end
+            local items, build = {}, nil
+            for _, b in ipairs(builds) do
+                if b.purpose == cur then build = b end
+                table.insert(items, { label = b.purpose, active = b.purpose == cur, onClick = function() selected[spec] = b.purpose UI.Refresh() end })
+            end
+            L:Buttons(items, 100)
+            build = build or builds[1]
+            if build.valid then
+                local spent = {}
+                for ti, tree in ipairs(ns.Data.TalentTrees) do table.insert(spent, tree.name .. " " .. build.trees[ti].spent) end
+                L:Text(("%s · %d points (level %d)"):format(table.concat(spent, " / "), build.total, build.level), { size = 13 })
+                if build.level > c.level then
+                    L:Text(UI.Hex(UI.C.dim) .. ("You have %d talent points at level %d; this build is the level-%d target. Work toward it in the order your guide suggests."):format(math.max(0, c.level - 9), c.level, build.level) .. "|r", { size = 11 })
+                end
+                L:Space(4)
+                drawTrees(L, build)
+                L:Buttons({ { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } }, 160)
+                L:Header("What this build takes")
+                buildList(L, build)
+            else
+                L:Flag("Can't draw this build on the current talent tree: " .. (build.reason or "?") .. ". Use the link instead.")
+                L:Buttons({ { label = "Copy Wowhead link", onClick = function() UI.CopyURL(build.url) end } }, 160)
+            end
+            L:Source(build)
+            local meta = ns.Data.TalentTreesMeta
+            if meta then
+                L:Text(UI.Hex(UI.C.dim) .. ("Talent trees: Icy Veins calculator data for client build %s (checked %s)."):format(tostring(meta.client_build), meta.checked) .. "|r", { size = 10 })
+            end
         end
         for _, b in ipairs(ns.Data.Builds.Other) do
             if b.spec == spec or (spec == "Shadow" and b.spec == "Alt route") then
-                L:Row({ icon = PURPOSE_ICON.Leveling, title = b.spec .. ": " .. b.purpose, sub = b.notes, onClick = b.talent_calc_url and function() UI.CopyURL(b.talent_calc_url) end })
+                L:Row({ icon = "Interface\\Icons\\INV_Misc_Map_01", title = b.spec .. ": " .. b.purpose, sub = b.notes })
             end
         end
         L:Text(UI.Hex(UI.C.dim) .. "Talents start at level 10. Milestones: " .. ns.Data.Milestones.talent_milestones .. ". Respec at any class trainer in a major city.|r", { size = 11 })
@@ -39,6 +159,5 @@ UI.RegisterPanel({
         for _, t in ipairs(ns.Data.LegacyTalents) do
             L:Spell(t.spell_id, t.name)
         end
-        L:Flag("Penance and Prayer of Mending spell IDs differ between Wowhead and Icy Veins; hover tooltips use the Wowhead ID.")
     end,
 })

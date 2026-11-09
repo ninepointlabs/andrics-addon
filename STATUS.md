@@ -13,7 +13,13 @@
   2. Change OmaForge's GitHub provider to download private assets through the API (`/repos/{repo}/releases/assets/{id}` with `Accept: application/octet-stream` and the token).
 - Once access works: `omaforge install -c forever github:ninepointlabs/andrics-addon`.
 
-## Client / Interface
+## Changes after v0.1.0 (Tim's in-game feedback, 2026-11-09)
+
+- **Rotation** lists only spells usable at your level. Known spells show normally; spells your level allows but that aren't detected in the spellbook say "available - visit trainer"; talents appear only once taken; the rest are counted as "unlock later".
+- **Talents & builds** draws each build on Forever's real talent trees, with points per talent, in-game spell tooltips and a "what this build takes" list. Tree data: `research/talents_priest.json` from Icy Veins' calculator for build 70862 (`tools/fetch_talents.py`). Wowhead's talent-calc is blocked for scripts (403), so its build strings are decoded and validated: all 12 level-60 builds come to exactly 51 points with valid ranks and rows, and Holy Level 30 to 21. **Discipline "Level 30" fails validation** (5 points in Improved Inner Fire, max 3), so it shows the link only.
+- **Gear** has three views: *For my level* (researched items you can equip now, per slot, best first, plus "coming up" for the next 5 levels), *Best overall*, and *By bracket*. Required level and slot come from the client's item info.
+
+
 
 | | Value |
 |---|---|

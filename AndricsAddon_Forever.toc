@@ -18,6 +18,7 @@ Data\Builds.lua
 Data\Gear.lua
 Data\World.lua
 Data\Notes.lua
+Data\Talents.lua
 Data\Learn.lua
 Data\Changes.lua
 Core\Spec.lua

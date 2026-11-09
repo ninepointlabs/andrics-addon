@@ -20,7 +20,7 @@ local function OnLogin()
     ns.DualSpec.Register(f)
 
     for _, ev in ipairs({ "PLAYER_LEVEL_UP", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "UNIT_AURA",
-        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED" }) do
+        "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "SPELLS_CHANGED", "PLAYER_TARGET_CHANGED", "GET_ITEM_INFO_RECEIVED" }) do
         pcall(f.RegisterEvent, f, ev)
     end
     pcall(f.RegisterUnitEvent, f, "UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -113,6 +113,8 @@ f:SetScript("OnEvent", function(_, event, ...)
     elseif event == "PLAYER_EQUIPMENT_CHANGED" then
         ns.Stats.ClearCache()
         SoftRefresh()
+    elseif event == "GET_ITEM_INFO_RECEIVED" then
+        SoftRefresh() -- uncached items were never stored in the stat cache, so no clear needed
     elseif event == "BAG_UPDATE_DELAYED" then
         SoftRefresh()
     end

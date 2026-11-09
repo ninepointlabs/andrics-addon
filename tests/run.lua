@@ -309,6 +309,66 @@ test("learn subsections render", function()
     truthy(textHas("Lessons"))
 end)
 
+test("talent builds decode onto Forever's trees", function()
+    truthy(#ns.Data.TalentTrees == 3, "three trees")
+    local valid60 = 0
+    for _, b in ipairs(ns.Data.DecodedBuilds) do
+        if b.valid then
+            for ti, tree in ipairs(ns.Data.TalentTrees) do
+                eq(#b.trees[ti].points, #tree.talents, "points per talent")
+                for i, t in ipairs(tree.talents) do truthy(b.trees[ti].points[i] <= t.max_rank) end
+            end
+            if b.level == 60 then valid60 = valid60 + 1 eq(b.total, 51) end
+        end
+        if b.spec == "Discipline" and b.purpose == "Level 30" then eq(b.valid, false, "stale build flagged") end
+    end
+    eq(valid60, 12)
+    ns.DB.SetSpec("Shadow")
+    M.texts = {}
+    ns.UI.Open("talents")
+    truthy(textHas("Shadowform"), "build list names talents")
+    truthy(textHas("51 points"), "summary line")
+end)
+
+test("rotation shows only spells usable at your level", function()
+    local saved = { level = S.level, known = S.known }
+    S.level, S.known = 6, { [585] = true }
+    eq(ns.Rotation.Availability("Smite", 6, "Undead"), "known")
+    eq(ns.Rotation.Availability("Shadow Word: Pain", 6, "Undead"), "trainable")
+    eq(ns.Rotation.Availability("Mind Blast", 6, "Undead"), nil)
+    eq(ns.Rotation.Availability("Mind Flay (talent)", 30, "Undead"), nil, "talent not taken")
+    eq(ns.Rotation.Availability("Starshards", 30, "Undead"), nil, "other race's racial")
+    eq(ns.Rotation.Availability("Touch of Weakness", 12, "Undead"), "trainable")
+    ns.DB.SetSpec("Shadow")
+    ns.DB.Profile().rotationContext = "solo"
+    M.texts = {}
+    ns.UI.Open("rotation")
+    truthy(not textHas(". Mind Blast"), "Mind Blast step hidden at level 6")
+    truthy(textHas(". Smite"), "Smite step shown")
+    truthy(textHas("unlock with levels or talents"))
+    S.level, S.known = saved.level, saved.known
+end)
+
+test("gear: my-level view vs best overall", function()
+    S.level = 24
+    S.itemInfo[270261] = { equipLoc = "INVTYPE_ROBE", classID = 4, subclassID = 1, minLevel = 18 } -- Robes of the Disgraced Thane
+    S.itemInfo[6682] = { equipLoc = "INVTYPE_ROBE", classID = 4, subclassID = 1, minLevel = 31 }   -- Death Speaker Robes
+    S.itemLines["item:270261"] = { "Robes", "+6 Intellect", "+5 Spirit" }
+    S.itemLines["item:6682"] = { "Robes", "+12 Intellect", "+10 Spirit" }
+    ns.Stats.ClearCache()
+    ns.DB.SetSpec("Holy")
+    ns.UI.SetGearView("mine")
+    M.texts = {}
+    ns.UI.Open("gear")
+    truthy(textHas("Robes of the Disgraced Thane"), "attainable item shown")
+    truthy(not textHas("Death Speaker Robes"), "level-31 item hidden at 24")
+    ns.UI.SetGearView("best")
+    M.texts = {}
+    ns.UI.Refresh()
+    truthy(textHas("Death Speaker Robes"), "best overall includes higher-level items")
+    ns.UI.SetGearView("mine")
+end)
+
 test("slash commands", function()
     SlashCmdList.ANDRICSADDON("spec disc")
     eq(ns.DB.ActiveSpec(), "Discipline")
