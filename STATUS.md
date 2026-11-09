@@ -1,7 +1,7 @@
 # STATUS: Andric's Addon (2026-11-09)
 
 **PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged. Tag/release `v0.1.0` cut on the PR branch at Tim's request (see below).
-**Repo:** `ninepointlabs/andrics-addon` (**public** since 2026-11-09, at Tim's request). Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
+**Repo:** `ninepointlabs/andrics-addon` (**public** since 2026-11-09, at Tim's request). Topics `wow-addon` and `world-of-warcraft` are set, which OmaForge's GitHub search requires. Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
 
 ## Release v0.1.0 (cut at Tim's request, 2026-11-09)
 
