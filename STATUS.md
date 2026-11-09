@@ -3,6 +3,8 @@
 **PR:** https://github.com/ninepointlabs/andrics-addon/pull/1 (branch `feature/initial-addon`). Not merged. Tag/release `v0.1.0` cut on the PR branch at Tim's request (see below).
 **Repo:** `ninepointlabs/andrics-addon` (**public** since 2026-11-09, at Tim's request). Topics `wow-addon` and `world-of-warcraft` are set, which OmaForge's GitHub search requires. Local checkout: `/home/tim/Projects/wow-forever-priest-addon`. The folder name was kept from the original brief; rename it if you like.
 
+**Release `v0.1.5`** (2026-11-09, at Tim's request): tag at `649b62c`. Release workflow passed; `release.json` = forever / 16001; OmaForge shows `v0.1.4 -> v0.1.5`. Fortitude button fix attempt: Tim reported clicks and the macro didn't cast, so the button now casts via a `/cast [@unit,help,nodead]` macro line, reports the outcome of each press in chat, and has `/andric fort debug`. **Still unverified in-game; waiting for Tim's chat output.** https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.1.5
+
 **Release `v0.1.4`** (2026-11-09): tag on `feature/initial-addon` at `d1f2fbc`. Release workflow passed; `release.json` = forever / 16001; OmaForge on TUF shows `-> v0.1.4`. Adds the Fortitude "Buff next" button (key binding + macro). CI now installs Lua from Ubuntu packages because the lua.org downloads kept timing out. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.1.4
 
 **Release `v0.1.3`** (2026-11-09, at Tim's request): tag on `feature/initial-addon` at `31ff91e`. Release workflow passed; `release.json` = forever / 16001; OmaForge on TUF shows `v0.1.2 -> v0.1.3`. Adds gear details (where and how to get each item, map pins) and the Forever healing-stat parsing fix. https://github.com/ninepointlabs/andrics-addon/releases/tag/v0.1.3
