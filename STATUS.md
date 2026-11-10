@@ -123,7 +123,7 @@ lua5.1 tests/run.lua            # headless tests
 ## Open questions / gaps
 
 1. **Dual spec: resolved.** Tim confirmed it unlocks at 40. `Core/DualSpec.lua` uses the same API as Blizzard's own Forever talent frame: `C_SpecializationInfo.GetActiveSpecGroup()`, `GetNumSpecGroups()` and the event `ACTIVE_TALENT_GROUP_CHANGED`. Talent spec 1 maps to profile A and spec 2 to profile B. Auto-switch is on by default. It still needs the in-game check listed above.
-2. **Percent-stat factor** (10 per 1% hit/crit): fine as a default, or do you have a preferred value?
+2. **Percent-stat factor: decided.** Tim confirmed 10 points per 1% hit/crit as the default (2026-11-10). It can still be changed in Settings › Tooltips & bags.
 3. **Gaps the addon flags instead of filling:** zones for 30–60, per-rank trainer costs (only the ~206–207g total), the Night Elf level-20 Elune's Grace quest ID, 40–60 gear lists, raid BiS (raids open Dec 9), and Benediction/Anathema. WeakAuras support is unconfirmed (not used).
 4. **Conflicts shown in-game:**
    - Contingency Plan CD (5 vs 10 min) and Divine Grace CD (5 vs 10 min)
