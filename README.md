@@ -340,6 +340,8 @@ README is his.
 
 If you see a Human Priest handing out Fortitude to everyone around him, say hello.
 
+Playing a Mage? Try the sister addon, **[Parzelle's Addon](https://parzelles-addon.myazerothlife.com/)**.
+
 *May the Light guide your heals.*
 
 <br clear="right">
