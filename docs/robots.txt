@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://andricsaddon.myazerothlife.com/sitemap.xml
